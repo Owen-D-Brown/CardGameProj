@@ -7,7 +7,7 @@ public abstract class Config {
     public static Dimension frameSize = new Dimension(1000, 1000);
     public static Dimension cardSize = new Dimension(150, 210);
 
-    public static boolean debug = false;
+    public static boolean debug = true;
 
     public enum GameState  {
         CARD_PLAY,

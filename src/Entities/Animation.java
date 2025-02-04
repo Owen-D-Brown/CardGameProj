@@ -1,10 +1,13 @@
 package Entities;
 
+import MainPackage.Config;
+import MainPackage.Game;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class Animation extends JComponent {
-    private int circleX, circleY;
+
     private int targetX, targetY;
     private boolean isMoving = false;
 
@@ -19,25 +22,50 @@ public class Animation extends JComponent {
         isMoving = true;
     }
 
-    public void updateAni() {
-        if (isMoving) {
-            int stepX = (targetX - circleX) / 10;
-            int stepY = (targetY - circleY) / 10;
-            circleX += stepX;
-            circleY += stepY;
-
-            if (Math.abs(circleX - targetX) < 1 && Math.abs(circleY - targetY) < 1) {
-                isMoving = false; // Stop the animation when target is reached
-            }
-        }
+    public void stopAnimation() {
+        isMoving = false;
     }
 
-    public void paint(Graphics g) {
+    private double circleX, circleY;
 
+    public void updateAni() {
         if (isMoving) {
-            System.out.println("Animation started");
+            double speed = 0.1; // Moves 20% of the remaining distance each frame
+
+            circleX += (targetX - circleX) * speed;
+            circleY += (targetY - circleY) * speed;
+
+            // Stop animation when close enough
+            if (Math.abs(circleX - targetX) < 5 && Math.abs(circleY - targetY) < 5) {
+                circleX = targetX;
+                circleY = targetY;
+                isMoving = false;
+            }
+        }
+        repaint();
+    }
+
+
+
+
+    public int duration = 1200;  // 2 seconds in milliseconds
+    public int FPS = 20;   // 20 updates per second
+    public int interval = 500 / FPS;
+    public void runAnimation() {
+
+
+    }
+    boolean test= false;
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (isMoving) {
+            //System.out.println("Animation started");
+
             g.setColor(Color.orange);
-            g.fillOval(circleX, circleY, 40, 40); // Circle moving animation
+            g.fillOval((int)circleX, (int)circleY, 40, 40); // Circle moving animation
+            System.out.println("In the paint method of Animation. X = "+circleX);
+
         }
     }
 }

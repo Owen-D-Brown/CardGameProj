@@ -4,8 +4,8 @@ import java.awt.*;
 
 public class Fireball extends Animation {
 
-    public Fireball() {
-        super(0, 0, 700, 20);
+    public Fireball(int startX, int startY, int targetX, int targetY) {
+        super(startX, startY, targetX, targetY);
 
     }
 }

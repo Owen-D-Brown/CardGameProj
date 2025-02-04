@@ -2,6 +2,7 @@ package Inputs;
 
 import Entities.Card;
 import GUI.CenterPanel;
+import GUI.GameplayPane;
 import MainPackage.Config;
 import MainPackage.Game;
 
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 
 public class MouseHandler implements MouseListener, MouseMotionListener {
 
-    private ArrayList<Card> cards = Game.player.cards;
+
     private Point intialGrab;
     public MouseHandler() {
 
@@ -36,18 +37,13 @@ public class MouseHandler implements MouseListener, MouseMotionListener {
         }
     }
 
+
+    //method for passing to card slot
     @Override
     public void mouseReleased(MouseEvent e) {
-        Rectangle rectangle = CenterPanel.rect;
-       // rectangle.x = rectangle.x + (int) (Config.frameSize.height * 0.3);
-        rectangle.y = rectangle.y + (int) (Config.frameSize.height * 0.3);
-        if(rectangle.intersects(selectedCard.getBounds()) ) {
-            selectedCard.setLocation(rectangle.x+10, rectangle.y+10);
-            selectedCard.primed = true;
-        } else {
-            selectedCard.setLocation(startx, starty);
-            selectedCard.primed = false;
-        }
+
+        GameplayPane.checkIntersect(selectedCard);
+
 
     }
 

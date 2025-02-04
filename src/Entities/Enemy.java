@@ -8,8 +8,8 @@ import java.util.Random;
 
 public class Enemy extends JComponent {
 
-    public int maxHealth = 50;
-    public int currentHealth = 50;
+    public int maxHealth = 30;
+    public int currentHealth = 30;
     private Rectangle hitbox = new Rectangle(10, 0, 24, 99);
     private Rectangle healthBar = new Rectangle(0, 0, 75, 10);
 
@@ -21,7 +21,7 @@ public class Enemy extends JComponent {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        g.setColor(Color.white);
+        g.setColor(Color.red);
 
         // Calculate the centered position for the hitbox
         int centeredX = (getWidth() - hitbox.width) / 2;
@@ -31,7 +31,7 @@ public class Enemy extends JComponent {
         hitbox.setLocation(centeredX, centeredY);
 
         // Draw the centered hitbox
-        g.drawRect(centeredX, centeredY-3, hitbox.width, hitbox.height);
+        g.fillRect(centeredX, centeredY-3, hitbox.width, hitbox.height);
 
         int barX = (getWidth() - healthBar.width) / 2;
         //int barY = (getHeight() - healthBar.height) / 2;
@@ -61,9 +61,18 @@ public class Enemy extends JComponent {
         repaint();
     }
 
-    public void attack() {
+    public void attack(Runnable onComplete) {
+        Animation ani = new Fireball(700, 20, 0, 0);
         Random rand = new Random();
         int dmg = rand.nextInt(10);
         Game.player.takeDamage(dmg);
+        AttackPlane.addAniToQue(ani);
+        AttackPlane.animations.get(0).startAnimation();
+        Game.gui.attackPlane.playAnimation(()-> {
+            AttackPlane.animations.get(0).stopAnimation();
+            onComplete.run();
+        });
+
+
     }
 }
