@@ -1,64 +1,46 @@
 package Entities;
 
-import Inputs.MouseHandler;
+import GUI.GameplayPane;
 import MainPackage.Config;
 import MainPackage.Game;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 import java.util.Random;
 
 public class Card extends JComponent implements MouseListener, MouseMotionListener {
+    // Variables
+    private Color color = Color.yellow; // Placeholder for card art
+    public boolean primed = false; // Whether the card is in a card slot
 
-    //Variables
-    private Color color = Color.yellow; //Placeholder for card art
-    public boolean primed = false; //Whether or not the card is currently in a card slot.
-
-    //Animations are JComponents that have methods to move their co-ords. These are placed in the AttackPlane and ran.
+    private Point intialGrab; // Stores where the mouse grabbed the card
     public Animation animation = new Fireball(0, 0, 700, 20);
 
-    //Constructor
+    // Constructor
     public Card() {
-
-        //Initializing this component
-        setSize(Config.cardSize);//Default card size.
-        MouseHandler mouseHandler = new MouseHandler(); //Controls for card movement - move to this class eventually.
-        this.addMouseListener(mouseHandler);
-        this.addMouseMotionListener(mouseHandler);
+        setSize(Config.cardSize); // Default card size.
+        addMouseListener(this);
+        addMouseMotionListener(this);
     }
 
-    //The card's effect.
+    // Card effect logic
     public void effect() {
-
-        //The effect on the enemy
         Random rand = new Random();
         int dmg = rand.nextInt(10) + 5;
         Game.gui.northPanel.enemies.get(0).takeDamage(dmg);
-
-
-        //Triggering the card's disolve animation
-        //disolve();
     }
 
-    //Flow -> Disolve() on all cards, pass animations to plane in disolve. - dont remove cards yet, just make them non visible. Animations play out, with effect
-    //after animation. then the cards are removed from play, and the game progresses.
-    //Animation after the card has been resolved. It disolves and removes the card from play.
+    // Dissolve animation for removing the card
     public void disolve(Runnable onComplete) {
         final int targetFPS = 20;
         final int delay = 1000 / targetFPS;
-
         Timer timer = new Timer(delay, null);
 
         ActionListener animationLis = evt -> {
             if (this.getWidth() <= 0 || this.getHeight() <= 0) {
                 ((Timer) evt.getSource()).stop();
                 this.setVisible(false);
-
-                // Call onComplete when dissolve is finished
                 if (onComplete != null) {
                     animation.startAnimation();
                     onComplete.run();
@@ -79,64 +61,44 @@ public class Card extends JComponent implements MouseListener, MouseMotionListen
 
         timer.addActionListener(animationLis);
         timer.start();
-
     }
 
-
+    // Paint component
     public boolean initswitch = false;
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.setColor(this.color);
-        if(!initswitch) {
-            g.fillRect(0, 0, this.getWidth(), this.getHeight());
-        } else {
-            g.fillRect(this.getX(), this.getY(), this.getWidth(), this.getHeight());
-            initswitch = true;
-        }
+        g.fillRect(0, 0, this.getWidth(), this.getHeight());
     }
 
-    public Color getColor() {
-        return color;
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
-
-    @Override
-    public void mouseClicked(MouseEvent e) {
-
-    }
-
+    // MouseListener & MouseMotionListener Logic
     @Override
     public void mousePressed(MouseEvent e) {
-
+        intialGrab = e.getPoint();
+        System.out.println("You have selected " + this);
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-
+        GameplayPane.checkIntersect(this);
     }
 
     @Override
     public void mouseDragged(MouseEvent e) {
+        if (intialGrab == null) return;
 
+        Point current = e.getLocationOnScreen();
+        SwingUtilities.convertPointFromScreen(current, this.getParent());
+        int x = current.x - intialGrab.x;
+        int y = current.y - intialGrab.y;
+
+        this.setLocation(x, y);
+        this.getParent().repaint();
     }
 
-    @Override
-    public void mouseMoved(MouseEvent e) {
-
-    }
+    @Override public void mouseClicked(MouseEvent e) {}
+    @Override public void mouseEntered(MouseEvent e) {}
+    @Override public void mouseExited(MouseEvent e) {}
+    @Override public void mouseMoved(MouseEvent e) {}
 }
