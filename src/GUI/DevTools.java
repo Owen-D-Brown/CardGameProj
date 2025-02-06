@@ -51,5 +51,25 @@ public class DevTools extends JFrame {
         });
         add(removeEnemy);
         removeEnemy.setBounds(210,0,100,50);
+
+        JButton removeSlot = new JButton("REMOVE SLOT");
+        removeSlot.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Game.gui.glassPane.removeCardSlot();
+            }
+        });
+        add(removeSlot);
+        removeSlot.setBounds(210,100,100,50);
+
+        JButton addSlot = new JButton("ADD SLOT");
+        addSlot.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Game.gui.glassPane.addCardSlot();
+            }
+        });
+        add(addSlot);
+        addSlot.setBounds(10,100,100,50);
     }
 }

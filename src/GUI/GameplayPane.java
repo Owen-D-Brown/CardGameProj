@@ -78,7 +78,43 @@ public class GameplayPane extends JPanel {
         Game.gui.repaint();
     }
 
-   //Method for drawing a card to the hand. Call this any time you need a player to draw a card. IMPORTANT METHOD
+    public void removeCardSlot() {
+        y = (int) ((int) (((Config.frameSize.height * 0.3) - 210) / 2) + Config.frameSize.height *0.3);
+        int currentNoOfSlots = cardSlots.size();
+        if (currentNoOfSlots == 0) {
+            System.out.println("No card slots to remove!");
+            return;
+        }
+
+        // Remove the last slot
+        cardSlots.removeLast();
+
+        // Reposition remaining slots
+        switch (currentNoOfSlots - 1) {  // Adjust because one slot is removed
+            case 0:
+                // No slots left, nothing to reposition
+                break;
+            case 1:
+                cardSlots.get(0).setLocation(400, y);
+                break;
+            case 2:
+                cardSlots.get(0).setLocation(300, y);
+                cardSlots.get(1).setLocation(500, y);
+                break;
+            case 3:
+                cardSlots.get(0).setLocation(100, y);
+                cardSlots.get(1).setLocation(300, y);
+                cardSlots.get(2).setLocation(500, y);
+                break;
+        }
+
+        // Refresh GUI
+        Game.gui.revalidate();
+        Game.gui.repaint();
+    }
+
+
+    //Method for drawing a card to the hand. Call this any time you need a player to draw a card. IMPORTANT METHOD
     public void drawCard() {
 
         if(Game.player.cards.size() <= 0) {

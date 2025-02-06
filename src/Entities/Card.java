@@ -81,7 +81,7 @@ public class Card extends JComponent implements MouseListener, MouseMotionListen
         timer.start();
 
     }
-        //
+
 
     public boolean initswitch = false;
     @Override

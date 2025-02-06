@@ -2,10 +2,10 @@ package GUI;
 
 import Entities.AttackPlane;
 import Entities.Card;
-import Entities.Enemy;
 import Entities.Player;
 import MainPackage.Config;
 import MainPackage.Game;
+import MainPackage.NorthPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,6 +19,7 @@ public class MainGui extends JFrame {
     public AttackPlane attackPlane; //This is the component in which the card animations play out.
     public CenterPanel center;
     public NorthPanel northPanel;
+    public SouthPanel southPanel;
 
     //Constructor
     public MainGui(Game game) {
@@ -69,7 +70,7 @@ public class MainGui extends JFrame {
         this.add(center, BorderLayout.CENTER);
 
         //South Panel
-        SouthPanel southPanel = new SouthPanel();
+        southPanel = new SouthPanel();
         this.add(southPanel, BorderLayout.SOUTH);
 
         //Glass pane that overlays the entire window.
