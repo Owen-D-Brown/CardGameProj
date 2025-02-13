@@ -6,59 +6,64 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Random;
 
-public class Enemy extends JComponent {
+//changed to abstract to force enemy types to define getEnemyType()
+public abstract class Enemy extends JComponent {
 
     public int maxHealth = 30;
     public int currentHealth = 30;
+    protected int attackPower;
+    protected int defense;
+    protected int agility;
+    protected int speed;
     private Rectangle hitbox = new Rectangle(10, 0, 24, 99);
     private Rectangle healthBar = new Rectangle(0, 0, 75, 10);
 
-    public Enemy() {
+    public Enemy(int maxHealth, int attackPower, int defense, int agility, int speed) {
+        this.maxHealth = maxHealth;
+        this.currentHealth = maxHealth; // Start at full health
+        this.attackPower = attackPower;
+        this.defense = defense;
+        this.agility = agility;
+        this.speed = speed;
         setSize(new Dimension(100, 150));
-        //setBorder(BorderFactory.createLineBorder(Color.white));
     }
 
     @Override
     public void paint(Graphics g) {
         super.paint(g);
         g.setColor(Color.red);
-        if(isTargeted) {
-            g.setColor(Color.green);
-        }
-        //Calculate the centered position for the hitbox
+
+        // Calculate the centered position for the hitbox
         int centeredX = (getWidth() - hitbox.width) / 2;
         int centeredY = (getHeight() - hitbox.height) / 2;
 
-        //Update the hitbox's position (optional, if you need it for other logic)
+        // Update the hitbox's position (optional, if you need it for other logic)
         hitbox.setLocation(centeredX, centeredY);
 
-        //Draw the centered hitbox
-        g.fillRect(hitbox.x, hitbox.y-3, hitbox.width, hitbox.height);
+        // Draw the centered hitbox
+        g.fillRect(centeredX, centeredY-3, hitbox.width, hitbox.height);
 
         int barX = (getWidth() - healthBar.width) / 2;
         //int barY = (getHeight() - healthBar.height) / 2;
         healthBar.setLocation(barX, 0);
-        g.fillRect(healthBar.x, (int) healthBar.getY(), healthBar.width, healthBar.height);
+        g.fillRect(barX, 0, healthBar.width, healthBar.height);
 
-        //Calculate maxHealth bar width based on current maxHealth
+        // Calculate maxHealth bar width based on current maxHealth
         int healthBarWidth = (int) ((double) currentHealth / maxHealth * healthBar.width);
 
-        //Draw the maxHealth bar (green for maxHealth)
+        // Draw the maxHealth bar (green for maxHealth)
         g.setColor(Color.green);
         g.fillRect(healthBar.x, healthBar.y, healthBarWidth, healthBar.height);
-
-
     }
-    public boolean isTargeted = false;
-    public void takeDamage(int damage) {
-        if(currentHealth > maxHealth)
-            currentHealth = maxHealth;
 
-        currentHealth = currentHealth - damage;
-        if(currentHealth <= 0) {
-            System.out.println("Enemy dead");
+    public void takeDamage(int damage) {
+        int reducedDamage = Math.max(damage - defense, 1);
+        currentHealth = Math.max(currentHealth - reducedDamage, 0);
+
+        if (currentHealth <= 0) {
+            System.out.println(getEnemyType() + " has been defeated!");
         } else {
-            System.out.println("maxHealth: "+currentHealth);
+            System.out.println(getEnemyType() + " Health: " + currentHealth);
         }
 
         revalidate();
@@ -66,17 +71,23 @@ public class Enemy extends JComponent {
     }
 
     public void attack(Runnable onComplete) {
-        Animation ani = new Fireball(700, 20, 0, 0);
         Random rand = new Random();
-        int dmg = rand.nextInt(10);
+        int dmg = rand.nextInt(attackPower) + 1; //rand damage between 1 and attack power
         Game.player.takeDamage(dmg);
+        System.out.println(getEnemyType() + " attacks for " + dmg + " damage!");
+
+        // Example animation call
+        Animation ani = new Fireball(700, 20, 0, 0);
         AttackPlane.addAniToQue(ani);
         AttackPlane.animations.get(0).startAnimation();
-        Game.gui.gameScreen.attackPlane.playAnimation(()-> {
+        Game.gui.attackPlane.playAnimation(() -> {
             AttackPlane.animations.get(0).stopAnimation();
             onComplete.run();
         });
+    }
 
-
+    // Force subclasses to define their enemy type
+    public String getEnemyType() {
+        return null;
     }
 }
