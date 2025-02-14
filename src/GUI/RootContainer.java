@@ -10,7 +10,7 @@ public class RootContainer extends JFrame {
 
     private JPanel currentScreen; // Tracks which panel is in the center
     public MainGui gameScreen;
-    private JPanel menuScreen;
+    public JPanel menuScreen;
     private JPanel containerPanel; // The main container using BorderLayout
 
     public RootContainer(Game game) {

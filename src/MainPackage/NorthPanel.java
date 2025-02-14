@@ -14,6 +14,7 @@ public class NorthPanel extends JPanel {
 
     public ArrayList<Enemy> enemies = new ArrayList<>();
     private BufferedImage background;
+
     public NorthPanel() {
         setLayout(null);
         background = loadImage("UpperBackground.png");
