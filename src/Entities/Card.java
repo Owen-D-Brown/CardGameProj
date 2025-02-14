@@ -13,7 +13,7 @@ public class Card extends JComponent implements MouseListener, MouseMotionListen
     // Variables
     private Color color = Color.yellow; // Placeholder for card art
     public boolean primed = false; // Whether the card is in a card slot
-
+    public int initX, initY;
     private Point intialGrab; // Stores where the mouse grabbed the card
     public Animation animation = new Fireball(0, 0, 700, 20);
 
@@ -22,6 +22,8 @@ public class Card extends JComponent implements MouseListener, MouseMotionListen
         setSize(Config.cardSize); // Default card size.
         addMouseListener(this);
         addMouseMotionListener(this);
+        initX = this.getX();
+        initY = this.getY();
     }
 
     // Card effect logic

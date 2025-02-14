@@ -118,7 +118,7 @@ public class GameplayPane extends JPanel {
     public void drawCard() {
 
         if(Game.player.cards.size() <= 0) {
-            for(int i = 0; i<=Game.player.discard.size(); i++) {
+            for(int i = 0; i<Game.player.discard.size(); i++) {
                 Game.player.cards.add(Game.player.discard.get(i));
 
             }
@@ -133,6 +133,8 @@ public class GameplayPane extends JPanel {
         int size = Game.player.hand.size();
         //System.out.println(size);
         int xcord = ((size-1) * Config.cardSize.width)+(size*10);
+        drawedCard.initX = xcord;
+        drawedCard.initY = 700;
         //System.out.println(xcord);
         drawedCard.setLocation(xcord, 700);
         drawedCard.setVisible(true);
@@ -164,7 +166,7 @@ public class GameplayPane extends JPanel {
                 }
             }
         //This code should only be reached if the card is not intersecting anything. In which case, it is not primed and reset to the hand.
-        c.setLocation(400, 700);
+        c.setLocation(c.initX, c.initY);
         c.primed = false;
 
     }

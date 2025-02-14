@@ -88,11 +88,7 @@ public class Game implements Runnable {
         }
 
         if(gui.gameScreen.northPanel.enemies.size() <= 0) {//IF all enemies are dead
-            gui.gameScreen.northPanel.addEnemy();
-            gui.gameScreen.northPanel.addEnemy();
-            gui.gameScreen.northPanel.addEnemy();
-            gui.gameScreen.northPanel.revalidate();
-            gui.gameScreen.northPanel.repaint();
+            gui.showScreen(gui.menuScreen);
         }
     }
 
