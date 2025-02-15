@@ -28,30 +28,80 @@ public abstract class Enemy extends JComponent {
         setSize(new Dimension(100, 150));
     }
 
+
+    // load image to open the file path
+    public static BufferedImage loadImage(String path) {
+        try (InputStream is = Enemy.class.getResourceAsStream(path)) {
+            if (is == null) { // if the files exists....
+                System.err.println("Error: Image not found at " + path);
+                return null;
+            }
+            return ImageIO.read(is);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    // split the sprite sheet into frames
+    public static BufferedImage[] importSprites(String pathName, int cols, int rows, int spriteWidth, int spriteHeight) {
+        BufferedImage image = loadImage(pathName);
+        if (image == null) {
+            return new BufferedImage[0]; // if it fails to laod
+        }
+            //Array of sprites col * row
+        BufferedImage[] sprites = new BufferedImage[cols * rows];
+
+        for (int y = 0; y < rows; y++) {
+            for (int x = 0; x < cols; x++) {
+                sprites[y * cols + x] = image.getSubimage(x * spriteWidth, y * spriteHeight, spriteWidth, spriteHeight);
+            }
+        }
+        return sprites;
+    }
+
+    // handle the animation
+    public void animate() {
+        aniCounter++;
+        //ani counter >= ani speed reset the counter and add to the index
+        //update frame index
+        if (aniCounter >= aniSpeed) {
+            aniCounter = 0;
+            aniIndex++;
+        }
+        if (aniIndex >= animations.get(0).length) {
+            aniIndex = 0;
+        }
+    }
+
+    // draw the animation
+    public void drawAni(Graphics g, int x, int y) {
+        animate();
+        g.drawImage(animations.get(0)[aniIndex], x, y, null);
+    }
+
+
+
+
+
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        g.setColor(Color.red);
 
-        // Calculate the centered position for the hitbox
-        int centeredX = (getWidth() - hitbox.width) / 2;
-        int centeredY = (getHeight() - hitbox.height) / 2;
+        // Draw animation instead of a hitbox
+        int spriteX = (getWidth() - 50) / 2; // Centered sprite
+        int spriteY = (getHeight() - 70) / 2;
 
-        // Update the hitbox's position (optional, if you need it for other logic)
-        hitbox.setLocation(centeredX, centeredY);
+        drawAni(g, spriteX, spriteY);
 
-        // Draw the centered hitbox
-        g.fillRect(centeredX, centeredY-3, hitbox.width, hitbox.height);
-
+        // Draw health bar
         int barX = (getWidth() - healthBar.width) / 2;
-        //int barY = (getHeight() - healthBar.height) / 2;
         healthBar.setLocation(barX, 0);
+        g.setColor(Color.white);
         g.fillRect(barX, 0, healthBar.width, healthBar.height);
 
-        // Calculate maxHealth bar width based on current maxHealth
+        // Calculate health bar width
         int healthBarWidth = (int) ((double) currentHealth / maxHealth * healthBar.width);
-
-        // Draw the maxHealth bar (green for maxHealth)
         g.setColor(Color.green);
         g.fillRect(healthBar.x, healthBar.y, healthBarWidth, healthBar.height);
     }
