@@ -1,56 +1,47 @@
 package Entities;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
 
 public class Goblin extends Enemy {
-    private static final double B_D_chance = 0.15; // 15% per agility
-    private ArrayList<BufferedImage[]> animations = new ArrayList<>();
-    private int aniIndex = 0;
-    private int aniSpeed = 10; // set animation speed
-    private int aniCounter = 0;
+    //Dodge chance increments of 15% will be + by agility base stat
+    private static final double B_DODGE_CHANCE = 0.15;
 
+    //Adding base stats for Goblin
     public Goblin() {
         super(20, 5, 1, 4, 2);
 
-        // Load and slice the idle animation
-        animations.add(importSprites("Goblin/idleMap2.png", 8, 1, 255, 224));
-
+        //tryin gto import idle sprites from file path
+        BufferedImage[] idleSprites = importSprites("/Resources/Goblin/idleMap2.png", 8, 1, 255, 224);
+        if (idleSprites.length > 0) {
+            animations.add(idleSprites);
+        } else {
+            System.err.println("Error: Goblin sprites failed to load!");
+        }
     }
 
+    //return enemy from getEnemy method and return the goblin as a string
     @Override
     public String getEnemyType() {
         return "Goblin";
     }
-
+    // Dodge mechanic and how it works
+    // if agility is 4 then 15% * 4 = 60% Dodge Chance
+    //Based on if rand < agility
     @Override
     public void takeDamage(int damage) {
-        if (Math.random() < (this.agility * B_D_chance)) {
+        if (Math.random() < (this.agility * B_DODGE_CHANCE)) {
             System.out.println("Goblin dodged the attack!");
             return;
         }
         super.takeDamage(damage);
     }
 
-    // Animate the idle animation
-    public void animate() {
-        aniCounter++;
-        if (aniCounter >= aniSpeed) {
-            aniCounter = 0;
-            aniIndex++;
-            if (aniIndex >= animations.get(0).length) aniIndex = 0;
-        }
-    }
-
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        animate();
-        g.drawImage(animations.get(0)[aniIndex], 0, 0, getWidth(), getHeight(), null);
+        if (!animations.isEmpty()) {
+            g.drawImage(animations.get(0)[aniIndex], 10, 10, 75, 75, null);
+        }
     }
-
 }

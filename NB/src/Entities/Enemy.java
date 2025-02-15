@@ -1,26 +1,36 @@
 package Entities;
 
-import MainPackage.Game;
-
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Random;
+import javax.imageio.ImageIO;
 
-//changed to abstract to force enemy types to define getEnemyType()
 public abstract class Enemy extends JComponent {
 
-    public int maxHealth = 30;
-    public int currentHealth = 30;
+
+    //Basic Stat  with RPG implements
+    protected int maxHealth;
+    protected int currentHealth;
     protected int attackPower;
     protected int defense;
     protected int agility;
     protected int speed;
-    private Rectangle hitbox = new Rectangle(10, 0, 24, 99);
-    private Rectangle healthBar = new Rectangle(0, 0, 75, 10);
 
+
+    //State tracking from Owens player class
+    protected ArrayList<BufferedImage[]> animations = new ArrayList<>();
+    protected int aniIndex = 0;
+    protected int aniSpeed = 10;
+    protected int aniCounter = 0;
+
+    //Construcotr to set stats and size etc..
     public Enemy(int maxHealth, int attackPower, int defense, int agility, int speed) {
         this.maxHealth = maxHealth;
-        this.currentHealth = maxHealth; // Start at full health
+        this.currentHealth = maxHealth;
         this.attackPower = attackPower;
         this.defense = defense;
         this.agility = agility;
@@ -28,11 +38,13 @@ public abstract class Enemy extends JComponent {
         setSize(new Dimension(100, 150));
     }
 
+//    Using Owen's load image method,
+//    Trying to open the resource file as the path,
+//    check if its found or not found
 
-    // load image to open the file path
     public static BufferedImage loadImage(String path) {
         try (InputStream is = Enemy.class.getResourceAsStream(path)) {
-            if (is == null) { // if the files exists....
+            if (is == null) {
                 System.err.println("Error: Image not found at " + path);
                 return null;
             }
@@ -42,14 +54,15 @@ public abstract class Enemy extends JComponent {
             return null;
         }
     }
+// Reading the spritesheet via the load image method,
+//    if image is null return the empty array, or create an array of Buffered Image,
+//    with col*row (for each row (0 & -1) and store it within the array)
 
-    // split the sprite sheet into frames
     public static BufferedImage[] importSprites(String pathName, int cols, int rows, int spriteWidth, int spriteHeight) {
         BufferedImage image = loadImage(pathName);
         if (image == null) {
-            return new BufferedImage[0]; // if it fails to laod
+            return new BufferedImage[0];
         }
-            //Array of sprites col * row
         BufferedImage[] sprites = new BufferedImage[cols * rows];
 
         for (int y = 0; y < rows; y++) {
@@ -59,51 +72,26 @@ public abstract class Enemy extends JComponent {
         }
         return sprites;
     }
-
-    // handle the animation
+    //add to animate counter
+    //if the counter is >= aniSpeed + frame index
     public void animate() {
         aniCounter++;
-        //ani counter >= ani speed reset the counter and add to the index
-        //update frame index
         if (aniCounter >= aniSpeed) {
             aniCounter = 0;
             aniIndex++;
-        }
-        if (aniIndex >= animations.get(0).length) {
-            aniIndex = 0;
+            if (aniIndex >= animations.get(0).length) {
+                aniIndex = 0;
+            }
         }
     }
-
-    // draw the animation
-    public void drawAni(Graphics g, int x, int y) {
-        animate();
-        g.drawImage(animations.get(0)[aniIndex], x, y, null);
-    }
-
-
-
-
 
     @Override
-    public void paint(Graphics g) {
-        super.paint(g);
-
-        // Draw animation instead of a hitbox
-        int spriteX = (getWidth() - 50) / 2; // Centered sprite
-        int spriteY = (getHeight() - 70) / 2;
-
-        drawAni(g, spriteX, spriteY);
-
-        // Draw health bar
-        int barX = (getWidth() - healthBar.width) / 2;
-        healthBar.setLocation(barX, 0);
-        g.setColor(Color.white);
-        g.fillRect(barX, 0, healthBar.width, healthBar.height);
-
-        // Calculate health bar width
-        int healthBarWidth = (int) ((double) currentHealth / maxHealth * healthBar.width);
-        g.setColor(Color.green);
-        g.fillRect(healthBar.x, healthBar.y, healthBarWidth, healthBar.height);
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        animate();
+        if (!animations.isEmpty()) {
+            g.drawImage(animations.get(0)[aniIndex], 10, 10, 75, 75, null);
+        }
     }
 
     public void takeDamage(int damage) {
@@ -120,24 +108,5 @@ public abstract class Enemy extends JComponent {
         repaint();
     }
 
-    public void attack(Runnable onComplete) {
-        Random rand = new Random();
-        int dmg = rand.nextInt(attackPower) + 1; //rand damage between 1 and attack power
-        Game.player.takeDamage(dmg);
-        System.out.println(getEnemyType() + " attacks for " + dmg + " damage!");
-
-        // Example animation call
-        Animation ani = new Fireball(700, 20, 0, 0);
-        AttackPlane.addAniToQue(ani);
-        AttackPlane.animations.get(0).startAnimation();
-        Game.gui.attackPlane.playAnimation(() -> {
-            AttackPlane.animations.get(0).stopAnimation();
-            onComplete.run();
-        });
-    }
-
-    // Force subclasses to define their enemy type
-    public String getEnemyType() {
-        return null;
-    }
+    public abstract String getEnemyType();
 }
