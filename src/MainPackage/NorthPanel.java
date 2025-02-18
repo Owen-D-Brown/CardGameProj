@@ -1,6 +1,9 @@
 package MainPackage;
 
 import Entities.Enemy;
+import Entities.Goblin;
+import Entities.Orc;
+import Entities.Slime;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -46,7 +49,7 @@ public class NorthPanel extends JPanel {
         }
         else {
 
-            Enemy enemyAdded = new Enemy();
+            Enemy enemyAdded = new Goblin();
             enemies.add(enemyAdded);
             add(enemies.getLast());
             //
