@@ -1,26 +1,36 @@
 package Entities;
 
-import MainPackage.Game;
-
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Random;
+import javax.imageio.ImageIO;
 
-//changed to abstract to force enemy types to define getEnemyType()
 public abstract class Enemy extends JComponent {
 
-    public int maxHealth = 30;
-    public int currentHealth = 30;
+
+    //Basic Stat  with RPG implements
+    protected int maxHealth;
+    protected int currentHealth;
     protected int attackPower;
     protected int defense;
     protected int agility;
     protected int speed;
-    private Rectangle hitbox = new Rectangle(10, 0, 24, 99);
-    private Rectangle healthBar = new Rectangle(0, 0, 75, 10);
 
+
+    //State tracking from Owens player class
+    protected ArrayList<BufferedImage[]> animations = new ArrayList<>();
+    protected int aniIndex = 0;
+    protected int aniSpeed = 10;
+    protected int aniCounter = 0;
+
+    //Construcotr to set stats and size etc..
     public Enemy(int maxHealth, int attackPower, int defense, int agility, int speed) {
         this.maxHealth = maxHealth;
-        this.currentHealth = maxHealth; // Start at full health
+        this.currentHealth = maxHealth;
         this.attackPower = attackPower;
         this.defense = defense;
         this.agility = agility;
@@ -28,32 +38,60 @@ public abstract class Enemy extends JComponent {
         setSize(new Dimension(100, 150));
     }
 
+//    Using Owen's load image method,
+//    Trying to open the resource file as the path,
+//    check if its found or not found
+
+    public static BufferedImage loadImage(String path) {
+        try (InputStream is = Enemy.class.getResourceAsStream(path)) {
+            if (is == null) {
+                System.err.println("Error: Image not found at " + path);
+                return null;
+            }
+            return ImageIO.read(is);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+// Reading the spritesheet via the load image method,
+//    if image is null return the empty array, or create an array of Buffered Image,
+//    with col*row (for each row (0 & -1) and store it within the array)
+
+    public static BufferedImage[] importSprites(String pathName, int cols, int rows, int spriteWidth, int spriteHeight) {
+        BufferedImage image = loadImage(pathName);
+        if (image == null) {
+            return new BufferedImage[0];
+        }
+        BufferedImage[] sprites = new BufferedImage[cols * rows];
+
+        for (int y = 0; y < rows; y++) {
+            for (int x = 0; x < cols; x++) {
+                sprites[y * cols + x] = image.getSubimage(x * spriteWidth, y * spriteHeight, spriteWidth, spriteHeight);
+            }
+        }
+        return sprites;
+    }
+    //add to animate counter
+    //if the counter is >= aniSpeed + frame index
+    public void animate() {
+        aniCounter++;
+        if (aniCounter >= aniSpeed) {
+            aniCounter = 0;
+            aniIndex++;
+            if (aniIndex >= animations.get(0).length) {
+                aniIndex = 0;
+            }
+        }
+    }
+
     @Override
-    public void paint(Graphics g) {
-        super.paint(g);
-        g.setColor(Color.red);
-
-        // Calculate the centered position for the hitbox
-        int centeredX = (getWidth() - hitbox.width) / 2;
-        int centeredY = (getHeight() - hitbox.height) / 2;
-
-        // Update the hitbox's position (optional, if you need it for other logic)
-        hitbox.setLocation(centeredX, centeredY);
-
-        // Draw the centered hitbox
-        g.fillRect(centeredX, centeredY-3, hitbox.width, hitbox.height);
-
-        int barX = (getWidth() - healthBar.width) / 2;
-        //int barY = (getHeight() - healthBar.height) / 2;
-        healthBar.setLocation(barX, 0);
-        g.fillRect(barX, 0, healthBar.width, healthBar.height);
-
-        // Calculate maxHealth bar width based on current maxHealth
-        int healthBarWidth = (int) ((double) currentHealth / maxHealth * healthBar.width);
-
-        // Draw the maxHealth bar (green for maxHealth)
-        g.setColor(Color.green);
-        g.fillRect(healthBar.x, healthBar.y, healthBarWidth, healthBar.height);
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        animate();
+        if (!animations.isEmpty()) {
+            g.drawImage(animations.get(0)[aniIndex], 10, 10, 75, 75, null);
+        }
     }
 
     public void takeDamage(int damage) {
@@ -70,24 +108,5 @@ public abstract class Enemy extends JComponent {
         repaint();
     }
 
-    public void attack(Runnable onComplete) {
-        Random rand = new Random();
-        int dmg = rand.nextInt(attackPower) + 1; //rand damage between 1 and attack power
-        Game.player.takeDamage(dmg);
-        System.out.println(getEnemyType() + " attacks for " + dmg + " damage!");
-
-        // Example animation call
-        Animation ani = new Fireball(700, 20, 0, 0);
-        AttackPlane.addAniToQue(ani);
-        AttackPlane.animations.get(0).startAnimation();
-        Game.gui.attackPlane.playAnimation(() -> {
-            AttackPlane.animations.get(0).stopAnimation();
-            onComplete.run();
-        });
-    }
-
-    // Force subclasses to define their enemy type
-    public String getEnemyType() {
-        return null;
-    }
+    public abstract String getEnemyType();
 }

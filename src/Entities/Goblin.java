@@ -7,18 +7,25 @@ public class Goblin extends Enemy {
     //Dodge chance increments of 15% will be + by agility base stat
     private static final double B_DODGE_CHANCE = 0.15;
 
-    //Adding base stats for Goblin
     public Goblin() {
         super(20, 5, 1, 4, 2);
 
-        //tryin gto import idle sprites from file path
-        BufferedImage[] idleSprites = importSprites("/Resources/Goblin/idleMap2.png", 8, 1, 255, 224);
+        // call import sprites
+        BufferedImage[] idleSprites = importSprites(
+                //filepath
+                "/Resources/Goblin/GoblinMap.png", 9, 1, 519, 498
+        );
+        //check the sprites in the array
         if (idleSprites.length > 0) {
+            //loaded frames from animations
             animations.add(idleSprites);
         } else {
             System.err.println("Error: Goblin sprites failed to load!");
         }
     }
+
+
+
 
     //return enemy from getEnemy method and return the goblin as a string
     @Override
