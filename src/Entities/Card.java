@@ -7,30 +7,45 @@ import MainPackage.Game;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Random;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import javax.imageio.ImageIO;
 
-public class Card extends JComponent implements MouseListener, MouseMotionListener {
+public abstract class Card extends JComponent implements MouseListener, MouseMotionListener {
     // Variables
-    private Color color = Color.yellow; // Placeholder for card art
     public boolean primed = false; // Whether the card is in a card slot
     public int initX, initY;
     private Point intialGrab; // Stores where the mouse grabbed the card
     public Animation animation = new Fireball(0, 0, 700, 20);
+    protected BufferedImage image;
+
 
     // Constructor
-    public Card() {
+    public Card(String imagePath) {
         setSize(Config.cardSize); // Default card size.
         addMouseListener(this);
         addMouseMotionListener(this);
+        this.image = loadImage(imagePath);
         initX = this.getX();
         initY = this.getY();
     }
 
-    // Card effect logic
-    public void effect() {
-        Random rand = new Random();
-        int dmg = rand.nextInt(10) + 5;
-        Game.gui.gameScreen.northPanel.enemies.get(0).takeDamage(dmg);
+    // abstract card effect method, implemented by card subclasses
+    public abstract void effect();
+
+    // Image loader like one found in player class
+    public static BufferedImage loadImage(String path) {
+        try (InputStream is = Card.class.getResourceAsStream(path)) {
+            if (is == null) {
+                System.err.println("Error: Image not found at " + path);
+                return null;
+            }
+            return ImageIO.read(is);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     // Dissolve animation for removing the card
@@ -66,20 +81,14 @@ public class Card extends JComponent implements MouseListener, MouseMotionListen
     }
 
     // Paint component
-    public boolean initswitch = false;
     @Override
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        g.setColor(this.color);
-        g.fillRect(0, 0, this.getWidth(), this.getHeight());
-        if (primed && draggingArrow && arrowEnd != null) {
-            g.setColor(Color.red);
-
-            // Convert global positions to local coordinates
-            Point start = SwingUtilities.convertPoint(this.getParent(), arrowStart, this);
-            Point end = SwingUtilities.convertPoint(this.getParent(), arrowEnd, this);
-
-            g.drawLine(start.x, start.y, end.x, end.y);
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);//clears old drawings and renders cards
+        if (image != null) { //check if image is available, draw it if so or use placeholder
+            g.drawImage(image, 0, 0, getWidth(), getHeight(), this); //draw card image
+        } else {
+            g.setColor(Color.YELLOW); // Placeholder color if image is missing
+            g.fillRect(0, 0, getWidth(), getHeight());
         }
     }
 
