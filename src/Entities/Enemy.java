@@ -170,7 +170,7 @@ public abstract class Enemy extends JComponent {
 
         // start of the animation (attack)
         AttackPlane.animations.get(0).startAnimation();
-        Game.gui.gameScreen.attackPlane.playAnimation(() -> {
+        Game.gui.gameScreen.northPanel.attackPlane.playAnimation(() -> {
             AttackPlane.animations.get(0).stopAnimation();
             onComplete.run();
         });

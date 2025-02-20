@@ -19,6 +19,18 @@ public class CardSlot extends Rectangle {
         this.slottedCard = playedCard;
     }
 
+    public void unslotCard() {
+        if(this.slottedCard != null) {
+            this.slottedCard.primed = false;
+            this.slottedCard.setBounds(this.slottedCard.initX, this.slottedCard.initY, this.slottedCard.getWidth(), this.slottedCard.getHeight());
+            this.slottedCard = null;
+
+        }
+
+    }
+
+    public boolean hasCard() {return (this.slottedCard != null);};
+
     //This method is called by ResolveNextCard() in gameplay pane, which in turn is called when the PlayHandButton is clicked.
     public void resolve(Runnable onComplete) {//Callback function passed iterates through the gameplay pane card slots. So, when this finishes, resolveNextCArd() is called again, which in turn calls this.resolve() again.
         AttackPlane.addAniToQue(slottedCard.animation);
@@ -29,7 +41,7 @@ public class CardSlot extends Rectangle {
         //Calls the disolve() method in the Card instance. Passes a callback function that plays the animation of the card. This executes once disolve() finishes.
         slottedCard.disolve(() -> {
             // Play attack animation AFTER dissolve finishes
-            Game.gui.gameScreen.attackPlane.playAnimation(() -> {
+            Game.gui.gameScreen.northPanel.attackPlane.playAnimation(() -> {
 
 
                 // Only now move to the next card
@@ -38,6 +50,8 @@ public class CardSlot extends Rectangle {
                     System.out.println("Card Slot Resolution Finished");
                     AttackPlane.animations.get(0).stopAnimation();
                     Game.checkEnemyStatus(Game.gui.gameScreen.northPanel.enemies);
+                    Game.gui.gameScreen.glassPane.removeCard(slottedCard);
+
                     onComplete.run();
                 }
             });

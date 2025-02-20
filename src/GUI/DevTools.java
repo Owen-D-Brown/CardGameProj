@@ -1,5 +1,6 @@
 package GUI;
 
+import Entities.Goblin;
 import MainPackage.Config;
 import MainPackage.Game;
 
@@ -10,6 +11,9 @@ import java.awt.event.ActionListener;
 
 public class DevTools extends JFrame {
 
+    public JLabel deckCount;
+    public JLabel discardCount;
+    public JLabel handCount;
     public DevTools() {
         //Configuring this frame.
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -36,7 +40,7 @@ public class DevTools extends JFrame {
         addEnemy.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Game.gui.gameScreen.northPanel.addEnemy();
+                Game.gui.gameScreen.northPanel.addEnemy(new Goblin());
             }
         });
         add(addEnemy);
@@ -71,5 +75,25 @@ public class DevTools extends JFrame {
         });
         add(addSlot);
         addSlot.setBounds(10,100,100,50);
+
+        deckCount = new JLabel();
+        deckCount.setBounds(400, 200, 200, 50);
+        add(deckCount);
+        discardCount = new JLabel();
+        discardCount.setBounds(400, 260, 200, 50);
+        add(discardCount);
+        handCount = new JLabel();
+        handCount.setBounds(400, 320, 200, 50);
+        add(handCount);
+        updateCounts();
+
+    }
+
+    public void updateCounts() {
+        this.deckCount.setText(String.valueOf(Game.player.cards.size()));
+        this.discardCount.setText(String.valueOf(Game.player.discard.size()));
+        this.handCount.setText(String.valueOf(Game.player.hand.size()));
+        this.revalidate();
+        this.repaint();
     }
 }

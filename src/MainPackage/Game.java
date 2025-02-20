@@ -17,11 +17,12 @@ public class Game implements Runnable {
 
     public static RootContainer gui; //Main GUI Instance
     public static Config.GameState gameState;//Gamestate instance to control game state
+    public static DevTools devTools;
 
     //Constructor
     public Game() {
         //Development Tools Frame
-        DevTools devTools = new DevTools();
+        devTools = new DevTools();
 
         //Main GUI Frame
         gui = new RootContainer(this);
@@ -55,8 +56,12 @@ public class Game implements Runnable {
 
     public static void removeCardSlot() {gui.gameScreen.glassPane.removeCardSlot();}
 
+    public static void unslotAllCards() {gui.gameScreen.glassPane.unslotAllCards();}
+
+    //ENGINE METHODS
     public static void changeStateToCardPlay() {
         gameState = Config.GameState.CARD_PLAY;
+        System.out.println("\nTHE GAME STATE HAS CHANGED -- CARD PLAY\n");
         for(int i = player.hand.size(); i< 5; i++) {
             drawCard();
         }
@@ -71,7 +76,7 @@ public class Game implements Runnable {
         gameState = Config.GameState.ENEMY_PHASE;
         System.out.println("THE GAME STATE HAS CHANGED -- ENEMY TURN.");
         resolveNextEnemy();
-        changeStateToCardPlay();
+
     }
     public static void checkEnemyStatus(ArrayList<Enemy> enemies) {
         List<Integer> toRemove = new ArrayList<>();
@@ -88,7 +93,10 @@ public class Game implements Runnable {
         }
 
         if(gui.gameScreen.northPanel.enemies.size() <= 0) {//IF all enemies are dead
-            gui.showScreen(gui.menuScreen);
+            gui.gameScreen.glassPane.setVisible(false);
+            gui.gameScreen.cardLayout.show(gui.gameScreen.centerContainer, "rewardScreen");
+            gui.gameScreen.revalidate();
+            gui.gameScreen.repaint();
         }
     }
 
@@ -110,11 +118,17 @@ public class Game implements Runnable {
             previousTime = currentTime;//Setting the previous time to the current time
 
             if (deltaF >= 1) {//By running the game loop this way, it prevents the calculations from being messed up from a nanosecond or two slipping through the cracks. It catches up with itself.
-               // gui.attackPlane.repaint();//Actually repainting the panel to display changes/animations
+                // gui.attackPlane.repaint();//Actually repainting the panel to display changes/animations
                 //gui.attackPlane.updateAnimations();
                 player.revalidate();
                 player.repaint();
-                deltaF--;//Removing one from deltaF, keeping any leftover time we may have for the next iteration.
+                if (Game.gui.gameScreen.northPanel != null) {
+                    for (Enemy enemy : gui.gameScreen.northPanel.enemies) {
+                        enemy.revalidate();
+                        enemy.repaint();
+                    }
+                    deltaF--;//Removing one from deltaF, keeping any leftover time we may have for the next iteration.
+                }
             }
         }
     }
@@ -122,7 +136,9 @@ public class Game implements Runnable {
     public static void resolveNextEnemy() {
 
             //If we have resolved all the card slots.
+          //  System.out.println("currentIndex: "+currentEnemyIndex+" size: "+gui.gameScreen.northPanel.enemies.size());
             if (currentEnemyIndex >= gui.gameScreen.northPanel.enemies.size()) {
+                //System.out.println("error");
                 Game.changeStateToCardPlay();
                 //Game.runEnemyTurn();
                 currentEnemyIndex = 0;

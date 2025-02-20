@@ -1,5 +1,8 @@
 package Entities;
 
+import GUI.GameplayPane;
+import MainPackage.Game;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -7,6 +10,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Player extends JComponent {
     public ArrayList<Card> cards = new ArrayList<>();
@@ -121,7 +125,39 @@ public class Player extends JComponent {
 
     }
 
+    public void refillDeck() {
+        cards.addAll(discard);
+        discard.clear();
+        Collections.shuffle(cards);
+    }
 
+    public void resetDeck() {
+        cards.addAll(hand);
+        cards.addAll(discard);
+        discard.clear();
+        hand.clear();
+        Collections.shuffle(cards);
+    }
+
+    public Card drawCard() {
+        if(cards.isEmpty())
+            refillDeck();
+        Card c = cards.get(0);
+        hand.add(c);
+        cards.remove(c);
+
+        return c;
+    }
+
+    public void discard(Card c) {
+        if(hand.contains(c)) {
+            hand.remove(c);
+            discard.add(c);
+        } else if(GameplayPane.slottedCards.contains(c)) {
+            GameplayPane.slottedCards.remove(c);
+            discard.add(c);
+        }
+    }
 
 
 }

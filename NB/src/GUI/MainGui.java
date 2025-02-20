@@ -68,7 +68,7 @@ public class MainGui extends JPanel {
         trinketSideBar = new TrinketSideBar();
         add(trinketSideBar, BorderLayout.WEST);
 
-        // **Glass Pane - This overlays everything inside MainGui**
+        // **Glass Pane - This overlays everything inside BattleGUI**
         glassPane = new GameplayPane();
         glassPane.setOpaque(false);
         glassPane.setBounds(0, 0, Config.frameSize.width, Config.frameSize.height);

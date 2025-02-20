@@ -11,6 +11,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import static GUI.GameplayPane.currentCardIndex;
+
 //This class is the button that triggers the cards on the field to play. This button moves the game state and starts the round process.
 public class PlayHandBtn extends JComponent implements MouseListener {
 
@@ -35,7 +37,8 @@ public class PlayHandBtn extends JComponent implements MouseListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if (GameplayPane.currentCardIndex == 0) { // Only start if it's not already running
+        System.out.println("MOUSE CLICKED ON PLAY HAND - "+currentCardIndex);
+        if (currentCardIndex == 0) { // Only start if it's not already running
             //Check to make sure there is at least one card played.
             Game.changeStateToCardResolution();
             Game.gui.gameScreen.glassPane.resolveNextCard();
