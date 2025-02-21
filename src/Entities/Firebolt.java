@@ -1,9 +1,7 @@
 package Entities;
 
 import MainPackage.Game;
-import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.Random;
 
 public class Firebolt extends Card {
@@ -14,6 +12,7 @@ public class Firebolt extends Card {
         public Firebolt() {
             super(IMAGE_PATH); //pass the image path to card constructor
             this.image = loadImage(IMAGE_PATH); // load image from the path
+
 
 
         }
@@ -35,9 +34,11 @@ public class Firebolt extends Card {
 
         if (image != null) {//check if image is available, draw it if so or use placeholder
             g.drawImage(image, 0, 0, getWidth(), getHeight(), this);//draw card image
+
         } else {//else add red placeholder
             g.setColor(Color.RED);
             g.fillRect(0, 0, getWidth(), getHeight()); // Red box if image is missing
+
         }
     }
 }
