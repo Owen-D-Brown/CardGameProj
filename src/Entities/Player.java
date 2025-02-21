@@ -27,7 +27,8 @@ public class Player extends JComponent {
         setSize(new Dimension(130, 200));
         //setBorder(BorderFactory.createLineBorder(Color.BLACK));
         for(int i = 0; i<10; i++) {
-            cards.add(new Card());
+            cards.add(new Firebolt());
+            cards.add(new IceBurst());
         }
         animations.add(importSprites("/Resources/EvilWizard/idleMap.png", 10, 1, 37, 53));
     }
