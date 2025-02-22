@@ -10,6 +10,7 @@ public class RootContainer extends JFrame {
 
     private JPanel currentScreen; // Tracks which panel is in the center
     public MainGui gameScreen;
+    public MapGui mapScreen;
     public JPanel menuScreen;
     private JPanel containerPanel; // The main container using BorderLayout
 
@@ -25,6 +26,7 @@ public class RootContainer extends JFrame {
 
         // Initialize screens
         gameScreen = new MainGui(game);
+        mapScreen = new MapGui();
         menuScreen = createMenuScreen();
 
         // Start on the menu
@@ -39,6 +41,9 @@ public class RootContainer extends JFrame {
         JButton startButton = new JButton("Start Game");
         startButton.addActionListener(e -> showScreen(gameScreen));
         menu.add(startButton);
+        JButton mapTestButton = new JButton("Map01 Test");//added button to test map function on launch
+        mapTestButton.addActionListener(e -> showScreen(mapScreen));
+        menu.add(mapTestButton);
         return menu;
     }
 
