@@ -7,7 +7,7 @@ import java.util.Random;
 
 public class IceBurst extends Card {
 
-    private static final String IMAGE_PATH = "/Resources/Cards/placeholder.png"; // example image path change when have card
+    private static final String IMAGE_PATH = "/Resources/Cards/IceBurst.png"; // example image path change when have card
 
 
     public IceBurst() {
