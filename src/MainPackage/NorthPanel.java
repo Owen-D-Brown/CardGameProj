@@ -1,6 +1,7 @@
 package MainPackage;
 
-import Entities.Enemy;
+import Entities.*;
+import GUI.GameplayPane;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -12,20 +13,53 @@ import java.util.ArrayList;
 
 public class NorthPanel extends JPanel {
 
-    public ArrayList<Enemy> enemies = new ArrayList<>();
-    private BufferedImage background;
+    //Variables
+    public ArrayList<Enemy> enemies = new ArrayList<>();//ArrayList that holds the enemies present in this encounter.
+    private BufferedImage background;//Image holding the background for this encounter.
+    private Player player = Game.player;//Getting a handier pointer to the Player class in Game.
+    public AttackPlane attackPlane;
 
-    public NorthPanel() {
+
+    public NorthPanel(ArrayList<Enemy> enemies) {
+
+        //Initializing this panel
         setLayout(null);
         background = loadImage("UpperBackground.png");
         setBackground(Color.red);
         setPreferredSize(new Dimension(100, (int)(Config.frameSize.height * 0.3)));
-        addEnemy();
-        addEnemy();
-        revalidate();
-        repaint();
+
+        //Iterating through enemies passes to this constructor, and adding them.
+        for(Enemy enemy : enemies)
+            addEnemy(enemy);
+
+        //Initializing the player.
+        player.setBounds(100, 200, player.getWidth(), player.getHeight());
+        add(player);
+
+        //Initializing the AttackPlane.
+        attackPlane = new AttackPlane();
+        attackPlane.setBounds(100, 200, attackPlane.getWidth(), attackPlane.getHeight());
+        add(attackPlane);
+
+        //Ensuring that the state of the game is reset every time a new encounter is made. Reset card slots, player deck, etc.
+        resetFightState();
     }
 
+    public void resetFightState() {
+        if(Config.debug)
+            System.out.println("\n--* NorthPanel.resetFightState() RUNNING *--");
+
+        GameplayPane.currentCardIndex = 0;
+        Game.gui.gameScreen.glassPane.unslotAllCards();
+        Game.player.resetDeck();
+        Game.gui.gameScreen.glassPane.updateHandRender();
+        Game.changeStateToCardPlay();
+        revalidate();
+        repaint();
+
+        if(Config.debug)
+            System.out.println("--* NorthPanel.resetFightState() COMPLETE *--");
+    }
     private BufferedImage loadImage(String filename) {
         try (InputStream is = getClass().getClassLoader().getResourceAsStream("Resources/" + filename)) {
             if (is == null) {
@@ -40,14 +74,14 @@ public class NorthPanel extends JPanel {
     }
 
 
-    public void addEnemy() {
+    public void addEnemy(Enemy enemy) {
         if(enemies.size() == 3) {
             System.out.println("Already 3 enemies in enemies array. -NorthPanel");
             return;
         }
         else {
 
-            Enemy enemyAdded = new Enemy();
+            Enemy enemyAdded = enemy;
             enemies.add(enemyAdded);
             add(enemies.getLast());
             //
@@ -61,6 +95,7 @@ public class NorthPanel extends JPanel {
             System.out.println("Enemy added at: "+x+" - NorthPanel");
         }
     }
+
     public void repositionEnemies() {
         int x = 710;
         int y = 150;
@@ -93,8 +128,6 @@ public class NorthPanel extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(background, 0, 0, null);
-
-
     }
 
 }

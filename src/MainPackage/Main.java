@@ -1,8 +1,5 @@
 package MainPackage;
 
-import Entities.Player;
-import GUI.MainGui;
-
 //Main method
 public class Main {
 

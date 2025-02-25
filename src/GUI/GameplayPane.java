@@ -15,6 +15,8 @@ public class GameplayPane extends JPanel {
 
     //Variables
     public static ArrayList<CardSlot> cardSlots = new ArrayList<>(); //This array list holds the card slots the player has to use.
+    public static ArrayList<Card> hand = new ArrayList<>();
+    public static ArrayList<Card> slottedCards = new ArrayList<>();
 
     //These are used to calculate the x and y coordinates of the card slots..
     int x;
@@ -36,6 +38,23 @@ public class GameplayPane extends JPanel {
 
 
     }
+
+    public void updateHandRender() {
+        hand.clear();
+        // Iterate through all the components in this container
+        for (Component comp : this.getComponents()) {
+            // Check if the component is an instance of Card
+            if (comp instanceof Card) {
+                Card card = (Card) comp; // Cast to Card type
+                // If the card is in the player's hand, remove it
+
+                    this.remove(card); // Remove the card from the container
+
+            }
+        }
+
+    }
+
 
     //This is a small method to do the math needed for calculating card coordinates.
     public void cardSlotMath() {
@@ -114,35 +133,65 @@ public class GameplayPane extends JPanel {
     }
 
 
+
+
     //Method for drawing a card to the hand. Call this any time you need a player to draw a card. IMPORTANT METHOD
     public void drawCard() {
-
-        if(Game.player.cards.size() <= 0) {
-            for(int i = 0; i<Game.player.discard.size(); i++) {
-                Game.player.cards.add(Game.player.discard.get(i));
-
-            }
-            Collections.shuffle(Game.player.cards);
-            Game.player.discard.clear();
+        if (Game.player.cards.size() <= 0) {
+            System.out.println("REFILLING PLAYER DECK");
+            Game.player.refillDeck();
         }
-        Card drawedCard = Game.player.cards.getFirst();
-        Game.player.cards.removeFirst();
-        Game.player.hand.add(drawedCard);
-        add(drawedCard);
-        //Setting up card size and coordinates.
-        int size = Game.player.hand.size();
-        //System.out.println(size);
-        int xcord = ((size-1) * Config.cardSize.width)+(size*10);
-        drawedCard.initX = xcord;
-        drawedCard.initY = 700;
-        //System.out.println(xcord);
-        drawedCard.setLocation(xcord, 700);
-        drawedCard.setVisible(true);
-        drawedCard.setSize(Config.cardSize.width, Config.cardSize.height);
+        Card drawnCard = Game.player.drawCard();
+        add(drawnCard);
+        hand.clear();  // Clear GUI hand before syncing
+        hand.addAll(Game.player.hand);  // Ensure GUI hand is the same
 
-        //Refreshing this pane to display changes.
+        // Debugging output
+        /*
+        System.out.println("Hand size after draw (GUI): " + hand.size());
+        System.out.println("Hand size after draw (Player): " + Game.player.hand.size());
+        System.out.println("Card Positions:");
+        for (Card c : hand) {
+            System.out.println(" - " + c + " at (" + c.getX() + ", " + c.getY() + ")");
+        }*/
+        // Recalculate coordinates
+        int xcord = 30; // Start position
+        for (int i = 0; i < Game.player.hand.size(); i++) {
+            Card card = Game.player.hand.get(i);
+
+            // Make sure the card is actually in the hand and added to the GUI
+            if (!this.isAncestorOf(card)) {
+                this.add(card);  // Ensure it's added before positioning
+            }
+
+            // Set proper position and size
+            card.setLocation(xcord, 700);
+            card.setSize(Config.cardSize.width, Config.cardSize.height);
+            card.setVisible(true);  // Ensure it's visible
+
+            xcord += Config.cardSize.width + 10; // Adjust spacing
+            card.initX = card.getX();
+            card.initY = card.getY();
+        }
+
+// Force UI refresh
         this.revalidate();
         this.repaint();
+
+    }
+
+
+
+    public void discardCard(Card c) {
+        if(Game.player.hand.contains(c)) {
+            Game.player.discard(c);
+        }
+        revalidate();
+        repaint();
+    }
+    public void removeCard(Card c) {
+        Game.player.discard(c);
+        remove(c);
     }
 
     //This method is called from each Card when it has a mouse released event via the mouseHandler.
@@ -155,20 +204,44 @@ public class GameplayPane extends JPanel {
                     c.setLocation(slot.x+5, slot.y+5);//Center the card in the card slot.
                     c.primed = true;//SET THE CARD'S STATUS TO PRIMED - TO BE REFINED
                     slot.slotCard(c);//Passing the card instance to the cardSlot object.
-
+                    Game.player.hand.remove(c);
+                    slottedCards.add(c);
+                    Game.devTools.updateCounts();
                     return;//Stop checking the card slots and leave this method.
                 }
                 else
                 {
+                    if(slottedCards.contains(c)) {
+                        Game.player.hand.add(c);
+                        slottedCards.remove(c);
+                        Game.devTools.updateCounts();
+                        c.setLocation(c.initX, c.initY);
+                    }
                     //figure out the logic for removing the card from the card slot when its dragged out of it without overriding other slots.
                     //if(slot.slottedCard != null && !slot.intersects(c.getBounds()))
                     //  slot.slotCard(null);//This is overriding the cards played before it,
                 }
             }
         //This code should only be reached if the card is not intersecting anything. In which case, it is not primed and reset to the hand.
+        if(slottedCards.contains(c)) {
+            Game.player.hand.add(c);
+            slottedCards.remove(c);
+        }
+
+        Game.devTools.updateCounts();
         c.setLocation(c.initX, c.initY);
         c.primed = false;
 
+
+    }
+
+    public void unslotAllCards() {
+        for(CardSlot slot : cardSlots) {
+            if(slot.hasCard()) {
+                Game.player.discard(slot.slottedCard);
+                slot.unslotCard();
+            }
+        }
     }
 
     //This int is for tracking the card slot we are currently itterating through.
@@ -184,6 +257,9 @@ public class GameplayPane extends JPanel {
             //Game.runEnemyTurn();
             currentCardIndex = 0;
             return; //No more cards to process
+        } else if(Game.gui.gameScreen.northPanel.enemies.isEmpty()){
+            System.out.println("all enemies are dead");
+            return;
         }
 
         //Getting the slot we are currently working on.
@@ -197,11 +273,10 @@ public class GameplayPane extends JPanel {
             //Slot sequentially. Callback triggers when dissolve + animation finish.
             slot.resolve(() -> {
                 currentCardIndex++;
-                Game.player.hand.remove(slot.slottedCard);
-                Game.player.discard.add(slot.slottedCard);
                 remove(slot.slottedCard);
-                slot.slottedCard = null;
+                slot.unslotCard();
                 resolveNextCard(); // Move to next card
+                Game.devTools.updateCounts();
             });
         }
 

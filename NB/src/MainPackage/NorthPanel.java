@@ -9,6 +9,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import Entities.Goblin;
+import Entities.Enemy;
 
 public class NorthPanel extends JPanel {
 
@@ -50,9 +52,9 @@ public class NorthPanel extends JPanel {
             enemies.add(enemyAdded);
             add(enemies.getLast());
             //
-             int x = 600;
-             int y = 150;
-             x = x+(enemies.size()*enemyAdded.getWidth())+10;
+            int x = 600;
+            int y = 150;
+            x = x+(enemies.size()*enemyAdded.getWidth())+10;
             //
             enemies.getLast().setBounds(x, y, enemyAdded.getWidth(), enemyAdded.getHeight());
             revalidate();

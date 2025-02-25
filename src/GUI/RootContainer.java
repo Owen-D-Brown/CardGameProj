@@ -1,18 +1,24 @@
 package GUI;
 
+import Entities.Enemy;
+import Entities.Goblin;
+import Entities.Orc;
+import Entities.Slime;
 import MainPackage.Config;
 import MainPackage.Game;
+import MainPackage.NorthPanel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class RootContainer extends JFrame {
 
     private JPanel currentScreen; // Tracks which panel is in the center
-    public MainGui gameScreen;
-    public MapGui mapScreen;
+    public BattleGUI gameScreen;
     public JPanel menuScreen;
     private JPanel containerPanel; // The main container using BorderLayout
+    public Game game;
 
     public RootContainer(Game game) {
         setTitle("Card Game");
@@ -25,8 +31,7 @@ public class RootContainer extends JFrame {
         add(containerPanel, BorderLayout.CENTER);
 
         // Initialize screens
-        gameScreen = new MainGui(game);
-        mapScreen = new MapGui();
+        gameScreen = new BattleGUI(game);
         menuScreen = createMenuScreen();
 
         // Start on the menu
@@ -39,12 +44,48 @@ public class RootContainer extends JFrame {
         JPanel menu = new JPanel();
         menu.setBackground(Color.BLACK);
         JButton startButton = new JButton("Start Game");
-        startButton.addActionListener(e -> showScreen(gameScreen));
+        startButton.addActionListener(e -> {
+            gameScreen.newFight(startFight(2));
+            Game.gui.gameScreen.glassPane.setVisible(true);
+            Game.gui.gameScreen.cardLayout.show(Game.gui.gameScreen.centerContainer, "main");
+            Game.unslotAllCards();
+            gameScreen.center.revalidate();
+            gameScreen.center.repaint();
+            showScreen(gameScreen);
+
+        });
         menu.add(startButton);
-        JButton mapTestButton = new JButton("Map01 Test");//added button to test map function on launch
-        mapTestButton.addActionListener(e -> showScreen(mapScreen));
-        menu.add(mapTestButton);
+        JButton encounter1 = new JButton("Encounter 1");
+        encounter1.addActionListener(e -> {
+            gameScreen.newFight(startFight(1));
+            Game.gui.gameScreen.glassPane.setVisible(true);
+            Game.gui.gameScreen.cardLayout.show(Game.gui.gameScreen.centerContainer, "main");
+            Game.unslotAllCards();
+            gameScreen.center.revalidate();
+            gameScreen.center.repaint();
+            showScreen(gameScreen);
+        });
+        menu.add(encounter1);
         return menu;
+    }
+
+
+    public NorthPanel startFight(int num) {
+        switch(num) {
+            case 1:
+                ArrayList<Enemy> entities = new ArrayList<>();
+                entities.add(new Goblin());
+                entities.add(new Orc());
+                entities.add(new Slime());
+                return new NorthPanel(entities);
+            case 2:
+                ArrayList<Enemy> entities1 = new ArrayList<>();
+                entities1.add(new Goblin());
+                entities1.add(new Goblin());
+                return new NorthPanel(entities1);
+
+        }
+        return null;
     }
 
     public void showScreen(JPanel newScreen) {
@@ -56,6 +97,4 @@ public class RootContainer extends JFrame {
         containerPanel.revalidate();
         containerPanel.repaint();
     }
-
-
 }

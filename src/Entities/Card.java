@@ -29,7 +29,7 @@ public class Card extends JComponent implements MouseListener, MouseMotionListen
     // Card effect logic
     public void effect() {
         Random rand = new Random();
-        int dmg = rand.nextInt(10) + 5;
+        int dmg = rand.nextInt(10) + 555;
         Game.gui.gameScreen.northPanel.enemies.get(0).takeDamage(dmg);
     }
 
@@ -43,6 +43,7 @@ public class Card extends JComponent implements MouseListener, MouseMotionListen
             if (this.getWidth() <= 0 || this.getHeight() <= 0) {
                 ((Timer) evt.getSource()).stop();
                 this.setVisible(false);
+                //card discarded here
                 if (onComplete != null) {
                     animation.startAnimation();
                     onComplete.run();
