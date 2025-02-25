@@ -11,11 +11,23 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Map;
 
 public class Player extends JComponent {
     public ArrayList<Card> cards = new ArrayList<>();
     public ArrayList<Card> hand = new ArrayList<>();
     public ArrayList<Card> discard = new ArrayList<>();
+    protected ArrayList<Map.Entry> trinkets = new ArrayList<>();
+
+    public int getGold() {
+        return gold;
+    }
+
+    public ArrayList<Map.Entry> getTrinkets() {
+        return trinkets;
+    }
+
+    protected int gold = 0;
     public int maxHealth = 100;
     public int currentHealth = 100;
 
@@ -31,6 +43,20 @@ public class Player extends JComponent {
             cards.add(new IceBurst());
         }
         animations.add(importSprites("/Resources/EvilWizard/idleMap.png", 10, 1, 37, 53));
+    }
+
+    public void giveGold(int n) {
+        this.gold += n;
+    }
+
+    public void removeGold(int n) {
+        if(this.gold >= n) {
+            gold -=n;
+        }
+    }
+
+    public void giveTrinket(Map.Entry<String, Object> trinket) {
+        this.trinkets.add(trinket);
     }
 
     @Override

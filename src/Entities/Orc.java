@@ -24,4 +24,9 @@ public class Orc extends Enemy {
             System.out.println("Orc enters a berserk rage! Attack power increased to " + attackPower);
         }
     }
+    @Override
+    public void populateLootTable() {
+        this.lootTable.put("Gold", 400);
+        this.lootTable.put("Orc's Tooth", 0);
+    }
 }

@@ -83,7 +83,6 @@ public class RootContainer extends JFrame {
                 entities1.add(new Goblin());
                 entities1.add(new Goblin());
                 return new NorthPanel(entities1);
-
         }
         return null;
     }

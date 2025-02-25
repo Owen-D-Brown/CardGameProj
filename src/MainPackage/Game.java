@@ -1,6 +1,7 @@
 package MainPackage;
 
 import Entities.Enemy;
+import Entities.FloatingText;
 import Entities.Player;
 import GUI.*;
 
@@ -123,10 +124,21 @@ public class Game implements Runnable {
                 player.revalidate();
                 player.repaint();
                 if (Game.gui.gameScreen.northPanel != null) {
-                    for (Enemy enemy : gui.gameScreen.northPanel.enemies) {
-                        enemy.revalidate();
-                        enemy.repaint();
+                    for (FloatingText instance : FloatingText.instances) {
+                        FloatingText.update();
+
                     }
+                    FloatingText.removeInstances();
+                    for (Enemy enemy : gui.gameScreen.northPanel.enemies) {
+
+
+
+                            enemy.revalidate();
+                            enemy.repaint();
+
+
+                    }
+
                     deltaF--;//Removing one from deltaF, keeping any leftover time we may have for the next iteration.
                 }
             }

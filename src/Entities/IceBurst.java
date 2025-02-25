@@ -21,7 +21,7 @@ public class IceBurst extends Card {
         System.out.println("IceBurst cast! Deals 8 damage to all Enemies!" );
         //casts 8 damage to all enemies in battle
         for (Enemy enemy : Game.gui.gameScreen.northPanel.enemies) {
-            enemy.takeDamage(8);
+            enemy.takeDamage(800);
         }
     }
 

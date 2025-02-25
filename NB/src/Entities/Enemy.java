@@ -27,6 +27,9 @@ public abstract class Enemy extends JComponent {
     protected int aniSpeed = 10;
     protected int aniCounter = 0;
 
+    //Loot related properties
+    protected ArrayList<Map<String, Object>> lootTable;
+
     //Construcotr to set stats and size etc..
     public Enemy(int maxHealth, int attackPower, int defense, int agility, int speed) {
         this.maxHealth = maxHealth;
@@ -109,4 +112,12 @@ public abstract class Enemy extends JComponent {
     }
 
     public abstract String getEnemyType();
+
+    public ArrayList<Map<String,Object>> getLootTable() {
+        return lootTable;
+    }
+
+    public Map.Entry<String, Object> generateLoot(){
+      Game.
+    }
 }

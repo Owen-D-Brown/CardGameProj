@@ -1,5 +1,7 @@
 package Entities;
 
+import Trinkets.Dagger;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
@@ -32,6 +34,13 @@ public class Goblin extends Enemy {
     public String getEnemyType() {
         return "Goblin";
     }
+
+    @Override
+    public void populateLootTable() {
+       // this.lootTable.put("Gold", 500);
+        this.lootTable.put("Dagger", new Dagger());
+    }
+
     // Dodge mechanic and how it works
     // if agility is 4 then 15% * 4 = 60% Dodge Chance
     //Based on if rand < agility
@@ -39,6 +48,7 @@ public class Goblin extends Enemy {
     public void takeDamage(int damage) {
         if (Math.random() < (this.agility * B_DODGE_CHANCE)) {
             System.out.println("Goblin dodged the attack!");
+            FloatingText.createEffect("DODGE", this, Color.BLUE);
             return;
         }
         super.takeDamage(damage);

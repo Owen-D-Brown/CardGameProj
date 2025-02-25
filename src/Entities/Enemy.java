@@ -1,5 +1,6 @@
 package Entities;
 
+import MainPackage.Config;
 import MainPackage.Game;
 
 import javax.swing.*;
@@ -7,8 +8,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.*;
 import javax.imageio.ImageIO;
 
 public abstract class Enemy extends JComponent {
@@ -34,6 +34,9 @@ public abstract class Enemy extends JComponent {
     // Track if this Enemy is targeted
     protected boolean isTargeted = false;
 
+    // Loot Related properties
+    protected Map<String, Object> lootTable = new HashMap<String, Object>();
+
 
 
 
@@ -46,6 +49,7 @@ public abstract class Enemy extends JComponent {
         this.agility = agility;
         this.speed = speed;
         setSize(new Dimension(100, 150));
+        populateLootTable();
     }
 
    // default enemy with stats
@@ -140,10 +144,11 @@ public abstract class Enemy extends JComponent {
 
    // take damage mechanic
     public void takeDamage(int damage) {
-        // reducin gdamage by defense
+        // reducing damage by defense
         int reducedDamage = Math.max(damage - defense, 1);
         currentHealth = Math.max(currentHealth - reducedDamage, 0);
-
+        FloatingText.createEffect("-" + damage, this, Color.RED);
+        System.out.println("visuals have started ------");
         if (currentHealth <= 0) {
             System.out.println(getEnemyType() + " has been defeated!");
         } else {
@@ -178,4 +183,27 @@ public abstract class Enemy extends JComponent {
 
     //Get the enemy type from sub-classes
     public abstract String getEnemyType();
+
+    public abstract void populateLootTable();
+
+    public Map<String, Object> getLootTable() {
+        return lootTable;
+    }
+
+    public Map.Entry<String, Object> generateLoot(){
+        if(Config.debug)
+            System.out.println("--* "+getClass()+".generateLoot() CALLED *--\n");
+
+        Random rng = new Random();
+        int x = rng.nextInt(lootTable.size());
+
+        Iterator<Map.Entry<String, Object>> iterator = lootTable.entrySet().iterator();
+        for (int i = 0; i < x; i++) {
+            iterator.next(); // Skip to the desired index
+        }
+        if(Config.debug)
+            System.out.println("--* "+getClass()+".generateLoot() FINISHED *--\n");
+
+        return iterator.next();
+    }
 }

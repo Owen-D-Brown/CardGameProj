@@ -20,7 +20,7 @@ public class Firebolt extends Card {
     @Override
     public void effect() {
         Random rand = new Random();
-        int damage = rand.nextInt(10) + 5; // Firebolt deals 5-15 damage
+        int damage = rand.nextInt(10) + 1; // Firebolt deals 5-15 damage
         System.out.println("Firebolt cast! Deals " + damage + " damage.");
 
         // Deal damage to the first enemy
