@@ -1,7 +1,6 @@
 package GUI;
 
 import Entities.Goblin;
-import MainPackage.Config;
 import MainPackage.Game;
 
 import javax.swing.*;
@@ -14,8 +13,9 @@ public class DevTools extends JFrame {
     public JLabel deckCount;
     public JLabel discardCount;
     public JLabel handCount;
+
     public DevTools() {
-        //Configuring this frame.
+        // Configuring this frame.
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("DevTools");
         setLocationRelativeTo(null);
@@ -35,8 +35,7 @@ public class DevTools extends JFrame {
         add(drawCard);
         drawCard.setBounds(0,0,100,50);
 
-
-        JButton addEnemy = new JButton(" ADD ENEMY");
+        JButton addEnemy = new JButton("ADD ENEMY");
         addEnemy.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -76,6 +75,17 @@ public class DevTools extends JFrame {
         add(addSlot);
         addSlot.setBounds(10,100,100,50);
 
+        //Complete Combat Button
+        JButton completeCombat = new JButton("COMPLETE COMBAT");
+        completeCombat.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                completeCombatAndReturnToMap();
+            }
+        });
+        add(completeCombat);
+        completeCombat.setBounds(110, 100, 150, 50); // Position for better layout
+
         deckCount = new JLabel();
         deckCount.setBounds(400, 200, 200, 50);
         add(deckCount);
@@ -86,7 +96,6 @@ public class DevTools extends JFrame {
         handCount.setBounds(400, 320, 200, 50);
         add(handCount);
         updateCounts();
-
     }
 
     public void updateCounts() {
@@ -95,5 +104,29 @@ public class DevTools extends JFrame {
         this.handCount.setText(String.valueOf(Game.player.hand.size()));
         this.revalidate();
         this.repaint();
+    }
+
+    /**
+     * Switches the game back to the Map Panel after combat.
+     * Ensures all combat-related components are turned off.
+     */
+    private void completeCombatAndReturnToMap() {
+        System.out.println("Completing combat and returning to the map...");
+
+        // Hide combat-related UI elements
+        Game.gui.gameScreen.glassPane.setVisible(false);
+        Game.gui.gameScreen.center.setVisible(false);
+        Game.gui.gameScreen.northPanel.setVisible(false);
+
+        // Reset any combat states if needed
+        Game.unslotAllCards();
+        Game.gui.gameScreen.center.revalidate();
+        Game.gui.gameScreen.center.repaint();
+
+        // Show the Map Panel
+        Game.gui.showScreen(Game.gui.mapScreen);
+
+        // Make sure the MapGameplayPane is re-enabled
+        Game.gui.getGlassPane().setVisible(true);
     }
 }
