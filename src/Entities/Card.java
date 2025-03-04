@@ -45,6 +45,7 @@ public abstract class Card extends JComponent implements MouseListener, MouseMot
                 System.err.println("Error: Image not found at " + path);
                 return null;
             }
+            System.out.println("image in load: "+is);
             return ImageIO.read(is);
         } catch (IOException e) {
             e.printStackTrace();
