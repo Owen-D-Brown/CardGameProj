@@ -13,7 +13,7 @@ import java.util.ArrayList;
 //Attack sprites travel along the box.
 public class AttackPlane extends JComponent {
 
-    private Rectangle attackPlane = new Rectangle(0, 0, 640, 50);
+    private Rectangle attackPlane = new Rectangle(0, 0, 1000, 333);
     public static ArrayList<Animation> animations = new ArrayList<>();
 
     public AttackPlane() {
@@ -24,6 +24,7 @@ public class AttackPlane extends JComponent {
 
     public static void addAniToQue(Animation ani) {
         animations.clear();
+
         animations.add(ani);
     }
 
@@ -39,7 +40,7 @@ public class AttackPlane extends JComponent {
         long startTime = System.currentTimeMillis();
 
         Timer animationTimer = new Timer(animations.get(0).interval, ev -> {
-            repaint();
+            this.repaint();
             updateAnimations();
             revalidate();
 
@@ -94,7 +95,7 @@ public class AttackPlane extends JComponent {
         for (Animation animation : animations) {
             animation.updateAni();
         }
-        repaint();
+        this.repaint();
     }
 
 }

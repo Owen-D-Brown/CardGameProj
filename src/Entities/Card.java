@@ -17,7 +17,7 @@ public abstract class Card extends JComponent implements MouseListener, MouseMot
     public boolean primed = false; // Whether the card is in a card slot
     public int initX, initY;
     private Point intialGrab; // Stores where the mouse grabbed the card
-    public Animation animation = new Fireball(0, 0, 700, 20);
+    public Animation animation;
     protected BufferedImage image;
 
 
@@ -33,6 +33,10 @@ public abstract class Card extends JComponent implements MouseListener, MouseMot
 
     // abstract card effect method, implemented by card subclasses
     public abstract void effect();
+
+    public void initCardAniBounds(int x, int y) {
+        animation = new Fireball(x, y, 700, y);
+    }
 
     // Image loader like one found in player class
     public static BufferedImage loadImage(String path) {

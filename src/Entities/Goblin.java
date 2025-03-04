@@ -2,6 +2,7 @@ package Entities;
 
 import Trinkets.Dagger;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
@@ -10,12 +11,13 @@ public class Goblin extends Enemy {
     private static final double B_DODGE_CHANCE = 0.15;
 
     public Goblin() {
-        super(20, 5, 1, 4, 2);
 
+        super(20, 5, 1, 4, 2, 100, 100);
+        this.aniSpeed = 5;
         // call import sprites
         BufferedImage[] idleSprites = importSprites(
                 //filepath
-                "/Resources/Goblin/GoblinMap.png", 9, 1, 519, 498
+                "/Resources/Goblin/GoblinMap.png", 8, 1, 400, 450
         );
         //check the sprites in the array
         if (idleSprites.length > 0) {
@@ -24,6 +26,7 @@ public class Goblin extends Enemy {
         } else {
             System.err.println("Error: Goblin sprites failed to load!");
         }
+
     }
 
 

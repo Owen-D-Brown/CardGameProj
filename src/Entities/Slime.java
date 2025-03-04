@@ -10,7 +10,7 @@ public class Slime extends Enemy {
     private static final int Dissolve_dam  = 5;
 
     public Slime() {
-        super(35, 9, 4, 1, 1);
+        super(35, 9, 4, 1, 1, 50, 100);
     }
 
     @Override

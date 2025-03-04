@@ -124,10 +124,10 @@ public class Game implements Runnable {
                 player.revalidate();
                 player.repaint();
                 if (Game.gui.gameScreen.northPanel != null) {
-                    for (FloatingText instance : FloatingText.instances) {
+
                         FloatingText.update();
 
-                    }
+
                     FloatingText.removeInstances();
                     for (Enemy enemy : gui.gameScreen.northPanel.enemies) {
 

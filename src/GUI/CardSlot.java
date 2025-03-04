@@ -33,6 +33,10 @@ public class CardSlot extends Rectangle {
 
     //This method is called by ResolveNextCard() in gameplay pane, which in turn is called when the PlayHandButton is clicked.
     public void resolve(Runnable onComplete) {//Callback function passed iterates through the gameplay pane card slots. So, when this finishes, resolveNextCArd() is called again, which in turn calls this.resolve() again.
+        Game.gui.gameScreen.northPanel.initAniBounds();
+        System.out.println("testing here for player pos "+Game.gui.gameScreen.northPanel.playerY);
+        slottedCard.initCardAniBounds(Game.gui.gameScreen.northPanel.playerX, Game.gui.gameScreen.northPanel.playerY);
+//align bounds here
         AttackPlane.addAniToQue(slottedCard.animation);
 
         //PlayHandBtn -> GameplayPane.ResolveNextCard() -> CardSlot.Resolve -> Card.disolve() -> Call Back Function that Plays Animation -> Card.Effect().
