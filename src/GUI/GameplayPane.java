@@ -7,6 +7,7 @@ import MainPackage.Game;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -249,7 +250,7 @@ public class GameplayPane extends JPanel {
 
     //This method is triggered by the PLAY HAND BUTTON. This controls the flow of resolving the cards. When we get here, the game runs itself until the round starts again.
     //PlayHand Button triggers this method. This method calls CardSlot.resolve(). It does this for the first slot, then the second, and so on.
-    public void resolveNextCard() {
+    public void resolveNextCard() throws IOException {
         System.out.println("Resolving Card Slot");
         //If we have resolved all the card slots.
         if (currentCardIndex >= GameplayPane.cardSlots.size()) {
@@ -275,7 +276,11 @@ public class GameplayPane extends JPanel {
                 currentCardIndex++;
                 remove(slot.slottedCard);
                 slot.unslotCard();
-                resolveNextCard(); // Move to next card
+                try {
+                    resolveNextCard(); // Move to next card
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 Game.devTools.updateCounts();
             });
         }

@@ -3,6 +3,8 @@ import MainPackage.Game;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+
 public class Bandage extends Card{
 
     private static final String IMAGE_PATH = "/Resources/Cards/placeholder.png";
@@ -22,6 +24,11 @@ public class Bandage extends Card{
         } else {
             System.out.println("Health is already full! Bandage has no effect.");
         }
+    }
+
+    @Override
+    public void initCardAniBounds() throws IOException {
+
     }
 
     protected void paintComponent(Graphics g) {

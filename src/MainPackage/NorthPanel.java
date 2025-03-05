@@ -46,6 +46,7 @@ public class NorthPanel extends JPanel {
         attackPlane.setBounds(0, 0, attackPlane.getWidth(), attackPlane.getHeight());
         add(attackPlane);
 
+        setComponentZOrder(attackPlane, 0);
         //Ensuring that the state of the game is reset every time a new encounter is made. Reset card slots, player deck, etc.
         resetFightState();
     }
@@ -152,6 +153,7 @@ public class NorthPanel extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(background, 0, 0, null);
+
         FloatingText.render(g);
         if(Config.debug){
             for(Rectangle rect : spawnZones) {

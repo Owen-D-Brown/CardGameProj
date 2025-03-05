@@ -34,9 +34,9 @@ public abstract class Card extends JComponent implements MouseListener, MouseMot
     // abstract card effect method, implemented by card subclasses
     public abstract void effect();
 
-    public void initCardAniBounds(int x, int y) {
-        animation = new Fireball(x, y, 700, y);
-    }
+    public abstract void initCardAniBounds() throws IOException;
+
+
 
     // Image loader like one found in player class
     public static BufferedImage loadImage(String path) {

@@ -51,8 +51,7 @@ public class FloatingText {
                 if (instance.duration <= 0) {
                     //instances.remove(instance); // Remove effect when finished
                     System.out.println("VISUALS HAVE COMPLETED -------");
-                    Game.gui.gameScreen.revalidate();
-                    Game.gui.gameScreen.repaint();
+
                 }
             }
         }
@@ -69,8 +68,7 @@ public class FloatingText {
                 g.setFont(new Font("Arial", Font.BOLD, 18));
                 g.drawString(instance.text, instance.x, instance.y);
              //   System.out.println(instance.x +"  |  "+ instance.y);
-                Game.gui.gameScreen.revalidate();
-                Game.gui.gameScreen.repaint();
+
             }
         }
     }

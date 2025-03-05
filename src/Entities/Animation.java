@@ -1,6 +1,5 @@
 package Entities;
 
-import MainPackage.Config;
 import MainPackage.Game;
 
 import javax.imageio.ImageIO;
@@ -9,50 +8,67 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 
 public class Animation extends JComponent {
 
-    private int targetX, targetY;
-    private boolean isMoving = false;
-    private double circleX, circleY;
-    public int duration = 1200;  // 2 seconds in milliseconds
-    public int FPS = 20;   // 20 updates per second
-    public int interval = 1000 / FPS;
-    boolean test= false;
-    public ArrayList<BufferedImage> sprites = new ArrayList<>();
 
-    public Animation(int startX, int startY, int targetX, int targetY) {
-        this.circleX = startX;
-        this.circleY = startY;
-        this.targetX = targetX;
-        this.targetY = targetY;
+    protected boolean isMoving = false;
 
-        for(int i = 1; i<=5; i++) {
-            String path = "/Resources/Fireball/FB00" + i+".png";
-            sprites.add(loadImage(path));
+
+
+    public BufferedImage[] sprites;
+    protected String filePath;
+    public int duration = 2000;  // 2 seconds in milliseconds
+    public int interval = 60/ duration;
+    protected int aniIndex = 0;
+    protected int aniSpeed;
+    protected int aniCounter = 0;
+
+    public Animation( String filePath, int w, int h, int col, int row, int aniSpeed) throws IOException {
+        this.filePath = filePath;
+        this.aniSpeed = aniSpeed;
+        this.sprites = importSprites(filePath, col, row, w, h);
+        //calculateDuration();
+
+    }
+
+    public void calculateInterval() {
+        this.interval = (aniSpeed * 1000) / 60;
+    }
+
+
+    public void calculateDuration() {
+        if (sprites == null || sprites.length == 0) {
+            this.duration = 0;
+        } else {
+            this.duration = (aniSpeed * sprites.length * 1000) / 60;
+            System.out.println("Duration: " + duration);
         }
     }
-    public Enemy target;
-    public Player player = Game.player;
 
-    public void setAnimationStartFinish() {
-        this.targetX = target.getX();
-        this.circleX = player.getX();
-        this.targetY = target.getY();
-        this.circleY = player.getY();
-    }
+    protected BufferedImage[] importSprites(String pathName, int cols, int rows, int spriteWidth, int spriteHeight) throws IOException {
+        BufferedImage image = loadImage(pathName);
+        if (image == null) {
+            return null;
+        }
 
 
+        BufferedImage[] sprites = new BufferedImage[cols * rows];
 
-    public void setTarget(Enemy en) {
-        for(Enemy eni : Game.gui.gameScreen.northPanel.enemies) {
-            if(eni == en) {
-                this.target = eni;
-                setAnimationStartFinish();
+        for (int y = 0; y < rows; y++) {
+            for (int x = 0; x < cols; x++) {
+                sprites[y * cols + x] = image.getSubimage(x * spriteWidth, y * spriteHeight, spriteWidth, spriteHeight);
             }
         }
+        return sprites;
     }
+
+    ///
+
+
+
+
+
 
     public void startAnimation() {
       //  this.circleX = Game.gui.gameScreen.northPanel.playerX;
@@ -66,55 +82,34 @@ public class Animation extends JComponent {
      //   this.circleY = Game.gui.gameScreen.northPanel.playerY;
         isMoving = false;
     }
-    protected int aniIndex = 0;
-    protected int aniSpeed = 1;
-    protected int aniCounter = 0;
+
+
+
+
+
     public void updateAni() {
 
-
-
         if (isMoving) {
-
-            //
-
             aniCounter++;
+
             if (aniCounter >= aniSpeed) {
                 aniCounter = 0;
                 aniIndex++;
 
-                if (!sprites.isEmpty() && aniIndex >= sprites.size()) {
+                if (sprites.length > 0 && aniIndex >= sprites.length) {
                     aniIndex = 0;
                 }
-            }
-            //
-            double speed = 0.1; // Moves 20% of the remaining distance each frame
-
-            circleX += (targetX - circleX) * speed;
-            circleY += (targetY - circleY) * speed;
-
-            // Stop animation when close enough
-            if (Math.abs(circleX - targetX) < 5 && Math.abs(circleY - targetY) < 5) {
-                circleX = targetX;
-                circleY = targetY;
-                isMoving = false;
             }
         }
         Game.gui.gameScreen.northPanel.attackPlane.repaint();
     }
 
-    public void runAnimation() {
-    }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         if (isMoving) {
-            //System.out.println("Animation started");
-            //g.setColor(Color.orange);
-            //g.fillOval((int)circleX, (int)circleY, 40, 40); // Circle moving animation
-          //  System.out.println("Animation.paintComponent triggered. X = "+circleX+" Y = "+circleY);
-            g.drawImage(sprites.get(aniIndex), (int)circleX, (int) circleY, 64*3, 32*3, null);
-
+            g.drawImage(sprites[aniIndex], this.getX(), this.getY(), this.getWidth(), this.getHeight(), null);
         }
     }
 

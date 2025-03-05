@@ -1,7 +1,10 @@
 package Entities;
 
 import MainPackage.Game;
+import MainPackage.NorthPanel;
+
 import java.awt.*;
+import java.io.IOException;
 import java.util.Random;
 
 public class Firebolt extends Card {
@@ -9,10 +12,10 @@ public class Firebolt extends Card {
         private static final String IMAGE_PATH = "/Resources/Cards/Firebolt.png"; // switch to cards image path
 
 
-        public Firebolt() {
+        public Firebolt() throws IOException {
             super(IMAGE_PATH); //pass the image path to card constructor
             this.image = loadImage(IMAGE_PATH); // load image from the path
-
+            animation = new Fireball();
 
 
         }
@@ -27,6 +30,13 @@ public class Firebolt extends Card {
             Game.gui.gameScreen.northPanel.enemies.get(0).takeDamage(damage);
         }
     }
+
+
+    @Override
+    public void initCardAniBounds() throws IOException {
+        ((Fireball) animation).initAnimation(Game.player, Game.gui.gameScreen.northPanel.enemies.get(0));
+    }
+
     //paint component for drawing the cards image
     @Override
     protected void paintComponent(Graphics g) {

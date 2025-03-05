@@ -35,13 +35,13 @@ public class Player extends JComponent {
     private Rectangle healthBar = new Rectangle(0, 0, 75, 10);
     private ArrayList<BufferedImage[]> animations = new ArrayList<>();
 
-    public Player() {
+    public Player() throws IOException {
         setSize(new Dimension(130, 200));
         //setBorder(BorderFactory.createLineBorder(Color.BLACK));
         for(int i = 0; i<10; i++) {
             cards.add(new Firebolt());
-            cards.add(new IceBurst());
-            cards.add(new Bandage());
+           // cards.add(new IceBurst());
+          //  cards.add(new Bandage());
         }
         animations.add(importSprites("/Resources/EvilWizard/idleMap.png", 10, 1, 37, 53));
     }

@@ -5,6 +5,7 @@ import Entities.FloatingText;
 import Entities.Player;
 import GUI.*;
 
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,15 @@ import java.util.List;
 public class Game implements Runnable {
 
     //Static entites for access by the entire application.
-    public static Player player = new Player();//Player instance
+    public static Player player;//Player instance
+
+    static {
+        try {
+            player = new Player();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static RootContainer gui; //Main GUI Instance
     public static Config.GameState gameState;//Gamestate instance to control game state
@@ -73,7 +82,7 @@ public class Game implements Runnable {
     }
 
     static int currentEnemyIndex = 0;
-    public static void changeStateToEnemyTurn() {
+    public static void changeStateToEnemyTurn() throws IOException {
         gameState = Config.GameState.ENEMY_PHASE;
         System.out.println("THE GAME STATE HAS CHANGED -- ENEMY TURN.");
         resolveNextEnemy();
@@ -123,12 +132,15 @@ public class Game implements Runnable {
                 //gui.attackPlane.updateAnimations();
                 player.revalidate();
                 player.repaint();
+
                 if (Game.gui.gameScreen.northPanel != null) {
 
                         FloatingText.update();
 
 
                     FloatingText.removeInstances();
+                    gui.gameScreen.northPanel.revalidate();
+                    gui.gameScreen.northPanel.repaint();
                     for (Enemy enemy : gui.gameScreen.northPanel.enemies) {
 
 
@@ -145,7 +157,7 @@ public class Game implements Runnable {
         }
     }
 
-    public static void resolveNextEnemy() {
+    public static void resolveNextEnemy() throws IOException {
 
             //If we have resolved all the card slots.
           //  System.out.println("currentIndex: "+currentEnemyIndex+" size: "+gui.gameScreen.northPanel.enemies.size());
@@ -168,7 +180,11 @@ public class Game implements Runnable {
                 //Slot sequentially. Callback triggers when dissolve + animation finish.
                 enemy.attack(() -> {
                     currentEnemyIndex++;
-                    resolveNextEnemy(); // Move to next card
+                    try {
+                        resolveNextEnemy(); // Move to next card
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 });
             }
 

@@ -168,9 +168,11 @@ public abstract class Enemy extends JComponent {
     }
 
     //example attack method from fireball
-    public void attack(Runnable onComplete) {
+    public void attack(Runnable onComplete) throws IOException {
         System.out.println("THE ENEMY IS ATTACKING. THE FOLLOWING HAVE BEEN PASSED TO Animation:\n  startX: "+this.getX()+"   |   finishX: "+Game.player.getX()+"\n  startY: "+this.getY()+"   |   finishY: "+Game.player.getY());
-        Animation ani = new Fireball(this.getX(), this.getY(), Game.player.getX(), Game.player.getY());
+        Animation ani = new Fireball() {
+
+        };
         Random rand = new Random();
         int dmg = rand.nextInt(10); // random between 0-9
 

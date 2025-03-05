@@ -10,6 +10,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.IOException;
 
 import static GUI.GameplayPane.currentCardIndex;
 
@@ -41,7 +42,11 @@ public class PlayHandBtn extends JComponent implements MouseListener {
         if (currentCardIndex == 0) { // Only start if it's not already running
             //Check to make sure there is at least one card played.
             Game.changeStateToCardResolution();
-            Game.gui.gameScreen.glassPane.resolveNextCard();
+            try {
+                Game.gui.gameScreen.glassPane.resolveNextCard();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 
