@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 public class DevTools extends JFrame {
 
@@ -40,7 +41,11 @@ public class DevTools extends JFrame {
         addEnemy.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Game.gui.gameScreen.northPanel.addEnemy(new Goblin());
+                try {
+                    Game.gui.gameScreen.northPanel.addEnemy(new Goblin());
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
         add(addEnemy);

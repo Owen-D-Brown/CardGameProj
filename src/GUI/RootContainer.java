@@ -10,6 +10,7 @@ import MainPackage.NorthPanel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class RootContainer extends JFrame {
@@ -45,7 +46,11 @@ public class RootContainer extends JFrame {
         menu.setBackground(Color.BLACK);
         JButton startButton = new JButton("Start Game");
         startButton.addActionListener(e -> {
-            gameScreen.newFight(startFight(2));
+            try {
+                gameScreen.newFight(startFight(2));
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
             Game.gui.gameScreen.glassPane.setVisible(true);
             Game.gui.gameScreen.cardLayout.show(Game.gui.gameScreen.centerContainer, "main");
             Game.unslotAllCards();
@@ -57,7 +62,11 @@ public class RootContainer extends JFrame {
         menu.add(startButton);
         JButton encounter1 = new JButton("Encounter 1");
         encounter1.addActionListener(e -> {
-            gameScreen.newFight(startFight(1));
+            try {
+                gameScreen.newFight(startFight(1));
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
             Game.gui.gameScreen.glassPane.setVisible(true);
             Game.gui.gameScreen.cardLayout.show(Game.gui.gameScreen.centerContainer, "main");
             Game.unslotAllCards();
@@ -70,7 +79,7 @@ public class RootContainer extends JFrame {
     }
 
 
-    public NorthPanel startFight(int num) {
+    public NorthPanel startFight(int num) throws IOException {
         switch(num) {
             case 1:
                 ArrayList<Enemy> entities = new ArrayList<>();

@@ -30,7 +30,7 @@ public class Game implements Runnable {
     public static DevTools devTools;
 
     //Constructor
-    public Game() {
+    public Game() throws IOException {
         //Development Tools Frame
         devTools = new DevTools();
 
@@ -50,7 +50,8 @@ public class Game implements Runnable {
         gui.gameScreen.glassPane.drawCard();
         gui.gameScreen.glassPane.drawCard();
         gui.gameScreen.glassPane.drawCard();
-        run();
+        Thread gameThread = new Thread(this);
+        gameThread.start();
 
     }
 
@@ -128,6 +129,7 @@ public class Game implements Runnable {
             previousTime = currentTime;//Setting the previous time to the current time
 
             if (deltaF >= 1) {//By running the game loop this way, it prevents the calculations from being messed up from a nanosecond or two slipping through the cracks. It catches up with itself.
+
                 // gui.attackPlane.repaint();//Actually repainting the panel to display changes/animations
                 //gui.attackPlane.updateAnimations();
                 player.animate();
@@ -186,7 +188,7 @@ public class Game implements Runnable {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                });
+                }, player.getX(), player.getY());
             }
 
             else //If the card slot doesn't have a card in it.

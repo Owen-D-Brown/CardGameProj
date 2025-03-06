@@ -15,7 +15,7 @@ public class Fireball extends XaxisAnimation {
 
 
     public Fireball() throws IOException {
-        super(64, 32,0, 0, "/Resources/Fireball/FB00", 7);
+        super(64, 32,0, 0, "/Resources/Fireball/FB00", 2);
         this.impactSprites = super.importSprites("/Resources/explosion.png", 8, 1, 32, 32);
         this.sprites = importSprites("",1,1,1,1) ;
     }
@@ -57,7 +57,7 @@ public class Fireball extends XaxisAnimation {
                         aniIndex = 0;
                     }
                 }
-                double speed = 0.0025;
+                double speed = 0.025;
                 currentX += (targetX - currentX) * speed;
                 currentY += (targetY - currentY) * speed;
 
@@ -90,6 +90,6 @@ public class Fireball extends XaxisAnimation {
             }
         }
     }
-    protected int explosionSpeed = 40;
+    protected int explosionSpeed = 7;
 
 }

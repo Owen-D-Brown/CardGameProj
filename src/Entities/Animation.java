@@ -12,9 +12,9 @@ import java.io.InputStream;
 public class Animation extends JComponent {
 
 
-    protected boolean isMoving = false;
+    public boolean isMoving = false;
 
-
+    protected int x, y;
     protected int FPS = 20;
     public BufferedImage[] sprites;
     protected String filePath;
@@ -98,6 +98,7 @@ public class Animation extends JComponent {
 
                 if (sprites.length > 0 && aniIndex >= sprites.length) {
                     aniIndex = 0;
+                    isMoving = false;
                 }
             }
         }
@@ -109,7 +110,8 @@ public class Animation extends JComponent {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         if (isMoving) {
-            g.drawImage(sprites[aniIndex], this.getX(), this.getY(), this.getWidth(), this.getHeight(), null);
+
+            g.drawImage(sprites[aniIndex], x, y, 53*2, 32*2, null);
         }
     }
 

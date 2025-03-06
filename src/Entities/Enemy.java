@@ -45,13 +45,14 @@ public abstract class Enemy extends JComponent {
 
 
     // main constructor with all of the stats and specific size dimensions
-    public Enemy(int maxHealth, int attackPower, int defense, int agility, int speed, int w, int h) {
+    public Enemy( int maxHealth, int attackPower, int defense, int agility, int speed, int w, int h) throws IOException {
         this.maxHealth = maxHealth;
         this.currentHealth = maxHealth;
         this.attackPower = attackPower;
         this.defense = defense;
         this.agility = agility;
         this.speed = speed;
+       ;
         setSize(new Dimension(w, h));
        // setBorder(BorderFactory.createLineBorder( Color.red, 3));
         populateLootTable();
@@ -60,7 +61,7 @@ public abstract class Enemy extends JComponent {
     }
 
    // default enemy with stats
-    public Enemy() {
+    public Enemy() throws IOException {
         this(30, 5, 2, 1, 1, 50, 100);
     }
 
@@ -166,16 +167,13 @@ public abstract class Enemy extends JComponent {
         revalidate();
         repaint();
     }
-
+    Animation ani = new Fireball();
     //example attack method from fireball
-    public void attack(Runnable onComplete) throws IOException {
-        System.out.println("THE ENEMY IS ATTACKING. THE FOLLOWING HAVE BEEN PASSED TO Animation:\n  startX: "+this.getX()+"   |   finishX: "+Game.player.getX()+"\n  startY: "+this.getY()+"   |   finishY: "+Game.player.getY());
-        Animation ani = new Fireball() {
+    public void attack(Runnable onComplete, int x, int y) throws IOException {
+       // System.out.println("THE ENEMY IS ATTACKING. THE FOLLOWING HAVE BEEN PASSED TO Animation:\n  startX: "+this.getX()+"   |   finishX: "+Game.player.getX()+"\n  startY: "+this.getY()+"   |   finishY: "+Game.player.getY());
 
-        };
         Random rand = new Random();
         int dmg = rand.nextInt(10); // random between 0-9
-
 
 
 

@@ -20,7 +20,7 @@ public class NorthPanel extends JPanel {
     public AttackPlane attackPlane;
 
 
-    public NorthPanel(ArrayList<Enemy> enemiesArg) {
+    public NorthPanel(ArrayList<Enemy> enemiesArg) throws IOException {
 
         //Initializing this panel
         setLayout(null);
