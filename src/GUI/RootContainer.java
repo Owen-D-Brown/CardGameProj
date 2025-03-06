@@ -7,6 +7,7 @@ import Entities.Slime;
 import MainPackage.Config;
 import MainPackage.Game;
 import MainPackage.NorthPanel;
+import MAP.gamePanel; // Import your game panel
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,10 +20,11 @@ public class RootContainer extends JFrame {
     public JPanel menuScreen;
     private JPanel containerPanel; // The main container using BorderLayout
     public Game game;
+    public gamePanel worldPanel; // Reference to the gamePanel (Shop System)
 
     public RootContainer(Game game) {
         setTitle("Card Game");
-        setSize(Config.frameSize.width+100, 1000);
+        setSize(Config.frameSize.width + 100, 1000);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
@@ -33,6 +35,7 @@ public class RootContainer extends JFrame {
         // Initialize screens
         gameScreen = new BattleGUI(game);
         menuScreen = createMenuScreen();
+        worldPanel = new gamePanel(); // Initialize shop system
 
         // Start on the menu
         showScreen(menuScreen);
@@ -43,6 +46,7 @@ public class RootContainer extends JFrame {
     private JPanel createMenuScreen() {
         JPanel menu = new JPanel();
         menu.setBackground(Color.BLACK);
+
         JButton startButton = new JButton("Start Game");
         startButton.addActionListener(e -> {
             gameScreen.newFight(startFight(2));
@@ -52,9 +56,9 @@ public class RootContainer extends JFrame {
             gameScreen.center.revalidate();
             gameScreen.center.repaint();
             showScreen(gameScreen);
-
         });
         menu.add(startButton);
+
         JButton encounter1 = new JButton("Encounter 1");
         encounter1.addActionListener(e -> {
             gameScreen.newFight(startFight(1));
@@ -66,12 +70,21 @@ public class RootContainer extends JFrame {
             showScreen(gameScreen);
         });
         menu.add(encounter1);
+
+        // Open the shop system
+        JButton worldButton = new JButton("Open World");
+        worldButton.addActionListener(e -> {
+            showScreen(worldPanel); // Switch to gamePanel (Shop System)
+            worldPanel.startGameThread(); // Start the game loop if it's not running
+            worldPanel.requestFocusInWindow();
+        });
+        menu.add(worldButton);
+
         return menu;
     }
 
-
     public NorthPanel startFight(int num) {
-        switch(num) {
+        switch (num) {
             case 1:
                 ArrayList<Enemy> entities = new ArrayList<>();
                 entities.add(new Goblin());

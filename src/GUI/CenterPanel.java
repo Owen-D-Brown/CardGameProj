@@ -22,7 +22,7 @@ public class CenterPanel extends JPanel {
     public static int rectWidth;
     public static int rectHeight;
     public static Rectangle rect;
-    private BufferedImage background = loadImage("/Resources/MiddleBackground.png");
+    private BufferedImage background = loadImage("/Resources/MiddleDone.png");
 
     public static BufferedImage loadImage(String path) {
         try (InputStream is = Enemy.class.getResourceAsStream(path)) {
@@ -40,7 +40,7 @@ public class CenterPanel extends JPanel {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        BufferedImage bck = background.getSubimage(0, 0, 1000, 280);
+        BufferedImage bck = background.getSubimage(0, 0, 1000, 333);
         g.drawImage(bck, 0, -6, 1000, this.getHeight()+6, null);
         g.setColor(Color.black);
 

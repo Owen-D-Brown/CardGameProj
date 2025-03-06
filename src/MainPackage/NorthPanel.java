@@ -24,7 +24,7 @@ public class NorthPanel extends JPanel {
 
         //Initializing this panel
         setLayout(null);
-        background = loadImage("UpperBackground.png");
+        background = loadImage("DungeonUpperPanelP2.png");
         setBackground(Color.red);
         setPreferredSize(new Dimension(100, (int)(Config.frameSize.height * 0.3)));
 
