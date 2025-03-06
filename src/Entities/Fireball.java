@@ -57,7 +57,7 @@ public class Fireball extends XaxisAnimation {
                         aniIndex = 0;
                     }
                 }
-                double speed = 0.05;
+                double speed = 0.0025;
                 currentX += (targetX - currentX) * speed;
                 currentY += (targetY - currentY) * speed;
 
@@ -76,19 +76,20 @@ public class Fireball extends XaxisAnimation {
             } else if (currentState == AnimationState.IMPACT) {
                 // Play impact animation frames
                 aniCounter++;
-                if (aniCounter >= aniSpeed) {
+                if (aniCounter >= explosionSpeed) {
                     aniCounter = 0;
                     aniIndex++;
                     System.out.println("ani index: "+aniIndex);
                     // If impact animation finishes, stop animation
                     if (aniIndex >= impactSprites.length-1) {
                         isMoving = false;  // End animation completely
-                        System.out.println("STTTTTTTTTTTTTTTTTTTOOOOOOOOOOPPPPPPPPPPP");
+
                        // this.currentState = AnimationState.MOVING;
                     }
                 }
             }
         }
     }
+    protected int explosionSpeed = 40;
 
 }

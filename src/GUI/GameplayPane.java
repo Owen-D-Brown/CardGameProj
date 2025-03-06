@@ -94,8 +94,8 @@ public class GameplayPane extends JPanel {
                 return;
         }
         cardSlots.add(new CardSlot(xToAdd, y));
-        Game.gui.revalidate();
-        Game.gui.repaint();
+        Game.gui.gameScreen.glassPane.revalidate();
+        Game.gui.gameScreen.glassPane.repaint();
     }
 
     public void removeCardSlot() {
@@ -129,8 +129,8 @@ public class GameplayPane extends JPanel {
         }
 
         // Refresh GUI
-        Game.gui.revalidate();
-        Game.gui.repaint();
+        Game.gui.gameScreen.glassPane.revalidate();
+        Game.gui.gameScreen.glassPane.repaint();
     }
 
 

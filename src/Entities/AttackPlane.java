@@ -39,8 +39,8 @@ public class AttackPlane extends JComponent {
 
         long startTime = System.currentTimeMillis();
 
-        Timer animationTimer = new Timer(animations.get(0).interval, ev -> {
-            this.repaint();
+        Timer animationTimer = new Timer(animations.get(0).FPS/1000, ev -> {
+           // this.repaint();
             updateAnimations();
             revalidate();
 

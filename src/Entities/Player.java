@@ -150,7 +150,7 @@ public class Player extends JComponent {
             aniIndex = 0;//Reset the index
     }
     public void drawAni(Graphics g, int x, int y) {
-        animate();
+       // animate();
         g.drawImage(animations.get(0)[aniIndex], 30, 22, 74, 106, null);
 
     }

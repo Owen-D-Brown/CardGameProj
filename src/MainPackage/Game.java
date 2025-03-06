@@ -130,6 +130,7 @@ public class Game implements Runnable {
             if (deltaF >= 1) {//By running the game loop this way, it prevents the calculations from being messed up from a nanosecond or two slipping through the cracks. It catches up with itself.
                 // gui.attackPlane.repaint();//Actually repainting the panel to display changes/animations
                 //gui.attackPlane.updateAnimations();
+                player.animate();
                 player.revalidate();
                 player.repaint();
 
@@ -144,7 +145,7 @@ public class Game implements Runnable {
                     for (Enemy enemy : gui.gameScreen.northPanel.enemies) {
 
 
-
+                            enemy.animate();
                             enemy.revalidate();
                             enemy.repaint();
 

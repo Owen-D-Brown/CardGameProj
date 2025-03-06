@@ -77,8 +77,8 @@ public abstract class Card extends JComponent implements MouseListener, MouseMot
             int newY = this.getY() + (this.getHeight() - newHeight) / 2;
 
             this.setBounds(newX, newY, newWidth, newHeight);
-            Game.gui.revalidate();
-            Game.gui.repaint();
+            Game.gui.gameScreen.glassPane.revalidate();
+            Game.gui.gameScreen.glassPane.repaint();
         };
 
         timer.addActionListener(animationLis);
@@ -174,7 +174,7 @@ public abstract class Card extends JComponent implements MouseListener, MouseMot
             int y = current.y - intialGrab.y;
 
             this.setLocation(x, y);
-            this.getParent().repaint();
+           // this.getParent().repaint();
         }
     }
 

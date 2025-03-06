@@ -125,7 +125,7 @@ public abstract class Enemy extends JComponent {
         super.paintComponent(g);
 
         // animate and draw sprite sheet if available
-        animate();
+        //animate();
         if (!animations.isEmpty() && animations.get(0).length > 0) {
            // g.drawImage(animations.get(0)[aniIndex], 10, 10, this.getWidth(), this.getHeight(), null);
         }

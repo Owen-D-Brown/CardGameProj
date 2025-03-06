@@ -15,7 +15,7 @@ public class Animation extends JComponent {
     protected boolean isMoving = false;
 
 
-
+    protected int FPS = 20;
     public BufferedImage[] sprites;
     protected String filePath;
     public int duration = 2000;  // 2 seconds in milliseconds
@@ -101,7 +101,7 @@ public class Animation extends JComponent {
                 }
             }
         }
-        Game.gui.gameScreen.northPanel.attackPlane.repaint();
+       // Game.gui.gameScreen.northPanel.attackPlane.repaint();
     }
 
 
