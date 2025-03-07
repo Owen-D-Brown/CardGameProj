@@ -5,6 +5,7 @@ import Entities.FloatingText;
 import Entities.Player;
 import GUI.*;
 
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,14 +15,22 @@ import java.util.List;
 public class Game implements Runnable {
 
     //Static entites for access by the entire application.
-    public static Player player = new Player();//Player instance
+    public static Player player;//Player instance
+
+    static {
+        try {
+            player = new Player();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static RootContainer gui; //Main GUI Instance
     public static Config.GameState gameState;//Gamestate instance to control game state
     public static DevTools devTools;
 
     //Constructor
-    public Game() {
+    public Game() throws IOException {
         //Development Tools Frame
         devTools = new DevTools();
 
@@ -41,7 +50,8 @@ public class Game implements Runnable {
         gui.gameScreen.glassPane.drawCard();
         gui.gameScreen.glassPane.drawCard();
         gui.gameScreen.glassPane.drawCard();
-        run();
+        Thread gameThread = new Thread(this);
+        gameThread.start();
 
     }
 
@@ -73,7 +83,7 @@ public class Game implements Runnable {
     }
 
     static int currentEnemyIndex = 0;
-    public static void changeStateToEnemyTurn() {
+    public static void changeStateToEnemyTurn() throws IOException {
         gameState = Config.GameState.ENEMY_PHASE;
         System.out.println("THE GAME STATE HAS CHANGED -- ENEMY TURN.");
         resolveNextEnemy();
@@ -119,20 +129,25 @@ public class Game implements Runnable {
             previousTime = currentTime;//Setting the previous time to the current time
 
             if (deltaF >= 1) {//By running the game loop this way, it prevents the calculations from being messed up from a nanosecond or two slipping through the cracks. It catches up with itself.
+
                 // gui.attackPlane.repaint();//Actually repainting the panel to display changes/animations
                 //gui.attackPlane.updateAnimations();
+                player.animate();
                 player.revalidate();
                 player.repaint();
+
                 if (Game.gui.gameScreen.northPanel != null) {
-                    for (FloatingText instance : FloatingText.instances) {
+
                         FloatingText.update();
 
-                    }
+
                     FloatingText.removeInstances();
+                    gui.gameScreen.northPanel.revalidate();
+                    gui.gameScreen.northPanel.repaint();
                     for (Enemy enemy : gui.gameScreen.northPanel.enemies) {
 
 
-
+                            enemy.animate();
                             enemy.revalidate();
                             enemy.repaint();
 
@@ -145,7 +160,7 @@ public class Game implements Runnable {
         }
     }
 
-    public static void resolveNextEnemy() {
+    public static void resolveNextEnemy() throws IOException {
 
             //If we have resolved all the card slots.
           //  System.out.println("currentIndex: "+currentEnemyIndex+" size: "+gui.gameScreen.northPanel.enemies.size());
@@ -168,8 +183,12 @@ public class Game implements Runnable {
                 //Slot sequentially. Callback triggers when dissolve + animation finish.
                 enemy.attack(() -> {
                     currentEnemyIndex++;
-                    resolveNextEnemy(); // Move to next card
-                });
+                    try {
+                        resolveNextEnemy(); // Move to next card
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }, player.getX(), player.getY());
             }
 
             else //If the card slot doesn't have a card in it.

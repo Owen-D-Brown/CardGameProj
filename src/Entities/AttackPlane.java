@@ -6,6 +6,7 @@ import MainPackage.Game;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
@@ -13,10 +14,10 @@ import java.util.ArrayList;
 //Attack sprites travel along the box.
 public class AttackPlane extends JComponent {
 
-    private Rectangle attackPlane = new Rectangle(0, 0, 640, 50);
+    private Rectangle attackPlane = new Rectangle(0, 0, 1000, 333);
     public static ArrayList<Animation> animations = new ArrayList<>();
 
-    public AttackPlane() {
+    public AttackPlane() throws IOException {
         setSize(new Dimension(attackPlane.width, attackPlane.height));
         setBorder(new LineBorder(Color.black));
     }
@@ -24,6 +25,7 @@ public class AttackPlane extends JComponent {
 
     public static void addAniToQue(Animation ani) {
         animations.clear();
+
         animations.add(ani);
     }
 
@@ -38,8 +40,8 @@ public class AttackPlane extends JComponent {
 
         long startTime = System.currentTimeMillis();
 
-        Timer animationTimer = new Timer(animations.get(0).interval, ev -> {
-            repaint();
+        Timer animationTimer = new Timer(animations.get(0).FPS/1000, ev -> {
+           // this.repaint();
             updateAnimations();
             revalidate();
 
@@ -65,7 +67,7 @@ public class AttackPlane extends JComponent {
         long startTime = System.currentTimeMillis();
 
         Timer animationTimer = new Timer(animations.get(0).interval, ev -> {
-            repaint();
+           // repaint();
             updateAnimations();
             revalidate();
 
@@ -80,10 +82,11 @@ public class AttackPlane extends JComponent {
         animationTimer.start();
     }
     //
-
+    GoblinAttackAnimation ani = new GoblinAttackAnimation();
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+        //g.drawImage(ani.sprites[3], Game.player.getX(), Game.player.getY(), null);
         for(Animation ani : animations) {
             ani.paintComponent(g);
         }
@@ -94,7 +97,7 @@ public class AttackPlane extends JComponent {
         for (Animation animation : animations) {
             animation.updateAni();
         }
-        repaint();
+        this.repaint();
     }
 
 }

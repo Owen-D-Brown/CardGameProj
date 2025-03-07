@@ -2,18 +2,17 @@ package Entities;
 import MainPackage.Game;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.util.Random;
+import java.io.IOException;
 
 public class IceBurst extends Card {
 
-    private static final String IMAGE_PATH = "/Resources/Cards/placeholder.png"; // example image path change when have card
+    private static final String IMAGE_PATH = "/Resources/Cards/IceBurst.png"; // example image path change when have card
 
 
-    public IceBurst() {
+    public IceBurst() throws IOException {
         super(IMAGE_PATH); //pass the image path to card constructor
         this.image = loadImage(IMAGE_PATH); // load image from the path
-
+        this.animation = new IceBlast();
     }
     //could possibly add a random chance to freeze enemies too
     @Override
@@ -36,5 +35,10 @@ public class IceBurst extends Card {
             g.setColor(Color.BLUE);
             g.fillRect(0, 0, getWidth(), getHeight()); // blue box if image is missing
         }
+    }
+
+    @Override
+    public void initCardAniBounds() throws IOException {
+        ((IceBlast) animation).initAnimation(Game.player, Game.gui.gameScreen.northPanel.enemies.get(0));
     }
 }

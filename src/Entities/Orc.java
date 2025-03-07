@@ -1,11 +1,13 @@
 package Entities;
 
+import java.io.IOException;
+
 public class Orc extends Enemy {
 
     private boolean isEnraged = false; // Tracks if the Orc has entered rage mode
 
-    public Orc() {
-        super(30, 10, 5, 2, 1); // (HP, Attack, Defense, Agility, Speed)
+    public Orc() throws IOException {
+        super(30, 10, 5, 2, 1, 50, 100); // (HP, Attack, Defense, Agility, Speed)
     }
 
     @Override

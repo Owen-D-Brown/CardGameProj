@@ -17,7 +17,7 @@ public abstract class Card extends JComponent implements MouseListener, MouseMot
     public boolean primed = false; // Whether the card is in a card slot
     public int initX, initY;
     private Point intialGrab; // Stores where the mouse grabbed the card
-    public Animation animation = new Fireball(0, 0, 700, 20);
+    public Animation animation;
     protected BufferedImage image;
 
 
@@ -34,6 +34,10 @@ public abstract class Card extends JComponent implements MouseListener, MouseMot
     // abstract card effect method, implemented by card subclasses
     public abstract void effect();
 
+    public abstract void initCardAniBounds() throws IOException;
+
+
+
     // Image loader like one found in player class
     public static BufferedImage loadImage(String path) {
         try (InputStream is = Card.class.getResourceAsStream(path)) {
@@ -41,6 +45,7 @@ public abstract class Card extends JComponent implements MouseListener, MouseMot
                 System.err.println("Error: Image not found at " + path);
                 return null;
             }
+            System.out.println("image in load: "+is);
             return ImageIO.read(is);
         } catch (IOException e) {
             e.printStackTrace();
@@ -72,8 +77,8 @@ public abstract class Card extends JComponent implements MouseListener, MouseMot
             int newY = this.getY() + (this.getHeight() - newHeight) / 2;
 
             this.setBounds(newX, newY, newWidth, newHeight);
-            Game.gui.revalidate();
-            Game.gui.repaint();
+            Game.gui.gameScreen.glassPane.revalidate();
+            Game.gui.gameScreen.glassPane.repaint();
         };
 
         timer.addActionListener(animationLis);
@@ -169,7 +174,7 @@ public abstract class Card extends JComponent implements MouseListener, MouseMot
             int y = current.y - intialGrab.y;
 
             this.setLocation(x, y);
-            this.getParent().repaint();
+           // this.getParent().repaint();
         }
     }
 

@@ -1,5 +1,6 @@
 package Entities;
 
+import java.io.IOException;
 import java.util.Random;
 
 import MainPackage.Game;
@@ -9,8 +10,8 @@ public class Slime extends Enemy {
     private static final double Dissolve_chance = 0.10; //10% chance
     private static final int Dissolve_dam  = 5;
 
-    public Slime() {
-        super(35, 9, 4, 1, 1);
+    public Slime() throws IOException {
+        super(35, 9, 4, 1, 1, 50, 100);
     }
 
     @Override

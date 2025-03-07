@@ -35,19 +35,13 @@ public class Player extends JComponent {
     private Rectangle healthBar = new Rectangle(0, 0, 75, 10);
     private ArrayList<BufferedImage[]> animations = new ArrayList<>();
 
-    public Player() {
+    public Player() throws IOException {
         setSize(new Dimension(130, 200));
         //setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        for(int i = 0; i<3; i++) {
+        for(int i = 0; i<10; i++) {
             cards.add(new Firebolt());
-            cards.add(new IceBurst());
-            cards.add(new Vampire_MCard());
-            cards.add(new Satyr_MCard());
-            cards.add(new Insanity_Card());
-            cards.add(new Potion_Card());
-            cards.add(new LastEmbrace_Card());
-
-
+           // cards.add(new IceBurst());
+          //  cards.add(new Bandage());
         }
         animations.add(importSprites("/Resources/EvilWizard/idleMap.png", 10, 1, 37, 53));
     }
@@ -79,7 +73,7 @@ public class Player extends JComponent {
 
         // Draw animation instead of the hitbox
         drawAni(g, centeredX, centeredY);
-
+        g.drawRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
         // Draw the health bar
         int barX = (getWidth() - healthBar.width) / 2;
         healthBar.setLocation(barX, 0);
@@ -96,9 +90,11 @@ public class Player extends JComponent {
 
 
     public void takeDamage(int damage) {
-        if(currentHealth > maxHealth)
+        if(currentHealth > maxHealth) {
             currentHealth = maxHealth;
 
+        }
+        FloatingText.createEffect("-" + damage, this, Color.RED);
         currentHealth = currentHealth - damage;
         if(currentHealth <= 0) {
             System.out.println("youre dead");
@@ -154,7 +150,7 @@ public class Player extends JComponent {
             aniIndex = 0;//Reset the index
     }
     public void drawAni(Graphics g, int x, int y) {
-        animate();
+       // animate();
         g.drawImage(animations.get(0)[aniIndex], 30, 22, 74, 106, null);
 
     }

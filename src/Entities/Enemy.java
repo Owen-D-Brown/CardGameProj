@@ -24,37 +24,45 @@ public abstract class Enemy extends JComponent {
 
     protected ArrayList<BufferedImage[]> animations = new ArrayList<>();
     protected int aniIndex = 0;
-    protected int aniSpeed = 10;
+    public int aniSpeed = 10;
     protected int aniCounter = 0;
 
     // Health bar & hitbox
-    protected Rectangle hitbox = new Rectangle(10, 0, 24, 99);
+    protected Rectangle hitbox;
     protected Rectangle healthBar = new Rectangle(0, 0, 75, 10);
 
     // Track if this Enemy is targeted
     protected boolean isTargeted = false;
 
+    public int x, y;
+
     // Loot Related properties
     protected Map<String, Object> lootTable = new HashMap<String, Object>();
 
-
+    public Rectangle getHitbox() {
+        return this.hitbox;
+    }
 
 
     // main constructor with all of the stats and specific size dimensions
-    public Enemy(int maxHealth, int attackPower, int defense, int agility, int speed) {
+    public Enemy( int maxHealth, int attackPower, int defense, int agility, int speed, int w, int h) throws IOException {
         this.maxHealth = maxHealth;
         this.currentHealth = maxHealth;
         this.attackPower = attackPower;
         this.defense = defense;
         this.agility = agility;
         this.speed = speed;
-        setSize(new Dimension(100, 150));
+       ;
+        setSize(new Dimension(w, h));
+       // setBorder(BorderFactory.createLineBorder( Color.red, 3));
         populateLootTable();
+        hitbox = new Rectangle(this.getX(), this.getY(), this.getWidth(), this.getHeight());
+        System.out.println("TESTING "+hitbox);
     }
 
    // default enemy with stats
-    public Enemy() {
-        this(30, 5, 2, 1, 1);
+    public Enemy() throws IOException {
+        this(30, 5, 2, 1, 1, 50, 100);
     }
 
   // setting the target
@@ -118,9 +126,9 @@ public abstract class Enemy extends JComponent {
         super.paintComponent(g);
 
         // animate and draw sprite sheet if available
-        animate();
+        //animate();
         if (!animations.isEmpty() && animations.get(0).length > 0) {
-            g.drawImage(animations.get(0)[aniIndex], 10, 10, 75, 75, null);
+           // g.drawImage(animations.get(0)[aniIndex], 10, 10, this.getWidth(), this.getHeight(), null);
         }
 
         // draw the hitbox (centered) and health bar
@@ -128,8 +136,8 @@ public abstract class Enemy extends JComponent {
 
         int centeredX = (getWidth() - hitbox.width) / 2;
         int centeredY = (getHeight() - hitbox.height) / 2;
-        hitbox.setLocation(centeredX, centeredY);
-        g.fillRect(hitbox.x, hitbox.y - 3, hitbox.width, hitbox.height);
+
+        g.drawRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
 
         // health bar across the top
         int barX = (getWidth() - healthBar.width) / 2;
@@ -159,16 +167,15 @@ public abstract class Enemy extends JComponent {
         revalidate();
         repaint();
     }
-
+    Animation ani = new Fireball();
     //example attack method from fireball
-    public void attack(Runnable onComplete) {
+    public void attack(Runnable onComplete, int x, int y) throws IOException {
+       // System.out.println("THE ENEMY IS ATTACKING. THE FOLLOWING HAVE BEEN PASSED TO Animation:\n  startX: "+this.getX()+"   |   finishX: "+Game.player.getX()+"\n  startY: "+this.getY()+"   |   finishY: "+Game.player.getY());
 
-        Animation ani = new Fireball(700, 20, 0, 0);
         Random rand = new Random();
         int dmg = rand.nextInt(10); // random between 0-9
 
 
-        Game.player.takeDamage(dmg);
 
 
         AttackPlane.addAniToQue(ani);
@@ -177,6 +184,7 @@ public abstract class Enemy extends JComponent {
         AttackPlane.animations.get(0).startAnimation();
         Game.gui.gameScreen.northPanel.attackPlane.playAnimation(() -> {
             AttackPlane.animations.get(0).stopAnimation();
+            Game.player.takeDamage(dmg);
             onComplete.run();
         });
     }
