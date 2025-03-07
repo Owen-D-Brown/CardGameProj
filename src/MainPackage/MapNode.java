@@ -12,10 +12,15 @@ public class MapNode {
     public int x, y;
     private int randomizedX; // Stores the randomized position
     private int combatID;
+    private boolean defeated = false; // Track defeated status
     public List<Integer> connections;
 
     public int getCombatID() { return combatID; }
     public int getX() { return randomizedX; } // Use randomizedX instead of x
+
+    // ✅ Getter & Setter for defeated status
+    public boolean isDefeated() { return defeated; }
+    public void setDefeated(boolean defeated) { this.defeated = defeated; }
 
     // Default constructor required for JSON parsing
     public MapNode() {}
