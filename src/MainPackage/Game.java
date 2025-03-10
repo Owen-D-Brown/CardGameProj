@@ -142,6 +142,7 @@ public class Game implements Runnable {
 
 
                     FloatingText.removeInstances();
+                    //ANIMATIONS WILL BE REPAINTED BY THIS LINE - SO LET'S FIGURE OUT A WAY TO MOVE ALL THE RENDERING LOGIC HERE
                     gui.gameScreen.northPanel.revalidate();
                     gui.gameScreen.northPanel.repaint();
                     for (Enemy enemy : gui.gameScreen.northPanel.enemies) {

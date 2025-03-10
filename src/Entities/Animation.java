@@ -18,7 +18,7 @@ public class Animation extends JComponent {
     protected int FPS = 20;
     public BufferedImage[] sprites;
     protected String filePath;
-    public int duration = 2000;  // 2 seconds in milliseconds
+    public int duration = 700;  // 2 seconds in milliseconds
     public int interval = 60/ duration;
     protected int aniIndex = 0;
     protected int aniSpeed;

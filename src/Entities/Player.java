@@ -73,7 +73,7 @@ public class Player extends JComponent {
 
         // Draw animation instead of the hitbox
         drawAni(g, centeredX, centeredY);
-        g.drawRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
+       // g.drawRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
         // Draw the health bar
         int barX = (getWidth() - healthBar.width) / 2;
         healthBar.setLocation(barX, 0);

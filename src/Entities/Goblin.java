@@ -14,7 +14,8 @@ public class Goblin extends Enemy {
     //Dodge chance increments of 15% will be + by agility base stat
     private static final double B_DODGE_CHANCE = 0.15;
     protected GoblinAttackAnimation attackAnimation;
-    protected enum State {IDLE, WALKING};
+    protected BufferedImage[] goblinAttackStateAni;
+    protected enum State {IDLE, WALKING, ATTACKING};
     State state = State.IDLE;
 
     public Goblin() throws IOException {
@@ -31,20 +32,31 @@ public class Goblin extends Enemy {
                 //filepath
                 "/Resources/Goblin/GoblinWalk.png", 6, 1, 600, 500
         );
+        BufferedImage[] goblinAttackStateAni = importSprites(
+                //filepath
+                "/Resources/Goblin/GoblinAttack.png", 6, 1, 600, 500
+        );
         //check the sprites in the array
         if (idleSprites.length > 0) {
             //loaded frames from animations
             animations.add(idleSprites);
             animations.add(walkikngSprites);
+            animations.add(goblinAttackStateAni);
         } else {
             System.err.println("Error: Goblin sprites failed to load!");
         }
 
     }
 
+
     protected int walkIndex = 0;
     protected int walkCounter = 0;
     protected int walkSpeed = 6;
+    protected int attackIndex = 0;
+    protected int attackCounter = 0;
+    protected int attackSpeed = 6;
+    int startX = 0;
+    protected boolean startXset = false;
     @Override
     public void animate() {
         aniCounter++;
@@ -68,8 +80,26 @@ public class Goblin extends Enemy {
                 }
             }
             Rectangle temp = this.getBounds();
+            if(!startXset) {
+                startBounds = this.getBounds();
+                startXset = true;
+            }
             this.setBounds(temp.x -=9, temp.y, temp.width, temp.height);
+            System.out.println("LOOK HERE PLEASEEEEEEEEE  "+this.getBounds());
+
             currentX = temp.x;
+        }
+
+        if(state == State.ATTACKING) {
+            attackCounter++;
+            if (attackCounter >= attackSpeed) {
+                attackCounter = 0;
+                attackIndex++;
+
+                if (!animations.isEmpty() && attackIndex >= animations.get(2).length) {
+                    attackIndex = 0;
+                }
+            }
         }
     }
 
@@ -117,29 +147,74 @@ public class Goblin extends Enemy {
             g.drawImage(animations.get(0)[aniIndex], 0, 0, 75, 75, null);
         }
 
+        if(state == State.ATTACKING) {
+            g.drawImage(animations.get(2)[attackIndex], 0, 0, 75, 75, null);
+        }
+
     }
 
+    //Resolve next enemy calls enemy.attack. This is the method that defines the difference
+    //Between static and dynamic parts of the engine. Here, timing must be introduced to stop
+    //The recursive flow until the animation is finished playing.
 
     @Override
     public void attack(Runnable onComplete, int x, int y) throws IOException {
-        // System.out.println("THE ENEMY IS ATTACKING. THE FOLLOWING HAVE BEEN PASSED TO Animation:\n  startX: "+this.getX()+"   |   finishX: "+Game.player.getX()+"\n  startY: "+this.getY()+"   |   finishY: "+Game.player.getY());
-
+        // Get random damage
         Random rand = new Random();
-        int dmg = rand.nextInt(10); // random between 0-9
+        int dmg = rand.nextInt(10); // Random between 0-9
 
+        // Reset attack animation index before starting
+        attackIndex = 0;
+
+        // Set state to walking
         this.state = State.WALKING;
-        if (currentX < -100) {
-            this.state = State.IDLE;
-            attackAnimation.placeAnimation(x, y);
-            AttackPlane.addAniToQue(attackAnimation);
 
-            // start of the animation (attack)
-            AttackPlane.animations.get(0).startAnimation();
-            Game.gui.gameScreen.northPanel.attackPlane.playAnimation(() -> {
-                AttackPlane.animations.get(0).stopAnimation();
-                Game.player.takeDamage(dmg);
-                onComplete.run();
+        // Timer to monitor enemy reaching attack position
+        Timer movementTimer = new Timer(16, e -> {
+            if (currentX >= 700)
+                return; // Keep waiting until it reaches threshold
+
+            ((Timer) e.getSource()).stop(); // Stop movement check
+            this.state = State.ATTACKING;  // Start attack animation
+
+            // Ensure attack animation fully loops before playing AttackPlane animation
+            Timer waitForAttack = new Timer(16, e1 -> {
+                if (attackIndex < animations.get(2).length - 1)
+                    return;  // Keep waiting until attack animation loop finishes
+
+                ((Timer) e1.getSource()).stop(); // Stop waiting
+
+                // Reset animation state for next attack
+                this.state = State.IDLE;
+                attackIndex = 0;  // Ensure attackIndex is reset
+
+                // Only NOW do we place the attack effect & play AttackPlane animation
+                attackAnimation.placeAnimation(x, y);
+                AttackPlane.addAniToQue(attackAnimation);
+                AttackPlane.animations.get(0).startAnimation();
+
+                // Play AttackPlane animation **ONLY AFTER attack animation finishes**
+                Game.gui.gameScreen.northPanel.attackPlane.playAnimation(() -> {
+                    AttackPlane.animations.get(0).stopAnimation(); // Stop animation
+                    Game.player.takeDamage(dmg);  // Apply damage
+
+                    // Reset position & state
+                    this.state = State.IDLE;
+                    this.setBounds(startBounds);
+                    currentX = this.getBounds().x;
+
+                    // NOW the game flow continues
+                    onComplete.run();
+                });
             });
-        }
+
+            waitForAttack.start(); // Start waiting for attack animation loop to finish
+        });
+
+        movementTimer.start(); // Start movement monitoring
     }
+
+
 }
+
+

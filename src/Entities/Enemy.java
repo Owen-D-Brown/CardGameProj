@@ -119,6 +119,10 @@ public abstract class Enemy extends JComponent {
             }
         }
     }
+    public Rectangle startBounds;
+    public void setStartBounds(Rectangle r) {
+        this.startBounds = r;
+    }
 
   //custome paint
     @Override
@@ -137,7 +141,7 @@ public abstract class Enemy extends JComponent {
         int centeredX = (getWidth() - hitbox.width) / 2;
         int centeredY = (getHeight() - hitbox.height) / 2;
 
-        g.drawRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
+        //g.drawRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
 
         // health bar across the top
         int barX = (getWidth() - healthBar.width) / 2;

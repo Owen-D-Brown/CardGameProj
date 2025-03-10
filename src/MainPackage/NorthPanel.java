@@ -113,11 +113,16 @@ public class NorthPanel extends JPanel {
              int x = 600;
              int y = 150;
              x = x+(enemies.size()*enemyAdded.getWidth())+10;
-            //
+            //#
+            //WOKRING IN HERE
+
+            /// /
             enemies.getLast().setBounds(x, y, enemyAdded.getWidth(), enemyAdded.getHeight());
+            enemies.getLast().setStartBounds(this.getBounds());
             revalidate();
             repaint();
-            System.out.println("Enemy added at: "+x+" - NorthPanel");
+           //
+            System.out.println("Enemy added at: "+x+" - NorthPanel - "+this.getBounds().toString()+"  |  "+enemies.getLast().startBounds.toString());
         }
     }
 
