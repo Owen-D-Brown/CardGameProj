@@ -31,4 +31,9 @@ public class Orc extends Enemy {
         this.lootTable.put("Gold", 400);
         this.lootTable.put("Orc's Tooth", 0);
     }
+
+    @Override
+    public void updateAttackState() {
+
+    }
 }

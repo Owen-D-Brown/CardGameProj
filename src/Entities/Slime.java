@@ -45,5 +45,10 @@ public class Slime extends Enemy {
         this.lootTable.put("Goo", 0);
     }
 
+    @Override
+    public void updateAttackState() {
+
+    }
+
 
 }

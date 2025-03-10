@@ -147,7 +147,7 @@ public class Game implements Runnable {
                     gui.gameScreen.northPanel.repaint();
                     for (Enemy enemy : gui.gameScreen.northPanel.enemies) {
 
-
+                            enemy.updateAttackState();
                             enemy.animate();
                             enemy.revalidate();
                             enemy.repaint();

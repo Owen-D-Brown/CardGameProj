@@ -57,7 +57,7 @@ public abstract class Enemy extends JComponent {
        // setBorder(BorderFactory.createLineBorder( Color.red, 3));
         populateLootTable();
         hitbox = new Rectangle(this.getX(), this.getY(), this.getWidth(), this.getHeight());
-        System.out.println("TESTING "+hitbox);
+
     }
 
    // default enemy with stats
@@ -197,6 +197,8 @@ public abstract class Enemy extends JComponent {
     public abstract String getEnemyType();
 
     public abstract void populateLootTable();
+
+    public abstract void updateAttackState();
 
     public Map<String, Object> getLootTable() {
         return lootTable;

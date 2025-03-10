@@ -23,7 +23,7 @@ public class RootContainer extends JFrame {
 
     public RootContainer(Game game) {
         setTitle("Card Game");
-        setSize(Config.frameSize.width+100, 1000);
+        setSize(Config.frameSize.width+100, Config.frameSize.height);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 

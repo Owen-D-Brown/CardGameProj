@@ -17,6 +17,7 @@ public class Goblin extends Enemy {
     protected BufferedImage[] goblinAttackStateAni;
     protected enum State {IDLE, WALKING, ATTACKING};
     State state = State.IDLE;
+    public int currentX, currentY;
 
     public Goblin() throws IOException {
 
@@ -45,6 +46,8 @@ public class Goblin extends Enemy {
         } else {
             System.err.println("Error: Goblin sprites failed to load!");
         }
+
+        currentX = 33333300;
 
     }
 
@@ -85,9 +88,10 @@ public class Goblin extends Enemy {
                 startXset = true;
             }
             this.setBounds(temp.x -=9, temp.y, temp.width, temp.height);
-            System.out.println("LOOK HERE PLEASEEEEEEEEE  "+this.getBounds());
+
 
             currentX = temp.x;
+
         }
 
         if(state == State.ATTACKING) {
@@ -131,7 +135,7 @@ public class Goblin extends Enemy {
         super.takeDamage(damage);
     }
 
-    public int currentX, currentY = 0;
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -157,61 +161,54 @@ public class Goblin extends Enemy {
     //Between static and dynamic parts of the engine. Here, timing must be introduced to stop
     //The recursive flow until the animation is finished playing.
 
+    private Runnable onComplete;
+    private boolean isAttacking = false;
+    private int attackTriggerX = 600;
+    private int slashX, slashY;
+
     @Override
     public void attack(Runnable onComplete, int x, int y) throws IOException {
-        // Get random damage
-        Random rand = new Random();
-        int dmg = rand.nextInt(10); // Random between 0-9
 
-        // Reset attack animation index before starting
+        this.onComplete = onComplete;
         attackIndex = 0;
-
-        // Set state to walking
         this.state = State.WALKING;
+        this.isAttacking = false;
+        this.slashX = x;
+        this.slashY = y;
 
-        // Timer to monitor enemy reaching attack position
-        Timer movementTimer = new Timer(16, e -> {
-            if (currentX >= 700)
-                return; // Keep waiting until it reaches threshold
+    }
 
-            ((Timer) e.getSource()).stop(); // Stop movement check
-            this.state = State.ATTACKING;  // Start attack animation
+    public void updateAttackState() {
+        if(currentX <= attackTriggerX && !isAttacking) {
 
-            // Ensure attack animation fully loops before playing AttackPlane animation
-            Timer waitForAttack = new Timer(16, e1 -> {
-                if (attackIndex < animations.get(2).length - 1)
-                    return;  // Keep waiting until attack animation loop finishes
+            this.state = State.ATTACKING;
+            isAttacking = true;
+        }
 
-                ((Timer) e1.getSource()).stop(); // Stop waiting
+        if(isAttacking) {
+            if(attackIndex >= animations.get(2).length-1) {
 
-                // Reset animation state for next attack
                 this.state = State.IDLE;
-                attackIndex = 0;  // Ensure attackIndex is reset
+                attackIndex = 0;
 
-                // Only NOW do we place the attack effect & play AttackPlane animation
-                attackAnimation.placeAnimation(x, y);
+                attackAnimation.placeAnimation(slashX, slashY);
                 AttackPlane.addAniToQue(attackAnimation);
                 AttackPlane.animations.get(0).startAnimation();
-
-                // Play AttackPlane animation **ONLY AFTER attack animation finishes**
                 Game.gui.gameScreen.northPanel.attackPlane.playAnimation(() -> {
                     AttackPlane.animations.get(0).stopAnimation(); // Stop animation
+                    Random rand = new Random();
+                    int dmg = rand.nextInt(10); // Random between 0-9
                     Game.player.takeDamage(dmg);  // Apply damage
 
                     // Reset position & state
                     this.state = State.IDLE;
                     this.setBounds(startBounds);
                     currentX = this.getBounds().x;
-
-                    // NOW the game flow continues
                     onComplete.run();
                 });
-            });
 
-            waitForAttack.start(); // Start waiting for attack animation loop to finish
-        });
-
-        movementTimer.start(); // Start movement monitoring
+            }
+        }
     }
 
 
