@@ -32,7 +32,7 @@ public class RootContainer extends JFrame {
 
         // Initialize screens
         gameScreen = new BattleGUI(game);
-        menuScreen = createMenuScreen();
+        menuScreen = new MainMenuPanel(this);
 
         // Start on the menu
         showScreen(menuScreen);
@@ -40,7 +40,7 @@ public class RootContainer extends JFrame {
         setVisible(true);
     }
 
-    private JPanel createMenuScreen() {
+    public JPanel createMenuScreen() {
         JPanel menu = new JPanel();
         menu.setBackground(Color.BLACK);
         JButton startButton = new JButton("Start Game");

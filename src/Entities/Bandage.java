@@ -36,7 +36,7 @@ public class Bandage extends Card{
 
         if (image != null) {//check if image is available, draw it if so or use placeholder
             g.drawImage(image, 0, 0, getWidth(), getHeight(), this);//draw card image
-        } else {//set placeholder colour for iceburst to blue
+        } else {//set placeholder colour for bandage tp pink
             g.setColor(Color.PINK);
             g.fillRect(0, 0, getWidth(), getHeight()); // blue box if image is missing
         }
