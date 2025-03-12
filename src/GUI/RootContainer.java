@@ -7,6 +7,7 @@ import Entities.Slime;
 import MainPackage.Config;
 import MainPackage.Game;
 import MainPackage.NorthPanel;
+import MAP.gamePanel; // Import your game panel
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,6 +21,7 @@ public class RootContainer extends JFrame {
     public JPanel menuScreen;
     private JPanel containerPanel; // The main container using BorderLayout
     public Game game;
+    public gamePanel worldPanel; // Reference to the gamePanel (Shop System)
 
     public RootContainer(Game game) {
         setTitle("Card Game");
@@ -34,6 +36,7 @@ public class RootContainer extends JFrame {
         // Initialize screens
         gameScreen = new BattleGUI(game);
         menuScreen = createMenuScreen();
+        worldPanel = new gamePanel(); // Initialize shop system
 
         // Start on the menu
         showScreen(menuScreen);
@@ -75,6 +78,16 @@ public class RootContainer extends JFrame {
             showScreen(gameScreen);
         });
         menu.add(encounter1);
+
+        // Open the shop system
+        JButton worldButton = new JButton("Open World");
+        worldButton.addActionListener(e -> {
+            showScreen(worldPanel); // Switch to gamePanel (Shop System)
+            worldPanel.startGameThread(); // Start the game loop if it's not running
+            worldPanel.requestFocusInWindow();
+        });
+        menu.add(worldButton);
+
         return menu;
     }
 
