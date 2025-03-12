@@ -7,12 +7,18 @@ public class Orc extends Enemy {
     private boolean isEnraged = false; // Tracks if the Orc has entered rage mode
 
     public Orc() throws IOException {
-        super(30, 10, 5, 2, 1, 50, 100); // (HP, Attack, Defense, Agility, Speed)
+        super("Orc", 30, 10, 5, 2, 1, 83, 73, 63, 63, 5,1, 7,1, 4,1, 4,1, new GoblinAttackAnimation()); // (HP, Attack, Defense, Agility, Speed)
     }
 
+
+
     @Override
-    public String getEnemyType() {
-        return "Orc";
+    protected void addMapsToAnimations(String basePath) {
+        //System.out.println(idleColCount+"  |  "+idleRowCount+"  |  "+spriteWidth+"  |  "+spriteHeight);
+        animations.add(importSprites(basePath+"IdleMap.png", idleColCount, idleRowCount, 64, 63));
+        animations.add(importSprites(basePath+"WalkMap.png", walkColCount, walkRowCount, 63, 63));
+        animations.add(importSprites(basePath+"AttackMap.png", attackColCount, attackRowCount, 83, 63));
+        animations.add(importSprites(basePath+"DeathMap.png", deathColCount, deathRowCount, 70, 63));
     }
 
     @Override
@@ -32,8 +38,5 @@ public class Orc extends Enemy {
         this.lootTable.put("Orc's Tooth", 0);
     }
 
-    @Override
-    public void updateAttackState() {
 
-    }
 }

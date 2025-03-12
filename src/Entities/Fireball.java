@@ -62,7 +62,8 @@ public class Fireball extends XaxisAnimation {
                 currentY += (targetY - currentY) * speed;
 
                 // Check if we reached the target
-                if (Math.abs(currentX - targetX) < 60 && Math.abs(currentY - targetY) < 60) {
+                System.out.println("debuggng currentX: "+currentX+" | TargetX: "+targetX+"\n calculation: "+(Math.abs(currentX - targetX)  ));
+                if (Math.abs(currentX - targetX) < 120) {
                     currentX = targetX;
                     currentY = targetY;
 
@@ -90,6 +91,6 @@ public class Fireball extends XaxisAnimation {
             }
         }
     }
-    protected int explosionSpeed = 7;
+    protected int explosionSpeed =15;
 
 }

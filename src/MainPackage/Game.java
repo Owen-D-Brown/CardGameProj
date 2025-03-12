@@ -6,9 +6,10 @@ import Entities.Player;
 import GUI.*;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 
 //Game class - Master class for running the game. Everything else sits inside of this.
@@ -130,11 +131,17 @@ public class Game implements Runnable {
 
             if (deltaF >= 1) {//By running the game loop this way, it prevents the calculations from being messed up from a nanosecond or two slipping through the cracks. It catches up with itself.
 
+
+
+
+
                 // gui.attackPlane.repaint();//Actually repainting the panel to display changes/animations
                 //gui.attackPlane.updateAnimations();
                 player.animate();
                 player.revalidate();
                 player.repaint();
+
+                boolean allEnemiesAlive = true;
 
                 if (Game.gui.gameScreen.northPanel != null) {
 
@@ -147,12 +154,49 @@ public class Game implements Runnable {
                     gui.gameScreen.northPanel.repaint();
                     for (Enemy enemy : gui.gameScreen.northPanel.enemies) {
 
-                            enemy.updateAttackState();
+                            enemy.updateEnemyStatus();
                             enemy.animate();
                             enemy.revalidate();
                             enemy.repaint();
 
+                        if (enemy.currentHealth <= 0) {
+                            allEnemiesAlive = false; // If any enemy is dead, stop changing the state
+                        }
 
+                    }
+
+
+                    if(!cardSlots.isEmpty() && gameState == Config.GameState.CARD_RESOLUTION) {
+                        //System.out.println("entered the conditional correctly");
+                        Runnable task = resolutionQueue.get(0); // Get next task
+                        CardSlot slot = cardSlots.get(0);
+                        if(!slot.isResolved) {
+                          //  System.out.println("slot is NOT RESOLVED");
+                            if(!slot.currentlyResolving) {
+                                if(allEnemiesAlive) {
+                                    // System.out.println("slot is NOT RESOLVING");
+                                    task.run();
+                                }
+                              //  System.out.println("task should be ran");
+                            }
+                            System.out.println("slot not resolved");
+                        } else if(slot.isResolved) {
+                            System.out.println("slot is resolved");
+                            resolutionQueue.remove(0);
+                            cardSlots.remove(0);
+                        }
+                    }
+
+                    if (Game.resolutionQueue.isEmpty() && gameState == Config.GameState.CARD_RESOLUTION) {
+                        // Change state to enemy turn once all cards have been resolved
+                        if (gameState != Config.GameState.ENEMY_PHASE && allEnemiesAlive) {
+                            try {
+                                GameplayPane.currentCardIndex = 0;
+                                changeStateToEnemyTurn(); // Transition to enemy turn state
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
                     }
 
                     deltaF--;//Removing one from deltaF, keeping any leftover time we may have for the next iteration.
@@ -161,10 +205,14 @@ public class Game implements Runnable {
         }
     }
 
+    public boolean persistanceFinished = true;
+    public static ArrayList<Runnable> resolutionQueue = new ArrayList<>();
+    public static ArrayList<CardSlot> cardSlots = new ArrayList<>();
+
     public static void resolveNextEnemy() throws IOException {
 
             //If we have resolved all the card slots.
-          //  System.out.println("currentIndex: "+currentEnemyIndex+" size: "+gui.gameScreen.northPanel.enemies.size());
+            System.out.println("currentIndex: "+currentEnemyIndex+" size: "+gui.gameScreen.northPanel.enemies.size());
             if (currentEnemyIndex >= gui.gameScreen.northPanel.enemies.size()) {
                 //System.out.println("error");
                 Game.changeStateToCardPlay();
@@ -177,11 +225,13 @@ public class Game implements Runnable {
             Enemy enemy = gui.gameScreen.northPanel.enemies.get(currentEnemyIndex);
 
             //Check if there is a card in the slot
+       // System.out.println("debugging "+enemy!=null);
             if (enemy != null) {
 
                 //Resolve the slot, passing a callback function. This function will run when slot.resolve finishes.
                 //In this case, it increases the index and calls itself again. This allows it to iterate through each
                 //Slot sequentially. Callback triggers when dissolve + animation finish.
+                System.out.println("enemy should now be attacking "+Game.gui.gameScreen.northPanel.enemies.size());
                 enemy.attack(() -> {
                     currentEnemyIndex++;
                     try {

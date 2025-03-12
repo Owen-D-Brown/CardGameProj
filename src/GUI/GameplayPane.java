@@ -1,6 +1,7 @@
 package GUI;
 
 import Entities.Card;
+import Entities.Enemy;
 import Entities.Player;
 import MainPackage.Config;
 import MainPackage.Game;
@@ -248,49 +249,53 @@ public class GameplayPane extends JPanel {
     //This int is for tracking the card slot we are currently itterating through.
     public static int currentCardIndex = 0;
 
+
     //This method is triggered by the PLAY HAND BUTTON. This controls the flow of resolving the cards. When we get here, the game runs itself until the round starts again.
     //PlayHand Button triggers this method. This method calls CardSlot.resolve(). It does this for the first slot, then the second, and so on.
     public void resolveNextCard() throws IOException {
-        System.out.println("Resolving Card Slot");
-        //If we have resolved all the card slots.
         if (currentCardIndex >= GameplayPane.cardSlots.size()) {
-            Game.changeStateToEnemyTurn();
-            //Game.runEnemyTurn();
-            currentCardIndex = 0;
-            return; //No more cards to process
-        } else if(Game.gui.gameScreen.northPanel.enemies.isEmpty()){
-            System.out.println("all enemies are dead");
+           // Game.changeStateToEnemyTurn();
+           // currentCardIndex = 0;
             return;
         }
 
-        //Getting the slot we are currently working on.
+        if (Game.gui.gameScreen.northPanel.enemies.isEmpty()) {
+            System.out.println("All enemies are dead");
+            return;
+        }
+
         CardSlot slot = GameplayPane.cardSlots.get(currentCardIndex);
-
-        //Check if there is a card in the slot
         if (slot.slottedCard != null) {
-
-            //Resolve the slot, passing a callback function. This function will run when slot.resolve finishes.
-            //In this case, it increases the index and calls itself again. This allows it to iterate through each
-            //Slot sequentially. Callback triggers when dissolve + animation finish.
-            slot.resolve(() -> {
-                currentCardIndex++;
-                remove(slot.slottedCard);
-                slot.unslotCard();
+            Game.resolutionQueue.add(() -> {
                 try {
-                    resolveNextCard(); // Move to next card
+                    slot.resolve(() -> {
+                        currentCardIndex++;
+                        Game.gui.gameScreen.glassPane.removeCard(slot.slottedCard);
+                        slot.unslotCard();
+                        Game.resolutionQueue.add(() -> {
+                            try {
+                                resolveNextCard();
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        });  // Add next card resolution to queue
+                    });
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                Game.devTools.updateCounts();
+            });
+        } else {
+            currentCardIndex++;
+            Game.resolutionQueue.add(() -> {
+                try {
+                    resolveNextCard();
+                } catch (IOException e) {
+                    throw new RuntimeException(e); // Convert to unchecked exception
+                }
             });
         }
-
-        else //If the card slot doesn't have a card in it.
-        {
-            currentCardIndex++;
-            resolveNextCard(); // Skip empty slots
-        }
     }
+
 
     //Overriding the paint method
     @Override

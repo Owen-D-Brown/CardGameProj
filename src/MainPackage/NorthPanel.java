@@ -154,6 +154,23 @@ public class NorthPanel extends JPanel {
         }
     }
 
+    public void removeEnemy(Enemy e) {
+        if(enemies.size() > 0) {
+            if (enemies.contains(e)) {
+                this.remove(e);
+                enemies.remove(e);
+                //repositionEnemies();
+                revalidate();
+                repaint();
+            }
+        }
+    }
+
+    public void removeEnemyFromArray(Enemy e) {
+            int index = enemies.indexOf(e);
+            enemies.remove(e);
+    }
+
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);

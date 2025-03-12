@@ -85,13 +85,14 @@ public class RootContainer extends JFrame {
                 ArrayList<Enemy> entities = new ArrayList<>();
                 entities.add(new Goblin());
                 entities.add(new Orc());
-                entities.add(new Slime());
+
                 return new NorthPanel(entities);
             case 2:
                 ArrayList<Enemy> entities1 = new ArrayList<>();
                 Goblin goblin = new Goblin();
+                Orc orc = new Orc();
                 entities1.add(goblin);
-                entities1.add(new Goblin());
+                entities1.add(orc);
                 NorthPanel encounter = new NorthPanel(entities1);
                 //encounter.positionEnemy(goblin, 950, 150);
                 encounter.createSpawnZone(750, 175, 100, 100);

@@ -41,14 +41,20 @@ public class PlayHandBtn extends JComponent implements MouseListener {
         System.out.println("MOUSE CLICKED ON PLAY HAND - "+currentCardIndex);
         if (currentCardIndex == 0) { // Only start if it's not already running
             //Check to make sure there is at least one card played.
+            Game.resolutionQueue.clear();
+            for(CardSlot slot : GameplayPane.cardSlots) {
+                slot.addSlotResolutionToQueue();
+            }
             Game.changeStateToCardResolution();
+            /*
             try {
-                Game.gui.gameScreen.glassPane.resolveNextCard();
+               // Game.gui.gameScreen.glassPane.resolveNextCard();
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
-            }
+            }*/
         }
     }
+
 
 
 

@@ -11,13 +11,10 @@ public class Slime extends Enemy {
     private static final int Dissolve_dam  = 5;
 
     public Slime() throws IOException {
-        super(35, 9, 4, 1, 1, 50, 100);
+     //   super(35, 9, 4, 1, 1, 50, 100);
     }
 
-    @Override
-    public String getEnemyType() {
-        return "Slime";
-    }
+
 
     @Override
     public void takeDamage(int damage) {
@@ -46,7 +43,7 @@ public class Slime extends Enemy {
     }
 
     @Override
-    public void updateAttackState() {
+    public void updateEnemyStatus() {
 
     }
 
