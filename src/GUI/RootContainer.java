@@ -38,6 +38,7 @@ public class RootContainer extends JFrame {
 
         // Initialize screens
         gameScreen = new BattleGUI(game);
+        menuScreen = new MainMenuPanel(this);
         menuScreen = createMenuScreen();
         worldPanel = new gamePanel(); // Initialize shop system
         mapScreen = new MapGui();
@@ -53,7 +54,7 @@ public class RootContainer extends JFrame {
         setVisible(true);
     }
 
-    private JPanel createMenuScreen() {
+    public JPanel createMenuScreen() {
         JPanel menu = new JPanel();
         menu.setBackground(Color.BLACK);
         JButton startButton = new JButton("Start Game");
@@ -158,16 +159,3 @@ public class RootContainer extends JFrame {
                 if (mapPanel != null) {
                     glassPane.setBounds(mapPanel.getBounds());
                 }
-
-                glassPane.setVisible(true);
-                System.out.println("MapGlassPane activated and resized.");
-            } else {
-                System.err.println("Warning: Map data is null, cannot update GlassPane.");
-            }
-        } else {
-            // Hide the GlassPane when switching away from the map
-            getGlassPane().setVisible(false);
-            System.out.println("MapGlassPane deactivated.");
-        }
-    }
-}
