@@ -19,6 +19,7 @@ public class RootContainer extends JFrame {
     private JPanel currentScreen; // Tracks which panel is in the center
     public BattleGUI gameScreen;
     public JPanel menuScreen;
+    public MapGui mapScreen;
     private JPanel containerPanel; // The main container using BorderLayout
     public Game game;
     public gamePanel worldPanel; // Reference to the gamePanel (Shop System)
@@ -29,6 +30,8 @@ public class RootContainer extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
+        this.game = game; // Store game reference
+
         // Panel that holds the swappable screens
         containerPanel = new JPanel(new BorderLayout());
         add(containerPanel, BorderLayout.CENTER);
@@ -37,6 +40,12 @@ public class RootContainer extends JFrame {
         gameScreen = new BattleGUI(game);
         menuScreen = createMenuScreen();
         worldPanel = new gamePanel(); // Initialize shop system
+        mapScreen = new MapGui();
+
+        // Add and configure GlassPane
+        MapGameplayPane glassPane = new MapGameplayPane(this);
+        setGlassPane(glassPane);
+        glassPane.setVisible(true); // Ensure it's visible
 
         // Start on the menu
         showScreen(menuScreen);
@@ -88,6 +97,10 @@ public class RootContainer extends JFrame {
         });
         menu.add(worldButton);
 
+
+        JButton mapTestButton = new JButton("Map01 Test");//added button to test map function on launch
+        mapTestButton.addActionListener(e -> showScreen(mapScreen));
+        menu.add(mapTestButton);
         return menu;
     }
 
@@ -118,12 +131,43 @@ public class RootContainer extends JFrame {
     }
 
     public void showScreen(JPanel newScreen) {
+        if (newScreen == null) {
+            System.err.println("Error: Attempted to show a null screen!");
+            return;
+        }
+
         if (currentScreen != null) {
             containerPanel.remove(currentScreen);
         }
+
         currentScreen = newScreen;
         containerPanel.add(newScreen, BorderLayout.CENTER);
         containerPanel.revalidate();
         containerPanel.repaint();
+
+        // If switching to the map screen, activate and resize the GlassPane
+        if (newScreen instanceof MapGui) {
+            MapGui mapGui = (MapGui) newScreen;
+            MapGameplayPane glassPane = (MapGameplayPane) getGlassPane();
+
+            if (mapGui.getMapData() != null) {
+                glassPane.setMapData(mapGui.getMapData());
+
+                // Set the glass pane size to match the MapPanel inside MapGui
+                Component mapPanel = mapGui.getMapPanel();
+                if (mapPanel != null) {
+                    glassPane.setBounds(mapPanel.getBounds());
+                }
+
+                glassPane.setVisible(true);
+                System.out.println("MapGlassPane activated and resized.");
+            } else {
+                System.err.println("Warning: Map data is null, cannot update GlassPane.");
+            }
+        } else {
+            // Hide the GlassPane when switching away from the map
+            getGlassPane().setVisible(false);
+            System.out.println("MapGlassPane deactivated.");
+        }
     }
 }

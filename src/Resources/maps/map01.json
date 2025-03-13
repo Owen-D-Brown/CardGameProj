@@ -1,0 +1,37 @@
+{
+  "mapID": "map01",
+  "nodes": [
+    {
+      "id": 1,
+      "type": "combat",
+      "x": 600,
+      "y": 850,
+      "connections": [2],
+      "combatID": 1
+    },
+    {
+      "id": 2,
+      "type": "combat",
+      "x": 600,
+      "y": 650,
+      "connections": [3],
+      "combatID": 2
+    },
+    {
+      "id": 3,
+      "type": "combat",
+      "x": 600,
+      "y": 450,
+      "connections": [4],
+      "combatID": 1
+    },
+    {
+      "id": 4,
+      "type": "boss",
+      "x": 600,
+      "y": 250,
+      "connections": [],
+      "combatID": 1
+    }
+  ]
+}
