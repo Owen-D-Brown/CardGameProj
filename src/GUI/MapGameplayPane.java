@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +41,11 @@ public class MapGameplayPane extends JPanel {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                handleNodeClick(e.getPoint());
+                try {
+                    handleNodeClick(e.getPoint());
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
         // Mouse motion listener to detect hover events
@@ -72,7 +77,7 @@ public class MapGameplayPane extends JPanel {
     /**
      * Handles clicks on nodes and starts combat if clicked.
      */
-    private void handleNodeClick(Point clickPoint) {
+    private void handleNodeClick(Point clickPoint) throws IOException {
         if (mapData == null || mapData.getNodes() == null) return;
 
         for (MapNode node : mapData.getNodes()) {
@@ -85,6 +90,7 @@ public class MapGameplayPane extends JPanel {
 
                 // Start combat
                 rootContainer.gameScreen.newFight(rootContainer.startFight(node.getCombatID()));
+                System.out.println(node.getCombatID());
 
                 // Ensure the gameplay pane for combat UI is visible
                 Game.gui.gameScreen.glassPane.setVisible(true);
