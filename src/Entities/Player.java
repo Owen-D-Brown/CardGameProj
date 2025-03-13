@@ -38,20 +38,11 @@ public class Player extends JComponent {
     public Player() throws IOException {
         setSize(new Dimension(130, 200));
         //setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        for(int i = 0; i<1; i++) {
-           // cards.add(new Firebolt());
-            //cards.add(new IceBurst());
-            //cards.add(new Bandage());
-            cards.add(new Insanity_Card());
-            cards.add(new LastEmbrace_Card());
-            cards.add(new Potion_Card());
-            cards.add(new Satyr_MCard());
-            cards.add(new Vampire_MCard());
+        for(int i = 0; i<3; i++) {
+            cards.add(new Firebolt());
+            cards.add(new IceBurst());
+          //  cards.add(new Bandage());
         }
-        cards.add(new Firebolt());
-        cards.add(new Firebolt());
-        cards.add(new Firebolt());
-        cards.add(new IceBurst());
         animations.add(importSprites("/Resources/EvilWizard/idleMap.png", 10, 1, 37, 53));
     }
 

@@ -8,7 +8,6 @@ public class Orc extends Enemy {
 
     public Orc() throws IOException {
         super("Orc", 30, 10, 5, 2, 1, 83, 73, 63, 63, 5,1, 7,1, 4,1, 4,1, new GoblinAttackAnimation()); // (HP, Attack, Defense, Agility, Speed)
-        this.attackSpeed = 4;
     }
 
 
