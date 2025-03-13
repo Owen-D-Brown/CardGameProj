@@ -4,6 +4,7 @@ import MainPackage.Config;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 
 public class MainMenuPanel extends JPanel {
 
@@ -37,7 +38,11 @@ public class MainMenuPanel extends JPanel {
         startGame.setPreferredSize(buttonSize);
         startGame.setMaximumSize(buttonSize);
         startGame.addActionListener(e -> {
-            root.gameScreen.newFight(root.startFight(1)); // Start first fight
+            try {
+                root.gameScreen.newFight(root.startFight(1)); // Start first fight
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
             root.gameScreen.glassPane.setVisible(true);
             root.gameScreen.cardLayout.show(root.gameScreen.centerContainer, "main");
             root.game.unslotAllCards();
