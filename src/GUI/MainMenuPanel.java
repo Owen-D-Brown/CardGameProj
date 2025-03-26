@@ -1,15 +1,23 @@
 package GUI;
 
+
 import MainPackage.Config;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class MainMenuPanel extends JPanel {
-
+    private static final String IMAGE_PATH = "/Resources/MenuImages/Mainmenu.png";
+    protected BufferedImage image;
     public MainMenuPanel(RootContainer root) {
+        //load background image
+        this.image = loadImage(IMAGE_PATH);
         setPreferredSize(new Dimension(Config.frameSize.width+100, 1000)); //set size
-        setBackground(Color.darkGray);//background color for now
+
 
         //layout setup border style
         setLayout(new BorderLayout());
@@ -65,5 +73,31 @@ public class MainMenuPanel extends JPanel {
         //add the center panel to the center of the BorderLayout
         add(centerPanel, BorderLayout.CENTER);
 
+
+    }
+
+    // Image loader similar to player class and card class one
+    public static BufferedImage loadImage(String path) {
+        try (InputStream is = MainMenuPanel.class.getResourceAsStream(path)) {
+            if (is == null) {
+                System.err.println("Error: Image not found at " + path);
+                return null;
+            }
+            System.out.println("image in load: "+is);
+            return ImageIO.read(is);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (image != null) {//check if image is available, draw it if so or use placeholder
+            g.drawImage(image, 0, 0, getWidth(), getHeight(), this);//draw background image
+        } else {//set placeholder colour for menu to dark gray if image wont load
+            g.setColor(Color.DARK_GRAY);
+            g.fillRect(0, 0, getWidth(), getHeight()); // grey background if image is missing
+        }
     }
 }
