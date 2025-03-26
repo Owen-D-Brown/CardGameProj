@@ -1,4 +1,4 @@
-package MainPackage;
+package CombatMap;
 
 import java.util.List;
 import java.util.Random;

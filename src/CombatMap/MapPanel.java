@@ -1,6 +1,4 @@
-package GUI;
-
-import MainPackage.MapData;
+package CombatMap;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,7 +1,6 @@
-package GUI;
+package CombatMap;
 
-import MainPackage.MapNode;
-import MainPackage.MapData;
+import GUI.RootContainer;
 import MainPackage.Game;
 
 import javax.swing.*;
@@ -10,7 +9,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.awt.event.MouseMotionAdapter;
 

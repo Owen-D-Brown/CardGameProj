@@ -10,6 +10,8 @@ import javax.swing.SwingUtilities;
 import MAP.GameStorePanel;
 import MAP.KeyH;
 import MAP.gamePanel;
+import Tiles.TileManager;
+import MainPackage.Game;
 
 public class Mplayer extends Mentity {
     gamePanel gp;
@@ -51,7 +53,7 @@ public class Mplayer extends Mentity {
 
         // this stops player movement when the Merchant it opened
         //issues with the player continuing  to walk after opening shop
-        if (gamePanel.gameState == gamePanel.S_SHOP) {
+        if (gamePanel.gameState == gamePanel.S_SHOP || gamePanel.gameState == gamePanel.S_COMBAT_MAP) {
             return;
         }
         // ifX and Y positions and using them to check for blocked co-ords
@@ -87,6 +89,18 @@ public class Mplayer extends Mentity {
             System.out.println("E Key Pressed: " + kh.Ep);
 
         }
+
+        if (kh.Ep && isOnCombatMapTile()) {
+            kh.Ep = false;
+            gamePanel.gameState = gamePanel.S_COMBAT_MAP;
+            System.out.println("Combat tile triggered! Loading map01.json...");
+
+            SwingUtilities.invokeLater(() -> {
+                Game.gui.showScreen(Game.gui.mapScreen);
+            });
+        }
+
+
         // is movement allowed here if not blocked update player pos
         if (!isBlocked(ifX, ifY)) {
             x = ifX;
@@ -152,6 +166,11 @@ public class Mplayer extends Mentity {
         return gp.tileManager.mapData[tileRow][tileCol] == 3; //checks the tile type and returns true
     }
 
+    private boolean isOnCombatMapTile() {
+        int tileRow = y / gp.tileSize;
+        int tileCol = x / gp.tileSize;
+        return gp.tileManager.mapData[tileRow][tileCol] == 10;
+    }
 
 
     public void draw(Graphics2D g2) {

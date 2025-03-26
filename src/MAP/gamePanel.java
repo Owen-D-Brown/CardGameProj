@@ -9,6 +9,7 @@ public class gamePanel extends JPanel implements Runnable {
 
     public static final int S_PLAY = 0; //default gamplay here no shop/merchant interaction
     public static final int S_SHOP = 1; // trying to get the player to stop moving when interacting with the merchant/shop
+    public static final int S_COMBAT_MAP = 2; // new state for combat map
     public static int gameState = S_PLAY; //default state/play state
 
 
