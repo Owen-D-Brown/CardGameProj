@@ -7,11 +7,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.awt.event.MouseMotionAdapter;
-
+import java.util.List;
 
 /**
  * A Gameplay Pane overlay for drawing map nodes and their connections.
@@ -46,6 +47,7 @@ public class MapGameplayPane extends JPanel {
                 }
             }
         });
+
         // Mouse motion listener to detect hover events
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
@@ -78,7 +80,11 @@ public class MapGameplayPane extends JPanel {
     private void handleNodeClick(Point clickPoint) throws IOException {
         if (mapData == null || mapData.getNodes() == null) return;
 
-        for (MapNode node : mapData.getNodes()) {
+        List<MapNode> availableNodes = mapData.getAvailableNodes();
+
+        for (MapNode node : availableNodes) {
+            if (node.isDefeated()) continue;
+
             int iconX = node.getX() - (iconSize / 2);
             int iconY = node.y - (iconSize / 2);
             Rectangle bounds = new Rectangle(iconX, iconY, iconSize, iconSize);
@@ -101,35 +107,32 @@ public class MapGameplayPane extends JPanel {
                 // Switch to combat screen
                 rootContainer.showScreen(rootContainer.gameScreen);
 
-                // ✅ Mark node as defeated (NEW CHANGE)
+                // Mark node as defeated
                 node.setDefeated(true);
 
-                // ✅ Repaint so icon updates when returning to the map
-                repaint();
+                repaint(); // Refresh node appearance
 
-                // Hide the Gameplay Pane since the map is no longer needed
-                setVisible(false);
+                setVisible(false); // Hide map pane
                 return;
             }
         }
     }
 
     private void updateHoveredNode(Point mousePosition) {
-        MapNode previousHovered = hoveredNode; // Store the last hovered node
-        hoveredNode = null; // Reset hover state
+        MapNode previousHovered = hoveredNode;
+        hoveredNode = null;
 
-        for (MapNode node : mapData.getNodes()) {
+        for (MapNode node : mapData.getAvailableNodes()) {
             int iconX = node.getX() - (iconSize / 2);
             int iconY = node.y - (iconSize / 2);
             Rectangle bounds = new Rectangle(iconX, iconY, iconSize, iconSize);
 
             if (bounds.contains(mousePosition)) {
-                hoveredNode = node; // Set hovered node
-                break; // Stop checking further once we find the hovered node
+                hoveredNode = node;
+                break;
             }
         }
 
-        // Only repaint if the hovered node has changed
         if (hoveredNode != previousHovered) {
             repaint();
         }
@@ -144,30 +147,69 @@ public class MapGameplayPane extends JPanel {
         if (mapData == null || mapData.getNodes() == null) return;
 
         Graphics2D g2d = (Graphics2D) g;
-        g2d.setStroke(new BasicStroke(3)); // Set line thickness
 
-        // Draw connections FIRST (so nodes are drawn on top)
-        g2d.setColor(Color.LIGHT_GRAY);
+        // Dashed line styling
+        float[] dashPattern = {10, 10};
+        g2d.setStroke(new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, dashPattern, 0));
+        g2d.setColor(Color.BLACK);
+
+        // Draw connections from defeated nodes
         for (MapNode node : mapData.getNodes()) {
+            if (!node.isDefeated()) continue;
+
             for (int connectedId : node.connections) {
                 MapNode connectedNode = mapData.getNodeById(connectedId);
-                if (connectedNode != null) {
-                    g2d.drawLine(node.getX(), node.y, connectedNode.getX(), connectedNode.y);
-                }
+                if (connectedNode == null) continue;
+
+                g2d.drawLine(node.getX(), node.y, connectedNode.getX(), connectedNode.y);
             }
         }
 
-        // Draw node icons
+        // Draw nodes (with grayscale for unavailable)
         for (MapNode node : mapData.getNodes()) {
-            // Choose the correct icon (defeated or normal)
-            Image icon = node.isDefeated() ? nodeIcons.get("defeated") : nodeIcons.getOrDefault(node.type, nodeIcons.get("default"));
+            Image icon;
 
-            // Increase size if the node is being hovered
-            int drawSize = (node == hoveredNode) ? (int) (iconSize * 1.25) : iconSize; // Grow 25% if hovered
+            if (node.isDefeated()) {
+                icon = nodeIcons.get("defeated");
+            } else if (mapData.getAvailableNodes().contains(node)) {
+                icon = nodeIcons.getOrDefault(node.type, nodeIcons.get("default"));
+            } else {
+                // Unavailable nodes → grayscale
+                icon = toGrayscale(nodeIcons.getOrDefault(node.type, nodeIcons.get("default")));
+            }
 
+            int drawSize = (node == hoveredNode) ? (int) (iconSize * 1.25) : iconSize;
             int iconX = node.getX() - (drawSize / 2);
             int iconY = node.y - (drawSize / 2);
+
             g2d.drawImage(icon, iconX, iconY, drawSize, drawSize, this);
         }
+    }
+
+    private Image toGrayscale(Image originalImage) {
+        if (originalImage == null) return null;
+
+        BufferedImage colored = new BufferedImage(
+                originalImage.getWidth(null),
+                originalImage.getHeight(null),
+                BufferedImage.TYPE_INT_ARGB
+        );
+
+        Graphics2D g2 = colored.createGraphics();
+        g2.drawImage(originalImage, 0, 0, null);
+        g2.dispose();
+
+        // Convert to grayscale
+        for (int y = 0; y < colored.getHeight(); y++) {
+            for (int x = 0; x < colored.getWidth(); x++) {
+                int rgba = colored.getRGB(x, y);
+                Color col = new Color(rgba, true);
+                int gray = (int) (0.3 * col.getRed() + 0.59 * col.getGreen() + 0.11 * col.getBlue());
+                Color grayColor = new Color(gray, gray, gray, col.getAlpha());
+                colored.setRGB(x, y, grayColor.getRGB());
+            }
+        }
+
+        return colored;
     }
 }

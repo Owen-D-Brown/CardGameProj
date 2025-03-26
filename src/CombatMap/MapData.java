@@ -1,5 +1,6 @@
 package CombatMap;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -80,5 +81,33 @@ public class MapData {
             }
             positionsRandomized = true; // Prevents further changes
         }
+    }
+
+    public List<MapNode> getAvailableNodes() {
+        List<MapNode> availableNodes = new ArrayList<>();
+
+        for (MapNode node : nodes) {
+            if (node.isDefeated()) {
+                // Unlock connected nodes
+                for (int connectedId : node.connections) {
+                    MapNode connectedNode = getNodeById(connectedId);
+                    if (connectedNode != null && !connectedNode.isDefeated() && !availableNodes.contains(connectedNode)) {
+                        availableNodes.add(connectedNode);
+                    }
+                }
+            }
+        }
+
+        // If no nodes are defeated, unlock the starting node(s)
+        if (availableNodes.isEmpty()) {
+            for (MapNode node : nodes) {
+                if (node.getId() == 4) { // Node 4 is the starting point
+                    availableNodes.add(node);
+                    break;
+                }
+            }
+        }
+
+        return availableNodes;
     }
 }
