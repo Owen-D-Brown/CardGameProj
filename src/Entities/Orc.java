@@ -7,7 +7,7 @@ public class Orc extends Enemy {
     private boolean isEnraged = false; // Tracks if the Orc has entered rage mode
 
     public Orc() throws IOException {
-        super("Orc", 30, 10, 5, 2, 1, 83, 73, 63, 63, 5,1, 7,1, 4,1, 4,1, new GoblinAttackAnimation()); // (HP, Attack, Defense, Agility, Speed)
+        super("Orc", 30, 10, 5, 2, 1, 83, 73, 63, 63, 5,1, 7,1, 4,1, 4,1, new GoblinAttackAnimation(), 10); // (HP, Attack, Defense, Agility, Speed, Weight)
     }
 
 

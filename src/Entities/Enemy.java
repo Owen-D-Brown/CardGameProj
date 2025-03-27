@@ -21,6 +21,8 @@ public abstract class Enemy extends JComponent {
     protected int agility;      //base agility
     protected int speed;        // base speed
 
+    protected int weight; // base difficulty
+
     //States to determine enemy animation
     protected enum State {IDLE, WALKING, ATTACKING, DYING};
     protected State state = State.IDLE;
@@ -80,7 +82,7 @@ public abstract class Enemy extends JComponent {
     protected int spriteWidth, spriteHeight;
 
     // main constructor with all of the stats and specific size dimensions
-    public Enemy(String name, int maxHealth, int attackPower, int defense, int agility, int speed, int w, int h, int sW, int sH, int idleColCount, int idleRolCount, int walkColCount, int walkRowCount, int attackColCount, int attackRowCount, int deathColCount, int deathRowCount, InPlaceAnimation attackAnimation) throws IOException {
+    public Enemy(String name, int maxHealth, int attackPower, int defense, int agility, int speed, int w, int h, int sW, int sH, int idleColCount, int idleRolCount, int walkColCount, int walkRowCount, int attackColCount, int attackRowCount, int deathColCount, int deathRowCount, InPlaceAnimation attackAnimation, int weight) throws IOException {
         currentX = 33333300;
         this.attackAnimation = attackAnimation;
         this.aniSpeed = 5;
@@ -94,6 +96,8 @@ public abstract class Enemy extends JComponent {
         this.defense = defense;
         this.agility = agility;
         this.speed = speed;
+
+        this.weight = weight;
 
         //Populating enemy animation data
         populateEnemyAnimationData(idleColCount, idleRolCount, walkColCount, walkRowCount, attackColCount, attackRowCount, deathColCount, deathRowCount);
@@ -410,5 +414,8 @@ public abstract class Enemy extends JComponent {
             System.out.println("--* "+getClass()+".generateLoot() FINISHED *--\n");
 
         return iterator.next();
+    }
+    public int getWeight() {
+        return weight;
     }
 }

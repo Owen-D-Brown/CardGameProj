@@ -1,9 +1,10 @@
 package GUI;
 
+import CombatMap.MapGameplayPane;
+import CombatMap.MapGui;
 import Entities.Enemy;
 import Entities.Goblin;
 import Entities.Orc;
-import Entities.Slime;
 import MainPackage.Config;
 import MainPackage.Game;
 import MainPackage.NorthPanel;
@@ -13,6 +14,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Random;
 
 public class RootContainer extends JFrame {
 
@@ -102,6 +105,23 @@ public class RootContainer extends JFrame {
         JButton mapTestButton = new JButton("Map01 Test");//added button to test map function on launch
         mapTestButton.addActionListener(e -> showScreen(mapScreen));
         menu.add(mapTestButton);
+
+
+        JButton randomFightButton = new JButton("Random Fight");
+        randomFightButton.addActionListener(e -> {
+            try {
+                gameScreen.newFight(startRandomFight(30, 0)); // Example: maxWeight = 10, minWeight = 0
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            Game.gui.gameScreen.glassPane.setVisible(true);
+            Game.gui.gameScreen.cardLayout.show(Game.gui.gameScreen.centerContainer, "main");
+            Game.unslotAllCards();
+            gameScreen.center.revalidate();
+            gameScreen.center.repaint();
+            showScreen(gameScreen);
+        });
+        menu.add(randomFightButton);
         return menu;
     }
 
@@ -170,5 +190,71 @@ public class RootContainer extends JFrame {
             getGlassPane().setVisible(false);
             System.out.println("MapGlassPane deactivated.");
         }
+    }
+
+    public NorthPanel startRandomFight(int maxWeight, int minWeight) throws IOException {
+        // ✅ Define available unique enemies
+        ArrayList<Enemy> availableEnemies = new ArrayList<>();
+        availableEnemies.add(new Goblin()); // Weight: 5
+        availableEnemies.add(new Orc());    // Weight: 10
+        // Add more enemy types as needed...
+
+        ArrayList<Enemy> selectedEnemies = new ArrayList<>();
+        HashSet<Class<?>> selectedEnemyTypes = new HashSet<>(); // Track selected enemy types
+        int remainingWeight = maxWeight;
+        Random random = new Random();
+
+        // ✅ Filter valid enemies based on minWeight & maxWeight
+        ArrayList<Enemy> validEnemies = new ArrayList<>();
+        for (Enemy e : availableEnemies) {
+            if (e.getWeight() >= minWeight && e.getWeight() <= maxWeight) {
+                validEnemies.add(e);
+            }
+        }
+
+        // ✅ Randomly select unique enemies while staying within weight & limit (3 enemies max)
+        while (!validEnemies.isEmpty() && selectedEnemies.size() < 3) {
+            Enemy chosenEnemy = validEnemies.get(random.nextInt(validEnemies.size()));
+
+            // ✅ Ensure the enemy type is unique in this battle
+            if (!selectedEnemyTypes.contains(chosenEnemy.getClass()) && remainingWeight - chosenEnemy.getWeight() >= 0) {
+                selectedEnemies.add(chosenEnemy);
+                selectedEnemyTypes.add(chosenEnemy.getClass()); // ✅ Store the type
+                remainingWeight -= chosenEnemy.getWeight();
+            }
+
+            // ✅ Stop if all unique enemy types have been used
+            if (selectedEnemyTypes.size() == validEnemies.size()) break;
+        }
+
+        // ✅ Debugging: Print selected enemies
+        System.out.println("Randomized Combat - Selected Unique Enemies:");
+        for (Enemy e : selectedEnemies) {
+            System.out.println(e.getClass().getSimpleName() + " - Weight: " + e.getWeight() + " | Instance: " + e);
+        }
+
+        // ✅ Create the combat panel
+        NorthPanel encounter = new NorthPanel(selectedEnemies);
+
+        // ✅ Define spawn positions for up to 3 enemies
+        int[][] spawnPositions = { {500, 175}, {650, 175}, {800, 175} };
+
+        for (int i = 0; i < selectedEnemies.size(); i++) {
+            Enemy enemy = selectedEnemies.get(i);
+            int x = spawnPositions[i][0];
+            int y = spawnPositions[i][1];
+
+            encounter.createSpawnZone(x, y, 100, 100);
+
+            // ✅ Explicitly assign the enemy's position
+            enemy.setBounds(x, y, 100, 100);
+
+            System.out.println("Enemy " + enemy.getClass().getSimpleName() + " placed at: " + x + ", " + y);
+        }
+
+        encounter.populateSpawnZones(); // ✅ Assign enemies to positions
+        encounter.initAniBounds(); // ✅ Ensure animations update correctly
+
+        return encounter;
     }
 }
