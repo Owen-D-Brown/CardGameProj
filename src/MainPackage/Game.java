@@ -1,8 +1,6 @@
 package MainPackage;
 
-import Entities.Enemy;
-import Entities.FloatingText;
-import Entities.Player;
+import Entities.*;
 import GUI.*;
 
 import java.io.IOException;
@@ -186,6 +184,17 @@ public class Game implements Runnable {
                             cardSlots.remove(0);
                         }
                     }
+                    /*
+                    //Updating animation
+                     for(Animation ani : AttackPlane.animations) {
+                         //ani.checkForUpdates();//STATE CONTROL
+                         ani.updateAni();//UPDATE MOVEMENT
+                         ani.revalidate();//READJUST POSITIONING
+                         ani.repaint();//REDRAW THE IMAGE
+                     }
+
+                    */
+
 
                     if (Game.resolutionQueue.isEmpty() && gameState == Config.GameState.CARD_RESOLUTION) {
                         // Change state to enemy turn once all cards have been resolved

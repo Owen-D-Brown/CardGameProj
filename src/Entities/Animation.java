@@ -69,18 +69,22 @@ public class Animation extends JComponent {
 
 
 
-
+    public enum State {WAITING, MOVING, IMPACT, FINISHED};
+    public State currentState = State.WAITING;
     public void startAnimation() {
       //  this.circleX = Game.gui.gameScreen.northPanel.playerX;
        // this.circleY = Game.gui.gameScreen.northPanel.playerY;
         //working here
         isMoving = true;
+        //state to moving
+        currentState = State.MOVING;
     }
 
     public void stopAnimation() {
     //    this.circleX = Game.gui.gameScreen.northPanel.playerX;
      //   this.circleY = Game.gui.gameScreen.northPanel.playerY;
         isMoving = false;
+        currentState = State.FINISHED;
     }
 
 

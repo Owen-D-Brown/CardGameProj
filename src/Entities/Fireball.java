@@ -8,8 +8,10 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public class Fireball extends XaxisAnimation {
-    private enum AnimationState { MOVING, IMPACT }
-    private AnimationState currentState = AnimationState.MOVING;
+
+
+    public enum State {WAITING, MOVING, IMPACT, FINISHED};
+    private State currentState = State.WAITING;
 
     BufferedImage[] impactSprites;
 
@@ -33,9 +35,9 @@ public class Fireball extends XaxisAnimation {
     public void paintComponent(Graphics g) {
         //super.paintComponent(g);
         if (isMoving) {
-            if (currentState == AnimationState.MOVING) {
+            if (currentState == State.MOVING) {
                 g.drawImage(sprites[aniIndex], (int) currentX, (int) currentY, 64 * 3, 32 * 3, null);
-            } else if (currentState == AnimationState.IMPACT) {
+            } else if (currentState == State.IMPACT) {
                 g.drawImage(impactSprites[aniIndex], targetX, targetY, 64 * 3, 32 * 3, null);
             }
         }
@@ -46,7 +48,7 @@ public class Fireball extends XaxisAnimation {
        // super.updateAni();
         if(isMoving) {
 
-            if (currentState == AnimationState.MOVING) {
+            if (currentState == State.MOVING) {
                 aniCounter++;
 
                 if (aniCounter >= aniSpeed) {
@@ -62,19 +64,19 @@ public class Fireball extends XaxisAnimation {
                 currentY += (targetY - currentY) * speed;
 
                 // Check if we reached the target
-                System.out.println("debuggng currentX: "+currentX+" | TargetX: "+targetX+"\n calculation: "+(Math.abs(currentX - targetX)  ));
+                //System.out.println("debuggng currentX: "+currentX+" | TargetX: "+targetX+"\n calculation: "+(Math.abs(currentX - targetX)  ));
                 if (Math.abs(currentX - targetX) < 120) {
                     currentX = targetX;
                     currentY = targetY;
 
                     // Switch to impact animation
-                    currentState = AnimationState.IMPACT;
+                    currentState = State.IMPACT;
 
                     // Change sprite sheet or reset animation index for impact
                     aniIndex = 0;
 
                 }
-            } else if (currentState == AnimationState.IMPACT) {
+            } else if (currentState == State.IMPACT) {
                 // Play impact animation frames
                 aniCounter++;
                 if (aniCounter >= explosionSpeed) {
@@ -92,5 +94,11 @@ public class Fireball extends XaxisAnimation {
         }
     }
     protected int explosionSpeed =15;
+
+    public void checkForUpdates() {
+        if(currentState == State.MOVING) {
+
+        }
+    }
 
 }

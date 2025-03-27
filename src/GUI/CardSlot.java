@@ -42,7 +42,7 @@ public class CardSlot extends Rectangle {
 
         //
         Game.gui.gameScreen.northPanel.initAniBounds();
-        System.out.println("testing here for player pos " + Game.gui.gameScreen.northPanel.playerY);
+        //System.out.println("testing here for player pos " + Game.gui.gameScreen.northPanel.playerY);
         slottedCard.initCardAniBounds();
 //align bounds here
         AttackPlane.addAniToQue(slottedCard.animation);
@@ -54,7 +54,8 @@ public class CardSlot extends Rectangle {
         slottedCard.disolve(() -> {
             // Play attack animation AFTER dissolve finishes
             Game.gui.gameScreen.northPanel.attackPlane.playAnimation(() -> {
-
+            //at this point, the animation is set to moving. Play animation starts teh animation timer, so no longer needed. Remove call to play animation, move logic to update animation
+                //for stopping it. ie. if State == finished -> stop animation, remove card.
 
                 // Only now move to the next card
                 if (onComplete != null) {
@@ -64,7 +65,7 @@ public class CardSlot extends Rectangle {
                     // Game.checkEnemyStatus(Game.gui.gameScreen.northPanel.enemies);
                     Game.gui.gameScreen.glassPane.removeCard(slottedCard);
 
-                    onComplete.run();
+                    onComplete.run();//unslots the card/moves to next one
                 }
             });
         });

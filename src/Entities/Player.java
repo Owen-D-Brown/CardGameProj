@@ -40,12 +40,13 @@ public class Player extends JComponent {
         //setBorder(BorderFactory.createLineBorder(Color.BLACK));
         for(int i = 0; i<3; i++) {
             cards.add(new Firebolt());
-            cards.add(new IceBurst());
+           // cards.add(new IceBurst());
           //  cards.add(new Bandage());
         }
         cards.add(new Satyr_MCard());
         cards.add(new Potion_Card());
         cards.add(new Insanity_Card());
+        cards.add(new IceBurst());
         animations.add(importSprites("/Resources/EvilWizard/idleMap.png", 10, 1, 37, 53));
     }
 
