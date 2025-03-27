@@ -17,6 +17,9 @@ public class Game implements Runnable {
 
     //Static entites for access by the entire application.
     public static Player player;//Player instance
+    public static int randomCombatMinWeight = 0;
+    public static int randomCombatMaxWeight = 10;
+    public static int randomCombatNodeClicks = 0; // Tracks how many combats started
 
     static {
         try {
@@ -248,6 +251,8 @@ public class Game implements Runnable {
                 resolveNextEnemy(); // Skip empty slots
             }
         }
+
+
     }
 /*
 TO DO:

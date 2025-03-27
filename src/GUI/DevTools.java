@@ -80,11 +80,24 @@ public class DevTools extends JFrame {
         add(addSlot);
         addSlot.setBounds(10,100,100,50);
 
-        //Complete Combat Button
+        // Complete Combat Button
         JButton completeCombat = new JButton("COMPLETE COMBAT");
         completeCombat.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                System.out.println("🟢 COMPLETE COMBAT button clicked!");
+
+                // ⬆ Scale randomized combat weights here
+                Game.randomCombatNodeClicks++;
+                Game.randomCombatMaxWeight += 10;
+                if (Game.randomCombatNodeClicks >= 2) {
+                    Game.randomCombatMinWeight += 10;
+                }
+
+                System.out.println("➡ New Combat Weight Range - Min: " + Game.randomCombatMinWeight +
+                        ", Max: " + Game.randomCombatMaxWeight);
+
+                // ✅ Call existing cleanup method
                 completeCombatAndReturnToMap();
             }
         });
@@ -101,6 +114,7 @@ public class DevTools extends JFrame {
         handCount.setBounds(400, 320, 200, 50);
         add(handCount);
         updateCounts();
+
     }
 
     public void updateCounts() {

@@ -90,33 +90,44 @@ public class MapGameplayPane extends JPanel {
             Rectangle bounds = new Rectangle(iconX, iconY, iconSize, iconSize);
 
             if (bounds.contains(clickPoint)) {
-                System.out.println("Node clicked: " + node.id + " - Starting Combat " + node.getCombatID());
+                System.out.println("Node clicked: " + node.id + " - CombatID: " + node.getCombatID());
 
-                // Start combat
-                rootContainer.gameScreen.newFight(rootContainer.startFight(node.getCombatID()));
+                if (node.getCombatID() == -1) {
+                    MainPackage.NorthPanel encounter = rootContainer.startRandomFight(Game.randomCombatMaxWeight, Game.randomCombatMinWeight);
+                    if (encounter == null) {
+                        System.err.println("⚠ Could not start randomized combat (encounter was null).");
+                        return;
+                    }
+                    rootContainer.gameScreen.newFight(encounter);
+                } else {
+                    rootContainer.gameScreen.newFight(
+                            rootContainer.startFight(node.getCombatID())
+                    );
+                }
 
-                // Ensure the gameplay pane for combat UI is visible
+                // 🔥 CRITICAL LINE - ensure GameScreen is displayed
+                rootContainer.showScreen(rootContainer.gameScreen);
+
+                // Show combat UI
                 Game.gui.gameScreen.glassPane.setVisible(true);
                 Game.gui.gameScreen.cardLayout.show(Game.gui.gameScreen.centerContainer, "main");
 
-                // Reset and refresh combat UI
                 Game.unslotAllCards();
                 rootContainer.gameScreen.center.revalidate();
                 rootContainer.gameScreen.center.repaint();
 
-                // Switch to combat screen
-                rootContainer.showScreen(rootContainer.gameScreen);
-
-                // Mark node as defeated
                 node.setDefeated(true);
-
-                repaint(); // Refresh node appearance
-
-                setVisible(false); // Hide map pane
+                repaint();
+                setVisible(false);
                 return;
             }
         }
     }
+
+
+
+
+
 
     private void updateHoveredNode(Point mousePosition) {
         MapNode previousHovered = hoveredNode;
