@@ -3,6 +3,7 @@ package Entities;
 import MainPackage.Game;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.Random;
 import java.awt.image.BufferedImage;
 
@@ -27,6 +28,12 @@ public class Vampire_MCard extends Card{
             Game.gui.gameScreen.northPanel.enemies.get(0).takeDamage(damage);
         }
     }
+
+    @Override
+    public void initCardAniBounds() throws IOException {
+
+    }
+
     //paint component for drawing the cards image
     @Override
     protected void paintComponent(Graphics g) {

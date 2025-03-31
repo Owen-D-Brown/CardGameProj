@@ -3,6 +3,7 @@ package Entities;
 import MainPackage.Game;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.Random;
 import java.awt.image.BufferedImage;
 
@@ -26,6 +27,12 @@ public class Potion_Card extends Card{
             System.out.println("Health is already full! Bandage has no effect.");
         }
     }
+
+    @Override
+    public void initCardAniBounds() throws IOException {
+
+    }
+
     //paint component for drawing the cards image
     @Override
     protected void paintComponent(Graphics g) {
