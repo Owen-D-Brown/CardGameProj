@@ -1,0 +1,40 @@
+[
+  {
+    "id": "fountain_event",
+    "imagePath": "src/Resources/RandomEvents/fountain.png",
+    "description": "You stumble upon a glowing fountain. The water pulses with strange energy.",
+    "choices": [
+      {
+        "label": "Drink from the fountain",
+        "outcomeText": "You feel your vitality surging. (+10 Max HP)",
+        "effectType": "increaseMaxHP",
+        "effectValue": 10
+      },
+      {
+        "label": "Reach into the water",
+        "outcomeText": "You find a handful of glittering gold! (+15 Gold)",
+        "effectType": "gainGold",
+        "effectValue": 15
+      }
+    ]
+  },
+  {
+    "id": "trapped_chest",
+    "imagePath": "src/Resources/RandomEvents/trapped_chest.png",
+    "description": "A suspicious chest lies in your path. Its lock gleams wickedly.",
+    "choices": [
+      {
+        "label": "Attempt to pick the lock (25%)",
+        "outcomeText": "Success! Inside lies a glittering pile of gold! (+100 Gold)",
+        "effectType": "gainGold",
+        "effectValue": 100
+      },
+      {
+        "label": "Leave the chest",
+        "outcomeText": "You decide not to risk it and move on.",
+        "effectType": "none",
+        "effectValue": 0
+      }
+    ]
+  }
+]

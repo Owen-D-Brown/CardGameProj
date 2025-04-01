@@ -2,6 +2,8 @@ package CombatMap;
 
 import GUI.RootContainer;
 import MainPackage.Game;
+import RandomEncounter.EncounterData;
+import RandomEncounter.EncounterManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,29 +16,23 @@ import java.util.Map;
 import java.awt.event.MouseMotionAdapter;
 import java.util.List;
 
-/**
- * A Gameplay Pane overlay for drawing map nodes and their connections.
- * Handles node interaction for starting combat.
- */
 public class MapGameplayPane extends JPanel {
-    private MapData mapData; // Stores all nodes
-    private RootContainer rootContainer; // Reference to RootContainer
-    private Map<String, Image> nodeIcons; // Stores icons for different node types
-    private final int iconSize = 60; // Updated icon size for better visibility
-    private MapNode hoveredNode = null; // Stores which node is currently being hovered
+    private MapData mapData;
+    private RootContainer rootContainer;
+    private Map<String, Image> nodeIcons;
+    private final int iconSize = 60;
+    private MapNode hoveredNode = null;
 
     public MapGameplayPane(RootContainer rootContainer) {
         setOpaque(false);
         this.rootContainer = rootContainer;
         this.nodeIcons = new HashMap<>();
 
-        // Load icons
         nodeIcons.put("combat", new ImageIcon("src/Resources/Icons/combat.png").getImage());
         nodeIcons.put("boss", new ImageIcon("src/Resources/Icons/boss.png").getImage());
-        nodeIcons.put("default", new ImageIcon("src/Resources/Icons/default.png").getImage()); // Fallback icon
-        nodeIcons.put("defeated", new ImageIcon("src/Resources/Icons/defeated.png").getImage()); // New defeated icon
+        nodeIcons.put("default", new ImageIcon("src/Resources/Icons/default.png").getImage());
+        nodeIcons.put("defeated", new ImageIcon("src/Resources/Icons/defeated.png").getImage());
 
-        // Mouse click listener to detect node clicks
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -48,7 +44,6 @@ public class MapGameplayPane extends JPanel {
             }
         });
 
-        // Mouse motion listener to detect hover events
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
@@ -57,16 +52,10 @@ public class MapGameplayPane extends JPanel {
         });
     }
 
-    /**
-     * Sets the map data and repaints.
-     */
     public void setMapData(MapData mapData) {
         this.mapData = mapData;
+        this.mapData.randomizeNodePositions(200);
 
-        // Randomize positions ONLY if it's the first time loading the map
-        this.mapData.randomizeNodePositions(200); // Adjust range as needed
-
-        // Resize Gameplay Pane to match the parent component
         if (getParent() != null) {
             setBounds(getParent().getBounds());
         }
@@ -74,9 +63,6 @@ public class MapGameplayPane extends JPanel {
         repaint();
     }
 
-    /**
-     * Handles clicks on nodes and starts combat if clicked.
-     */
     private void handleNodeClick(Point clickPoint) throws IOException {
         if (mapData == null || mapData.getNodes() == null) return;
 
@@ -90,7 +76,21 @@ public class MapGameplayPane extends JPanel {
             Rectangle bounds = new Rectangle(iconX, iconY, iconSize, iconSize);
 
             if (bounds.contains(clickPoint)) {
-                System.out.println("Node clicked: " + node.id + " - CombatID: " + node.getCombatID());
+                System.out.println("Node clicked: " + node.id + " - Type: " + node.type);
+
+                if ("encounter".equals(node.type)) {
+                    EncounterData encounter = EncounterManager.loadRandomEncounter();
+                    if (encounter != null) {
+                        Game.gui.encounterPanel.displayEncounter(encounter);
+                        Game.gui.showScreen(Game.gui.encounterPanel);
+                    } else {
+                        System.err.println("❌ No encounters loaded or something went wrong!");
+                    }
+                    node.setDefeated(true);
+                    repaint();
+                    setVisible(false);
+                    return;
+                }
 
                 if (node.getCombatID() == -1) {
                     MainPackage.NorthPanel encounter = rootContainer.startRandomFight(Game.randomCombatMaxWeight, Game.randomCombatMinWeight);
@@ -100,18 +100,12 @@ public class MapGameplayPane extends JPanel {
                     }
                     rootContainer.gameScreen.newFight(encounter);
                 } else {
-                    rootContainer.gameScreen.newFight(
-                            rootContainer.startFight(node.getCombatID())
-                    );
+                    rootContainer.gameScreen.newFight(rootContainer.startFight(node.getCombatID()));
                 }
 
-                // 🔥 CRITICAL LINE - ensure GameScreen is displayed
                 rootContainer.showScreen(rootContainer.gameScreen);
-
-                // Show combat UI
                 Game.gui.gameScreen.glassPane.setVisible(true);
                 Game.gui.gameScreen.cardLayout.show(Game.gui.gameScreen.centerContainer, "main");
-
                 Game.unslotAllCards();
                 rootContainer.gameScreen.center.revalidate();
                 rootContainer.gameScreen.center.repaint();
@@ -123,11 +117,6 @@ public class MapGameplayPane extends JPanel {
             }
         }
     }
-
-
-
-
-
 
     private void updateHoveredNode(Point mousePosition) {
         MapNode previousHovered = hoveredNode;
@@ -149,22 +138,16 @@ public class MapGameplayPane extends JPanel {
         }
     }
 
-    /**
-     * Paints connections between nodes and then the node icons themselves.
-     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         if (mapData == null || mapData.getNodes() == null) return;
 
         Graphics2D g2d = (Graphics2D) g;
-
-        // Dashed line styling
         float[] dashPattern = {10, 10};
         g2d.setStroke(new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, dashPattern, 0));
         g2d.setColor(Color.BLACK);
 
-        // Draw connections from defeated nodes
         for (MapNode node : mapData.getNodes()) {
             if (!node.isDefeated()) continue;
 
@@ -176,16 +159,19 @@ public class MapGameplayPane extends JPanel {
             }
         }
 
-        // Draw nodes (with grayscale for unavailable)
         for (MapNode node : mapData.getNodes()) {
-            Image icon;
+            if (node.type.equals("encounter") && !node.isDefeated()) {
+                g2d.setColor(Color.RED);
+                g2d.fillOval(node.getX() - (iconSize / 4), node.y - (iconSize / 4), iconSize / 2, iconSize / 2);
+                continue;
+            }
 
+            Image icon;
             if (node.isDefeated()) {
                 icon = nodeIcons.get("defeated");
             } else if (mapData.getAvailableNodes().contains(node)) {
                 icon = nodeIcons.getOrDefault(node.type, nodeIcons.get("default"));
             } else {
-                // Unavailable nodes → grayscale
                 icon = toGrayscale(nodeIcons.getOrDefault(node.type, nodeIcons.get("default")));
             }
 
@@ -210,7 +196,6 @@ public class MapGameplayPane extends JPanel {
         g2.drawImage(originalImage, 0, 0, null);
         g2.dispose();
 
-        // Convert to grayscale
         for (int y = 0; y < colored.getHeight(); y++) {
             for (int x = 0; x < colored.getWidth(); x++) {
                 int rgba = colored.getRGB(x, y);
@@ -224,3 +209,4 @@ public class MapGameplayPane extends JPanel {
         return colored;
     }
 }
+

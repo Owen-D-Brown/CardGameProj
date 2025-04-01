@@ -7,6 +7,7 @@ import MainPackage.Config;
 import MainPackage.Game;
 import MainPackage.NorthPanel;
 import MAP.gamePanel; // Import your game panel
+import RandomEncounter.EncounterPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,6 +28,7 @@ public class RootContainer extends JFrame {
     private JPanel containerPanel; // The main container using BorderLayout
     public Game game;
     public gamePanel worldPanel; // Reference to the gamePanel (Shop System)
+    public EncounterPanel encounterPanel;
 
     public RootContainer(Game game) {
         setTitle("Card Game");
@@ -46,6 +48,7 @@ public class RootContainer extends JFrame {
         //menuScreen = createMenuScreen();
         worldPanel = new gamePanel(); // Initialize shop system
         mapScreen = new MapGui();
+        encounterPanel = new EncounterPanel(); // NEW ENCOUNTER PANEL
 
         // Add and configure GlassPane
         MapGameplayPane glassPane = new MapGameplayPane(this);
