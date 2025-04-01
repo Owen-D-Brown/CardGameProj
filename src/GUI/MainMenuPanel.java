@@ -41,6 +41,7 @@ public class MainMenuPanel extends JPanel {
         devMenu.setMaximumSize(buttonSize);
         devMenu.addActionListener(e -> root.showScreen(root.createMenuScreen()));
 
+        //button to start game
         JButton startGame = new JButton("Start Game"); // New button to start first fight directly
         startGame.setPreferredSize(buttonSize);
         startGame.setMaximumSize(buttonSize);
@@ -76,7 +77,7 @@ public class MainMenuPanel extends JPanel {
 
     }
 
-    // Image loader similar to player class and card class one
+    // Image loader same logic as player class and card class one
     public static BufferedImage loadImage(String path) {
         try (InputStream is = MainMenuPanel.class.getResourceAsStream(path)) {
             if (is == null) {
