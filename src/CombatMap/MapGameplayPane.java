@@ -32,6 +32,9 @@ public class MapGameplayPane extends JPanel {
         nodeIcons.put("boss", new ImageIcon("src/Resources/Icons/boss.png").getImage());
         nodeIcons.put("default", new ImageIcon("src/Resources/Icons/default.png").getImage());
         nodeIcons.put("defeated", new ImageIcon("src/Resources/Icons/defeated.png").getImage());
+        nodeIcons.put("encounter", new ImageIcon("src/Resources/Icons/encounter.png").getImage());
+        nodeIcons.put("encounter_defeated", new ImageIcon("src/Resources/Icons/encounter_defeated.png").getImage());
+
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -78,17 +81,21 @@ public class MapGameplayPane extends JPanel {
             if (bounds.contains(clickPoint)) {
                 System.out.println("Node clicked: " + node.id + " - Type: " + node.type);
 
-                if ("encounter".equals(node.type)) {
+                if (node.type.equals("encounter")) {
+                    // Load random encounter
                     EncounterData encounter = EncounterManager.loadRandomEncounter();
                     if (encounter != null) {
+                        ImageIcon background = new ImageIcon("src/Resources//RandomEvents/encounterbg.png");
+                        Game.gui.encounterPanel.setBackgroundImage(background);
+
                         Game.gui.encounterPanel.displayEncounter(encounter);
                         Game.gui.showScreen(Game.gui.encounterPanel);
+                        node.setDefeated(true);
+                        repaint();
+                        setVisible(false);
                     } else {
-                        System.err.println("❌ No encounters loaded or something went wrong!");
+                        System.err.println("⚠ No valid encounter loaded.");
                     }
-                    node.setDefeated(true);
-                    repaint();
-                    setVisible(false);
                     return;
                 }
 
@@ -161,19 +168,30 @@ public class MapGameplayPane extends JPanel {
 
         for (MapNode node : mapData.getNodes()) {
             if (node.type.equals("encounter") && !node.isDefeated()) {
-                g2d.setColor(Color.RED);
-                g2d.fillOval(node.getX() - (iconSize / 4), node.y - (iconSize / 4), iconSize / 2, iconSize / 2);
+                Image encounterIcon = nodeIcons.get("encounter");
+                if (encounterIcon != null) {
+                    int drawSize = (node == hoveredNode) ? (int) (iconSize * 1.25) : iconSize;
+                    int iconX = node.getX() - (drawSize / 2);
+                    int iconY = node.y - (drawSize / 2);
+                    g2d.drawImage(encounterIcon, iconX, iconY, drawSize, drawSize, this);
+                }
                 continue;
             }
 
+
             Image icon;
             if (node.isDefeated()) {
-                icon = nodeIcons.get("defeated");
+                if ("encounter".equals(node.type)) {
+                    icon = nodeIcons.getOrDefault("encounter_defeated", nodeIcons.get("defeated"));
+                } else {
+                    icon = nodeIcons.get("defeated");
+                }
             } else if (mapData.getAvailableNodes().contains(node)) {
                 icon = nodeIcons.getOrDefault(node.type, nodeIcons.get("default"));
             } else {
                 icon = toGrayscale(nodeIcons.getOrDefault(node.type, nodeIcons.get("default")));
             }
+
 
             int drawSize = (node == hoveredNode) ? (int) (iconSize * 1.25) : iconSize;
             int iconX = node.getX() - (drawSize / 2);
