@@ -41,6 +41,13 @@ public class Player extends JComponent {
         for(int i = 0; i<3; i++) {
             cards.add(new Firebolt());
             cards.add(new IceBurst());
+            cards.add(new Vampire_MCard());
+            cards.add(new Satyr_MCard());
+            cards.add(new Potion_Card());
+            cards.add(new LastEmbrace_Card());
+
+
+            cards.add(new IceBurst());
           //  cards.add(new Bandage());
         }
         cards.add(new Satyr_MCard());
@@ -76,7 +83,7 @@ public class Player extends JComponent {
 
         // Draw animation instead of the hitbox
         drawAni(g, centeredX, centeredY);
-       // g.drawRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
+
         // Draw the health bar
         int barX = (getWidth() - healthBar.width) / 2;
         healthBar.setLocation(barX, 0);
@@ -93,11 +100,9 @@ public class Player extends JComponent {
 
 
     public void takeDamage(int damage) {
-        if(currentHealth > maxHealth) {
+        if(currentHealth > maxHealth)
             currentHealth = maxHealth;
 
-        }
-        FloatingText.createEffect("-" + damage, this, Color.RED);
         currentHealth = currentHealth - damage;
         if(currentHealth <= 0) {
             System.out.println("youre dead");
@@ -153,7 +158,7 @@ public class Player extends JComponent {
             aniIndex = 0;//Reset the index
     }
     public void drawAni(Graphics g, int x, int y) {
-       // animate();
+        animate();
         g.drawImage(animations.get(0)[aniIndex], 30, 22, 74, 106, null);
 
     }

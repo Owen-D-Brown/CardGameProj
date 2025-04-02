@@ -64,6 +64,7 @@ public class RootContainer extends JFrame {
     public JPanel createMenuScreen() {
         JPanel menu = new JPanel();
         menu.setBackground(Color.BLACK);
+
         JButton startButton = new JButton("Start Game");
         startButton.addActionListener(e -> {
             try {
@@ -77,9 +78,9 @@ public class RootContainer extends JFrame {
             gameScreen.center.revalidate();
             gameScreen.center.repaint();
             showScreen(gameScreen);
-
         });
         menu.add(startButton);
+
         JButton encounter1 = new JButton("Encounter 1");
         encounter1.addActionListener(e -> {
             try {
@@ -129,14 +130,13 @@ public class RootContainer extends JFrame {
         return menu;
     }
 
-
     public NorthPanel startFight(int num) throws IOException {
-        switch(num) {
+        switch (num) {
             case 1:
                 ArrayList<Enemy> entities = new ArrayList<>();
                 entities.add(new Goblin());
                 entities.add(new Orc());
-
+                entities.add(new Slime());
                 return new NorthPanel(entities);
             case 2:
                 ArrayList<Enemy> entities1 = new ArrayList<>();
