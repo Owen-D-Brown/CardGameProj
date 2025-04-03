@@ -48,7 +48,7 @@ public class Mplayer extends Mentity {
     }
 
     //logic and collision checking
-    public void update() {
+    public void update() throws IOException {
 
         // this stops player movement when the Merchant it opened
         //issues with the player continuing  to walk after opening shop

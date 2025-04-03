@@ -27,7 +27,7 @@ public class Player extends JComponent {
         return trinkets;
     }
 
-    protected int gold = 0;
+    protected int gold = 400;
     public int maxHealth = 100;
     public int currentHealth = 100;
 
@@ -41,11 +41,12 @@ public class Player extends JComponent {
         for(int i = 0; i<3; i++) {
             cards.add(new Firebolt());
             cards.add(new IceBurst());
-            cards.add(new Vampire_MCard());
-            cards.add(new Satyr_MCard());
-            cards.add(new Potion_Card());
-            cards.add(new LastEmbrace_Card());
-
+            cards.add(new LightningBolt());
+            cards.add(new Bow_Card());
+            cards.add(new Hellfire());
+            cards.add(new Sword());
+            cards.add(new MagicHand());
+            cards.add(new Punch());
 
         }
         animations.add(importSprites("/Resources/EvilWizard/idleMap.png", 10, 1, 37, 53));
