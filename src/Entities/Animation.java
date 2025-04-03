@@ -8,12 +8,13 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 
 public class Animation extends JComponent {
 
 
     public boolean isMoving = false;
-
+    public Runnable onComplete;
     protected int x, y;
     protected int FPS = 20;
     public BufferedImage[] sprites;
@@ -32,19 +33,43 @@ public class Animation extends JComponent {
 
     }
 
-    public void calculateInterval() {
-        this.interval = (aniSpeed * 1000) / 60;
-    }
+    public void checkForUpdates(Iterator<Animation> i) throws IOException {
 
 
-    public void calculateDuration() {
-        if (sprites == null || sprites.length == 0) {
-            this.duration = 0;
-        } else {
-            this.duration = (aniSpeed * sprites.length * 1000) / 60;
-            System.out.println("Duration: " + duration);
+        if(isMoving && currentState == State.WAITING) {
+            currentState = State.MOVING;
+        }
+
+        if(currentState == State.MOVING) {
+
+        }
+
+        if(currentState ==State.IMPACT) {
+
+            isMoving = false;
+
+
+            if(!isMoving) {
+
+                currentState = State.FINISHED;
+                if(card!=null) {
+                    card.effect();
+                    Game.gui.gameScreen.glassPane.removeCard(card);
+
+
+                } else if (card == null) {
+
+
+                }
+                //AttackPlane.animations.remove(this);
+                i.remove();
+                onComplete.run();
+            }
         }
     }
+
+
+
 
     protected BufferedImage[] importSprites(String pathName, int cols, int rows, int spriteWidth, int spriteHeight) throws IOException {
         BufferedImage image = loadImage(pathName);
@@ -84,25 +109,28 @@ public class Animation extends JComponent {
     //    this.circleX = Game.gui.gameScreen.northPanel.playerX;
      //   this.circleY = Game.gui.gameScreen.northPanel.playerY;
         isMoving = false;
+
         currentState = State.FINISHED;
     }
 
 
 
-
+    public Card card;
 
     public void updateAni() {
-
+          //System.out.println("THIS IS FOR CARD ANINMATIONS - for ani in AttackPlane.animations "+currentState+" aniIndex: "+aniIndex+" aniCounter: "+aniCounter);
         if (isMoving) {
             aniCounter++;
 
             if (aniCounter >= aniSpeed) {
                 aniCounter = 0;
                 aniIndex++;
-
+                System.out.println(sprites.length+"  "+aniIndex);
                 if (sprites.length > 0 && aniIndex >= sprites.length) {
+
                     aniIndex = 0;
                     isMoving = false;
+                    currentState = State.IMPACT;
                 }
             }
         }

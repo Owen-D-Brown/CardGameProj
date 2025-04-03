@@ -6,8 +6,10 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Iterator;
 
 public class Fireball extends XaxisAnimation {
+
 
 
     public enum State {WAITING, MOVING, IMPACT, FINISHED};
@@ -37,8 +39,6 @@ public class Fireball extends XaxisAnimation {
         if (isMoving) {
             if (currentState == State.MOVING) {
                 g.drawImage(sprites[aniIndex], (int) currentX, (int) currentY, 64 * 3, 32 * 3, null);
-            } else if (currentState == State.IMPACT) {
-                g.drawImage(impactSprites[aniIndex], targetX, targetY, 64 * 3, 32 * 3, null);
             }
         }
     }
@@ -46,6 +46,9 @@ public class Fireball extends XaxisAnimation {
     @Override
     public void updateAni() {
        // super.updateAni();
+        System.out.println("Animation instance: " + System.identityHashCode(this));
+
+        System.out.println("STARTING UPDATEANI currentState "+currentState);
         if(isMoving) {
 
             if (currentState == State.MOVING) {
@@ -59,13 +62,14 @@ public class Fireball extends XaxisAnimation {
                         aniIndex = 0;
                     }
                 }
-                double speed = 0.025;
+                double speed = 0.035;
                 currentX += (targetX - currentX) * speed;
                 currentY += (targetY - currentY) * speed;
 
                 // Check if we reached the target
                 //System.out.println("debuggng currentX: "+currentX+" | TargetX: "+targetX+"\n calculation: "+(Math.abs(currentX - targetX)  ));
                 if (Math.abs(currentX - targetX) < 120) {
+                    System.out.println("reached its target");
                     currentX = targetX;
                     currentY = targetY;
 
@@ -76,28 +80,41 @@ public class Fireball extends XaxisAnimation {
                     aniIndex = 0;
 
                 }
-            } else if (currentState == State.IMPACT) {
-                // Play impact animation frames
-                aniCounter++;
-                if (aniCounter >= explosionSpeed) {
-                    aniCounter = 0;
-                    aniIndex++;
-                    System.out.println("ani index: "+aniIndex);
-                    // If impact animation finishes, stop animation
-                    if (aniIndex >= impactSprites.length-1) {
-                        isMoving = false;  // End animation completely
 
-                       // this.currentState = AnimationState.MOVING;
-                    }
-                }
             }
         }
+        System.out.println("CURRENT STATE AT END OF UPDATE ANI "+currentState);
     }
     protected int explosionSpeed =15;
 
-    public void checkForUpdates() {
+    @Override
+    public void checkForUpdates(Iterator<Animation> i) throws IOException {
+        System.out.println("checkForUpdates "+currentState+"    "+isMoving);
+        if(isMoving && currentState == State.WAITING) {
+            currentState = State.MOVING;
+        }
+
         if(currentState == State.MOVING) {
 
+        }
+
+        if(currentState == State.IMPACT) {
+
+            isMoving = false;
+
+
+            if(!isMoving) {
+
+                currentState = State.FINISHED;
+                i.remove();
+                if(card!=null) {
+                    card.effect();
+                    Game.gui.gameScreen.glassPane.removeCard(card);
+
+                }
+
+                onComplete.run();
+            }
         }
     }
 

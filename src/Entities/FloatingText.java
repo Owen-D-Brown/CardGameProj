@@ -50,7 +50,7 @@ public class FloatingText {
 
                 if (instance.duration <= 0) {
                     //instances.remove(instance); // Remove effect when finished
-                    System.out.println("VISUALS HAVE COMPLETED -------");
+                    //System.out.println("VISUALS HAVE COMPLETED -------");
 
                 }
             }

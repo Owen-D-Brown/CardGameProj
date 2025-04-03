@@ -19,9 +19,6 @@ public class CenterPanel extends JPanel {
         setPreferredSize(new Dimension(100, (int) (Config.frameSize.height * 0.3)));
     }
 
-    public static int rectWidth;
-    public static int rectHeight;
-    public static Rectangle rect;
     private BufferedImage background = loadImage("/Resources/MiddleDone.png");
 
     public static BufferedImage loadImage(String path) {
@@ -52,8 +49,7 @@ public class CenterPanel extends JPanel {
             //System.out.println("size of slot array "+GameplayPane.cardSlots.size());
         }
     }
-    public int panelWidth = getWidth();
-    public int panelHeight = getHeight();
+
 }
 //TODO:
 /*

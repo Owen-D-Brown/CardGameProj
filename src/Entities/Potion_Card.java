@@ -17,6 +17,11 @@ public class Potion_Card extends Card{
     }
 
     @Override
+    public void resetAnimation() throws IOException {
+
+    }
+
+    @Override
     public void effect() {
 
         if (Game.player.currentHealth < Game.player.maxHealth) { //if players current health is less than max (100)
@@ -29,10 +34,14 @@ public class Potion_Card extends Card{
     }
 
     @Override
-    public void initCardAniBounds() throws IOException {
-
+    public void initCardAniBounds(Player player, Enemy enemy) throws IOException {
+        ((IceBlast) animation).initAnimation(player, enemy);
     }
 
+    @Override
+    public void initCardAniBounds(Enemy enemy, Player player) throws IOException {
+        ((IceBlast) animation).initAnimation(enemy, player);
+    }
     //paint component for drawing the cards image
     @Override
     protected void paintComponent(Graphics g) {

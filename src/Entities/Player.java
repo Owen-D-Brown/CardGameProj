@@ -1,6 +1,7 @@
 package Entities;
 
 import GUI.GameplayPane;
+import MainPackage.Config;
 import MainPackage.Game;
 
 import javax.imageio.ImageIO;
@@ -26,18 +27,20 @@ public class Player extends JComponent {
     public ArrayList<Map.Entry> getTrinkets() {
         return trinkets;
     }
+    public enum State {IDLE, WALKING, ATTACKING, DYING}
 
     protected int gold = 0;
     public int maxHealth = 100;
     public int currentHealth = 100;
 
-    private Rectangle hitbox = new Rectangle(10, 0, 24, 99);
+    private Rectangle hitbox = new Rectangle(25, 50, 50, 70);
     private Rectangle healthBar = new Rectangle(0, 0, 75, 10);
     private ArrayList<BufferedImage[]> animations = new ArrayList<>();
 
     public Player() throws IOException {
-        setSize(new Dimension(130, 200));
-        //setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        setSize(new Dimension(128, 128));
+        if(Config.hitboxesOn)
+            //setBorder(BorderFactory.createLineBorder(Color.white));
         for(int i = 0; i<3; i++) {
             cards.add(new Firebolt());
            // cards.add(new IceBurst());
@@ -47,7 +50,9 @@ public class Player extends JComponent {
         cards.add(new Potion_Card());
         cards.add(new Insanity_Card());
         cards.add(new IceBurst());
-        animations.add(importSprites("/Resources/EvilWizard/idleMap.png", 10, 1, 37, 53));
+        animations.add(importSprites("/Resources/FireWizard/FireWizardIdleMap.png", 7, 1, 128, 128));
+        animations.add(importSprites("/Resources/FireWizard/FireWizardRangeAttackMap.png", 8, 1, 128, 128));
+        animations.add(importSprites("/Resources/FireWizard/FireWizardMeleeAttackMap.png", 4, 1, 128, 128));
     }
 
     public void giveGold(int n) {
@@ -73,23 +78,33 @@ public class Player extends JComponent {
         int centeredY = 25; // Matches the previous hitbox position
 
         // Update the hitbox's position (optional, if needed for other logic)
-        hitbox.setLocation(centeredX, centeredY);
+       // hitbox.setLocation(centeredX, centeredY);
 
         // Draw animation instead of the hitbox
         drawAni(g, centeredX, centeredY);
-       // g.drawRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
-        // Draw the health bar
-        int barX = (getWidth() - healthBar.width) / 2;
-        healthBar.setLocation(barX, 0);
-        g.setColor(Color.white);
-        g.fillRect(barX, 0, healthBar.width, healthBar.height);
+        if(Config.hitboxesOn) {
+            g.setColor(Color.white);
+            g.drawRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
+            if(this.getBorder() == null) {
+                setBorder(BorderFactory.createLineBorder(Color.white));
+            }
+        } else {
+            this.setBorder(null);
+        }
 
-        // Calculate current health bar width
+
+        // Center the health bar above the hitbox
+        int barX = hitbox.x + (hitbox.width - healthBar.width) / 2;
+        int barY = hitbox.y - healthBar.height - 5; // Offset by 5 pixels above the hitbox
+
+// Draw background bar (red)
+        g.setColor(Color.red);
+        g.fillRect(barX, barY, healthBar.width, healthBar.height);
+
+// Calculate and draw current health (green)
         int healthBarWidth = (int) ((double) currentHealth / maxHealth * healthBar.width);
-
-        // Draw health bar (green for health)
         g.setColor(Color.green);
-        g.fillRect(healthBar.x, healthBar.y, healthBarWidth, healthBar.height);
+        g.fillRect(barX, barY, healthBarWidth, healthBar.height);
     }
 
 
@@ -139,23 +154,52 @@ public class Player extends JComponent {
         }
         return sprites;
     }
-
+    public State currentState = State.IDLE;
     int aniCounter = 0;
     int aniSpeed = 5;
     int aniIndex = 0;
+
+    //Attacking Animation
+    protected int attackIndex = 0;
+    protected int attackCounter = 0;
+    protected int attackSpeed = 4;
     public void animate() {
-        //System.out.println(aniIndex);//Debugging for making sure the index is functioning correctly
-        aniCounter++;//Increments by one every frame.
-        if(aniCounter >= aniSpeed) {//If the number of frames I want per animation sprite has passed
-            aniCounter = 0;//Reset the counter
-            aniIndex++;//Increase the index by one to move to the next sprite
+        if (currentState == State.IDLE) {
+
+
+            aniCounter++;//Increments by one every frame.
+            if (aniCounter >= aniSpeed) {//If the number of frames I want per animation sprite has passed
+                aniCounter = 0;//Reset the counter
+                aniIndex++;//Increase the index by one to move to the next sprite
+            }
+            if (aniIndex >= this.animations.get(0).length) //If we reach the end of the sprite map
+                aniIndex = 0;//Reset the index
         }
-        if(aniIndex >= this.animations.get(0).length) //If we reach the end of the sprite map
-            aniIndex = 0;//Reset the index
+
+        if(currentState == State.ATTACKING) {
+            attackCounter++;
+            if(attackCounter>=attackSpeed) {
+                attackCounter = 0;
+                attackIndex++;
+                if(!animations.isEmpty()&&attackIndex >= animations.get(1).length) {
+                    attackIndex = 0;
+                    currentState = State.IDLE;
+                    whatToDoAfterAttackAnimation.run();
+                }
+            }
+        }
+    }
+    Runnable whatToDoAfterAttackAnimation;
+    public void setStateToAttacking(Runnable onComplete) {
+        this.currentState = State.ATTACKING;
+        whatToDoAfterAttackAnimation = onComplete;
     }
     public void drawAni(Graphics g, int x, int y) {
        // animate();
-        g.drawImage(animations.get(0)[aniIndex], 30, 22, 74, 106, null);
+        if(currentState == State.IDLE)
+            g.drawImage(animations.get(0)[aniIndex], 0, 0, 128, 128, null);
+        if(currentState == State.ATTACKING)
+            g.drawImage(animations.get(1)[attackIndex], 0, 0, 128, 128, null);
 
     }
 

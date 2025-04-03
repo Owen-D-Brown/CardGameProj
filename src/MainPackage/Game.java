@@ -4,38 +4,35 @@ import Entities.*;
 import GUI.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 
 //Game class - Master class for running the game. Everything else sits inside of this.
 public class Game implements Runnable {
 
-    //Static entites for access by the entire application.
+    //// Static entites for access by the entire application. ////
+
     public static Player player;//Player instance
-
-    static {
-        try {
-            player = new Player();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public static RootContainer gui; //Main GUI Instance
     public static Config.GameState gameState;//Gamestate instance to control game state
-    public static DevTools devTools;
+    public static DevTools devTools; //Development Tools window
+    static int currentEnemyIndex = 0;
+    public static boolean allEnemiesAlive = true;
+    public static boolean enemyWaiting = false;
+    public static ArrayList<Runnable> resolutionQueue = new ArrayList<>();
+    public static ArrayList<CardSlot> cardSlots = new ArrayList<>();
+    //////////////////////////////
 
     //Constructor
     public Game() throws IOException {
+
+        player = new Player();//Initializing player.
+
         //Development Tools Frame
         devTools = new DevTools();
 
         //Main GUI Frame
         gui = new RootContainer(this);
-
 
         //Initializing Game
         gameState = Config.GameState.CARD_PLAY;//Putting the state into the first one.
@@ -45,70 +42,193 @@ public class Game implements Runnable {
         gui.gameScreen.glassPane.addCardSlot();
         gui.gameScreen.glassPane.addCardSlot();
 
-        //Temp code for setting up Cards in hand.
-        gui.gameScreen.glassPane.drawCard();
-        gui.gameScreen.glassPane.drawCard();
-        gui.gameScreen.glassPane.drawCard();
+        //END OF INITIALIZATION
+
+        //Starting game
         Thread gameThread = new Thread(this);
         gameThread.start();
-
     }
 
-    //TODO - Discard pile reshuffles into deck when player has no cards. ??
 
+    ///----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    ///////////////////////////
+    //// INTERFACE METHODS ////
+    ///////////////////////////
     //Draw a card to the player's hand.
     public static void drawCard() {
         gui.gameScreen.glassPane.drawCard();
     }
 
+    //Add a card slot to the field
     public static void addCardSlot() {gui.gameScreen.glassPane.addCardSlot();}
-    //TO DO - DISCARD CARD.
 
+    //Remove a card slot from the field
     public static void removeCardSlot() {gui.gameScreen.glassPane.removeCardSlot();}
 
-    public static void unslotAllCards() {gui.gameScreen.glassPane.unslotAllCards();}
+    //TO DO - DISCARD CARD.
 
-    //ENGINE METHODS
+    public static void unslotAllCards() {gui.gameScreen.glassPane.unslotAllCards();}
+    //////////////////////////////
+
+
+
+    ////////////////////////
+    //// ENGINE METHODS ////
+    ////////////////////////
     public static void changeStateToCardPlay() {
         gameState = Config.GameState.CARD_PLAY;
-        System.out.println("\nTHE GAME STATE HAS CHANGED -- CARD PLAY\n");
+        System.out.println("\n****THE GAME STATE HAS CHANGED -- CARD PLAY****\n");
+
+        //Draw up to five cards in the player's hand
         for(int i = player.hand.size(); i< 5; i++) {
             drawCard();
         }
         gui.gameScreen.southPanel.updateSouthPanel();
     }
+
     public static void changeStateToCardResolution() {
         gameState = Config.GameState.CARD_RESOLUTION;
+        System.out.println("\n****THE GAME STATE HAS CHANGED -- CARD RESOLUTION****\n.");
     }
 
-    static int currentEnemyIndex = 0;
     public static void changeStateToEnemyTurn() throws IOException {
         gameState = Config.GameState.ENEMY_PHASE;
-        System.out.println("THE GAME STATE HAS CHANGED -- ENEMY TURN.");
+        System.out.println("\n****THE GAME STATE HAS CHANGED -- ENEMY TURN****\n");
         resolveNextEnemy();
-
     }
-    public static void checkEnemyStatus(ArrayList<Enemy> enemies) {
-        List<Integer> toRemove = new ArrayList<>();
 
-        for (int i = 0; i < enemies.size(); i++) {
-            if (enemies.get(i).currentHealth <= 0) {
-                toRemove.add(i);
+    //Recursive algorithm for iterating and resolving enemy attacks
+    public static void resolveNextEnemy() throws IOException {
+
+        //If we have resolved all the card slots.
+        if (currentEnemyIndex >= gui.gameScreen.northPanel.enemies.size()) {
+
+            Game.changeStateToCardPlay();
+
+            currentEnemyIndex = 0;
+            return; //No more cards to process
+        }
+
+        //Getting the slot we are currently working on.
+        Enemy enemy = gui.gameScreen.northPanel.enemies.get(currentEnemyIndex);
+
+        //Check if there is a card in the slot
+
+        if (enemy != null && !enemy.dead) {
+
+            //Resolve the slot, passing a callback function. This function will run when slot.resolve finishes.
+            //In this case, it increases the index and calls itself again. This allows it to iterate through each
+            //Slot sequentially. Callback triggers when dissolve + animation finish.
+            //System.out.println("enemy should now be attacking "+Game.gui.gameScreen.northPanel.enemies.size());
+            enemy.attack(() -> {
+                currentEnemyIndex++;
+                try {
+                    resolveNextEnemy(); // Move to next card
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }, player.getX(), player.getY());
+        }
+
+        else //If the card slot doesn't have a card in it.
+        {
+            currentEnemyIndex++;
+            resolveNextEnemy(); // Skip empty slots
+        }
+    }
+
+    //Methods called within the game loop for checks and updates.
+    protected void shouldGoToRewardScreen() {
+        if(gui.gameScreen.northPanel.enemies.isEmpty()) {
+
+            gui.gameScreen.cardLayout.show(gui.gameScreen.centerContainer, "rewardScreen");//Display the reward screen.
+            AttackPlane.animations.clear();//Clear any remaining queued animations
+            gui.gameScreen.glassPane.setVisible(false);//Turn off the card slots.
+
+        } else if(!gui.gameScreen.glassPane.isVisible()) {
+            // gui.gameScreen.glassPane.setVisible(true);
+        }
+    }
+
+    protected void updateEnemies() {
+        if (!gui.gameScreen.northPanel.enemies.isEmpty()) {
+            Iterator<Enemy> iterator = gui.gameScreen.northPanel.enemies.iterator();
+
+            while(iterator.hasNext()) {
+                Enemy enemy = iterator.next();
+                enemy.animate();
+                enemy.revalidate();
+                enemy.repaint();
+                enemy.updateEnemyStatus(iterator); // Pass iterator for safe removal
             }
         }
+    }
 
-        // Remove enemies from the highest index down to avoid shifting issues
-        for (int i = toRemove.size() - 1; i >= 0; i--) {
-            gui.gameScreen.northPanel.removeEnemy(toRemove.get(i));
-        }
+    protected void checkAndRunPlayedCards() {
+        if(!cardSlots.isEmpty() && gameState == Config.GameState.CARD_RESOLUTION) {
 
-        if(gui.gameScreen.northPanel.enemies.size() <= 0) {//IF all enemies are dead
-            gui.gameScreen.glassPane.setVisible(false);
-            gui.gameScreen.cardLayout.show(gui.gameScreen.centerContainer, "rewardScreen");
-            gui.gameScreen.revalidate();
-            gui.gameScreen.repaint();
+            Runnable task = resolutionQueue.get(0); // Get next task
+            CardSlot slot = cardSlots.get(0);
+
+            if(!slot.isResolved) {
+
+
+                if(!slot.currentlyResolving) {
+
+                    if(allEnemiesAlive&&task!=null) {
+
+                        task.run();
+                    }
+
+                }
+
+            } else if(slot.isResolved) {
+
+                resolutionQueue.remove(0);
+                cardSlots.remove(0);
+                slot.isResolved = false;
+                slot.currentlyResolving = false;
+                System.out.println("\n***--slot task has finished resolving--*** \ncurrentlyResolving: "+slot.currentlyResolving+" isResolved: "+slot.isResolved);
+            }
         }
     }
+
+    protected void animateAttackPlaneAnimations() {
+        Iterator<Animation> iterator1 = AttackPlane.animations.iterator();
+        while(iterator1.hasNext()) {
+            Animation ani = iterator1.next();
+            try {
+                ani.checkForUpdates(iterator1);//STATE CONTROL
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            ani.updateAni();//UPDATE MOVEMENT
+
+            ani.revalidate();//READJUST POSITIONING
+            ani.repaint();//REDRAW THE IMAGE
+
+
+        }
+    }
+
+    protected void checkAndMoveToEnemyPhase() {
+        if (resolutionQueue.isEmpty() && gameState == Config.GameState.CARD_RESOLUTION) {
+            // Change state to enemy turn once all cards have been resolved
+
+            if (gameState != Config.GameState.ENEMY_PHASE && allEnemiesAlive && !enemyWaiting) {
+                try {
+                    GameplayPane.currentCardIndex = 0;
+                    changeStateToEnemyTurn(); // Transition to enemy turn state
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+    }
+    //////////////////////////////
+
 
 
     //Run method. Has its own thread running constantly. Idle animations are played out here.
@@ -129,84 +249,42 @@ public class Game implements Runnable {
 
             if (deltaF >= 1) {//By running the game loop this way, it prevents the calculations from being messed up from a nanosecond or two slipping through the cracks. It catches up with itself.
 
-
-
-
-
-                // gui.attackPlane.repaint();//Actually repainting the panel to display changes/animations
-                //gui.attackPlane.updateAnimations();
-                player.animate();
-                player.revalidate();
-                player.repaint();
-
-                boolean allEnemiesAlive = true;
-
+                //If there is a combat instance loaded
                 if (Game.gui.gameScreen.northPanel != null) {
 
-                        FloatingText.update();
+                    //Animate the player sprite.
+                    player.animate();
+                    player.revalidate();
+                    player.repaint();
 
+                    //Update any instances of floating text that need to be animated
+                    FloatingText.update();
 
+                    //If there are no more enemies in the master enemy array. Bring the player to the rewardscreen.
+                    shouldGoToRewardScreen();
+
+                    //Remove any finished floating text instances
                     FloatingText.removeInstances();
-                    //ANIMATIONS WILL BE REPAINTED BY THIS LINE - SO LET'S FIGURE OUT A WAY TO MOVE ALL THE RENDERING LOGIC HERE
+
+                    //Running updates for all enemies
+                    updateEnemies();
+
+                    //Performing a check to see if there are enemies still alive. Used for game flow
+                    if(gui.gameScreen.northPanel.enemies.size() <= 0) {allEnemiesAlive = false;}
+
+                    /// FOR THESE METHODS TO RUN - THE GAME SHOULD BE IN CARD RESOLUTION STATE
+                    //checks the gamestate, then runs tasks that have been loaded into the resolution queue by clicking on the play hand button.
+                    checkAndRunPlayedCards();
+
+                    //Animate animations queued up in the attack plane.
+                    animateAttackPlaneAnimations();
+
+                    //Check if all cards have resolved, and any dead enemies have finished their animations. Then, moves to enemy phase.
+                    checkAndMoveToEnemyPhase();
+
+                    //Repaint the north panel where everything is located/
                     gui.gameScreen.northPanel.revalidate();
                     gui.gameScreen.northPanel.repaint();
-                    for (Enemy enemy : gui.gameScreen.northPanel.enemies) {
-
-                            enemy.updateEnemyStatus();
-                            enemy.animate();
-                            enemy.revalidate();
-                            enemy.repaint();
-
-                        if (enemy.currentHealth <= 0) {
-                            allEnemiesAlive = false; // If any enemy is dead, stop changing the state
-                        }
-
-                    }
-
-
-                    if(!cardSlots.isEmpty() && gameState == Config.GameState.CARD_RESOLUTION) {
-                        //System.out.println("entered the conditional correctly");
-                        Runnable task = resolutionQueue.get(0); // Get next task
-                        CardSlot slot = cardSlots.get(0);
-                        if(!slot.isResolved) {
-                          //  System.out.println("slot is NOT RESOLVED");
-                            if(!slot.currentlyResolving) {
-                                if(allEnemiesAlive) {
-                                    // System.out.println("slot is NOT RESOLVING");
-                                    task.run();
-                                }
-                              //  System.out.println("task should be ran");
-                            }
-                            System.out.println("slot not resolved");
-                        } else if(slot.isResolved) {
-                            System.out.println("slot is resolved");
-                            resolutionQueue.remove(0);
-                            cardSlots.remove(0);
-                        }
-                    }
-                    /*
-                    //Updating animation
-                     for(Animation ani : AttackPlane.animations) {
-                         //ani.checkForUpdates();//STATE CONTROL
-                         ani.updateAni();//UPDATE MOVEMENT
-                         ani.revalidate();//READJUST POSITIONING
-                         ani.repaint();//REDRAW THE IMAGE
-                     }
-
-                    */
-
-
-                    if (Game.resolutionQueue.isEmpty() && gameState == Config.GameState.CARD_RESOLUTION) {
-                        // Change state to enemy turn once all cards have been resolved
-                        if (gameState != Config.GameState.ENEMY_PHASE && allEnemiesAlive) {
-                            try {
-                                GameplayPane.currentCardIndex = 0;
-                                changeStateToEnemyTurn(); // Transition to enemy turn state
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                    }
 
                     deltaF--;//Removing one from deltaF, keeping any leftover time we may have for the next iteration.
                 }
@@ -214,52 +292,4 @@ public class Game implements Runnable {
         }
     }
 
-    public boolean persistanceFinished = true;
-    public static ArrayList<Runnable> resolutionQueue = new ArrayList<>();
-    public static ArrayList<CardSlot> cardSlots = new ArrayList<>();
-
-    public static void resolveNextEnemy() throws IOException {
-
-            //If we have resolved all the card slots.
-            System.out.println("currentIndex: "+currentEnemyIndex+" size: "+gui.gameScreen.northPanel.enemies.size());
-            if (currentEnemyIndex >= gui.gameScreen.northPanel.enemies.size()) {
-                //System.out.println("error");
-                Game.changeStateToCardPlay();
-                //Game.runEnemyTurn();
-                currentEnemyIndex = 0;
-                return; //No more cards to process
-            }
-
-            //Getting the slot we are currently working on.
-            Enemy enemy = gui.gameScreen.northPanel.enemies.get(currentEnemyIndex);
-
-            //Check if there is a card in the slot
-       // System.out.println("debugging "+enemy!=null);
-            if (enemy != null) {
-
-                //Resolve the slot, passing a callback function. This function will run when slot.resolve finishes.
-                //In this case, it increases the index and calls itself again. This allows it to iterate through each
-                //Slot sequentially. Callback triggers when dissolve + animation finish.
-                System.out.println("enemy should now be attacking "+Game.gui.gameScreen.northPanel.enemies.size());
-                enemy.attack(() -> {
-                    currentEnemyIndex++;
-                    try {
-                        resolveNextEnemy(); // Move to next card
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }, player.getX(), player.getY());
-            }
-
-            else //If the card slot doesn't have a card in it.
-            {
-                currentEnemyIndex++;
-                resolveNextEnemy(); // Skip empty slots
-            }
-        }
     }
-/*
-TO DO:
-Make all these classes singletons.
-Move GameState control to this class. Triggers for the changes simply call methods here.
- */

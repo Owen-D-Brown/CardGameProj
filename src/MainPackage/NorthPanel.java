@@ -1,6 +1,7 @@
 package MainPackage;
 
 import Entities.*;
+import GUI.CardSlot;
 import GUI.GameplayPane;
 
 import javax.imageio.ImageIO;
@@ -18,8 +19,9 @@ public class NorthPanel extends JPanel {
     private BufferedImage background;//Image holding the background for this encounter.
     private Player player = Game.player;//Getting a handier pointer to the Player class in Game.
     public AttackPlane attackPlane;
+    public int yFloor = 295;
 
-
+    /// CONSTRUCTOR
     public NorthPanel(ArrayList<Enemy> enemiesArg) throws IOException {
 
         //Initializing this panel
@@ -31,13 +33,10 @@ public class NorthPanel extends JPanel {
         //Iterating through enemies passes to this constructor, and adding them.
         for(Enemy enemy : enemiesArg) {
             addEnemy(enemy);
-
-
-            System.out.println("ENEMY TESTING "+enemy);
         }
 
         //Initializing the player.
-        player.setBounds(70, 150, player.getWidth(), player.getHeight());
+        player.setBounds(70, yFloor-player.getHeight(), player.getWidth(), player.getHeight());
 
         add(player);
 
@@ -51,24 +50,7 @@ public class NorthPanel extends JPanel {
         resetFightState();
     }
 
-    public void positionEnemy(Enemy enemy, int x, int y) {
-        if(Config.debug)
-            System.out.println("\n--* NorthPanel.positionEnemy() CALLED *--\n  *Enemys present in array: "+enemies.size()+"*");
-        Rectangle temp = new Rectangle(x, y, enemy.getWidth(), enemy.getHeight());
-        for(Enemy en : enemies) {
-            if(temp.intersects(en.getHitbox())) {
-                System.out.println("  *HITBOXES INTERSECTING ON NorthPanel.positionEnemy()*");
-            //    return;
-            }
-        }
-        enemy.x = x;
-        enemy.y = y;
-        enemy.setBounds(enemy.x, enemy.y, enemy.getWidth(), enemy.getHeight());
-        this.revalidate();
-        this.repaint();
-        if(Config.debug)
-            System.out.println("--* NorthPanel.positionEnemy() *-- FINISHED");
-    }
+
 
     public void resetFightState() {
         if(Config.debug)
@@ -78,6 +60,12 @@ public class NorthPanel extends JPanel {
         Game.gui.gameScreen.glassPane.unslotAllCards();
         Game.player.resetDeck();
         Game.gui.gameScreen.glassPane.updateHandRender();
+        for(CardSlot slot : GameplayPane.cardSlots) {
+            slot.isResolved = false;
+            slot.currentlyResolving = false;
+            slot.slottedCard = null;
+        }
+        Game.allEnemiesAlive = true;
         Game.changeStateToCardPlay();
         revalidate();
         repaint();
@@ -85,6 +73,7 @@ public class NorthPanel extends JPanel {
         if(Config.debug)
             System.out.println("--* NorthPanel.resetFightState() COMPLETE *--");
     }
+
     private BufferedImage loadImage(String filename) {
         try (InputStream is = getClass().getClassLoader().getResourceAsStream("Resources/" + filename)) {
             if (is == null) {
@@ -100,35 +89,31 @@ public class NorthPanel extends JPanel {
 
 
     public void addEnemy(Enemy enemy) {
-        if(enemies.size() == 3) {
-            System.out.println("Already 3 enemies in enemies array. -NorthPanel");
+        if (enemies.size() == 3) {
+            System.out.println("Already 3 enemies in enemies array. - NorthPanel");
             return;
         }
-        else {
 
-            Enemy enemyAdded = enemy;
-            enemies.add(enemyAdded);
-            add(enemies.getLast());
-            //
-             int x = 600;
-             int y = 150;
-             x = x+(enemies.size()*enemyAdded.getWidth())+10;
-            //#
-            //WOKRING IN HERE
+        enemies.add(enemy);
+        add(enemy);
 
-            /// /
-            enemies.getLast().setBounds(x, y, enemyAdded.getWidth(), enemyAdded.getHeight());
-            enemies.getLast().setStartBounds(this.getBounds());
-            revalidate();
-            repaint();
-           //
-            System.out.println("Enemy added at: "+x+" - NorthPanel - "+this.getBounds().toString()+"  |  "+enemies.getLast().startBounds.toString());
-        }
+        int baseX = 600;
+        int spacing = 70;
+        int x = baseX + ((enemies.size() - 1) * (enemy.getWidth() + spacing));
+
+
+        enemy.setBounds(x, yFloor-enemy.getHeight(), enemy.getWidth(), enemy.getHeight());
+        enemy.setStartBounds(this.getBounds());
+
+        revalidate();
+        repaint();
+
+        System.out.println("Enemy added at: " + yFloor + " - NorthPanel - " + this.getBounds().toString() + " | " + enemy.startBounds.toString()+" "+player.getBounds().y);
     }
 
     public void repositionEnemies() {
         int x = 710;
-        int y = 150;
+        int y = yFloor;
 
         for (int i = 0; i < enemies.size(); i++) {
             enemies.get(i).setBounds(x, y, enemies.get(i).getWidth(), enemies.get(i).getHeight());
@@ -155,10 +140,13 @@ public class NorthPanel extends JPanel {
     }
 
     public void removeEnemy(Enemy e) {
+        System.out.println("removing enemy");
         if(enemies.size() > 0) {
+
             if (enemies.contains(e)) {
+
                 this.remove(e);
-                enemies.remove(e);
+               // enemies.remove(e);
                 //repositionEnemies();
                 revalidate();
                 repaint();
@@ -189,17 +177,17 @@ public class NorthPanel extends JPanel {
     }
     public int playerX;
     public int playerY;
-    public void initAniBounds() {
+
+    public void initPlayerAniBounds() {
         playerX = 70;
         playerY = 150;
-        System.out.println("Inside initANiBounds "+playerY);
     }
 
     ArrayList<Rectangle> spawnZones = new ArrayList<>();
-    public Rectangle createSpawnZone(int x, int y, int width, int height) {
+
+    public void createSpawnZone(int x, int y, int width, int height) {
         Rectangle zone = new Rectangle(x, y, width, height);
         spawnZones.add(zone);
-        return zone;
     }
 
     public void populateSpawnZones() {

@@ -17,6 +17,11 @@ public class Vampire_MCard extends Card{
     }
 
     @Override
+    public void resetAnimation() throws IOException {
+
+    }
+
+    @Override
     public void effect() {
 
         Random rand = new Random();
@@ -30,8 +35,13 @@ public class Vampire_MCard extends Card{
     }
 
     @Override
-    public void initCardAniBounds() throws IOException {
+    public void initCardAniBounds(Player player, Enemy enemy) throws IOException {
+        ((IceBlast) animation).initAnimation(player, enemy);
+    }
 
+    @Override
+    public void initCardAniBounds(Enemy enemy, Player player) throws IOException {
+        ((IceBlast) animation).initAnimation(enemy, player);
     }
 
     //paint component for drawing the cards image

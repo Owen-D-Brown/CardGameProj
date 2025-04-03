@@ -5,6 +5,7 @@ import CombatMap.MapGui;
 import Entities.Enemy;
 import Entities.Goblin;
 import Entities.Orc;
+import Entities.SatyrFemale;
 import MainPackage.Config;
 import MainPackage.Game;
 import MainPackage.NorthPanel;
@@ -76,14 +77,13 @@ public class RootContainer extends JFrame {
 
         });
         menu.add(startButton);
-        JButton encounter1 = new JButton("Encounter 1");
+        JButton encounter1 = new JButton("Encounter fresh");
         encounter1.addActionListener(e -> {
             try {
                 gameScreen.newFight(startFight(1));
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
-            Game.gui.gameScreen.glassPane.setVisible(true);
             Game.gui.gameScreen.cardLayout.show(Game.gui.gameScreen.centerContainer, "main");
             Game.unslotAllCards();
             gameScreen.center.revalidate();
@@ -130,7 +130,7 @@ public class RootContainer extends JFrame {
         switch(num) {
             case 1:
                 ArrayList<Enemy> entities = new ArrayList<>();
-                entities.add(new Goblin());
+                entities.add(new SatyrFemale());
                 entities.add(new Orc());
 
                 return new NorthPanel(entities);
@@ -145,7 +145,7 @@ public class RootContainer extends JFrame {
                 encounter.createSpawnZone(750, 175, 100, 100);
                 encounter.createSpawnZone(900, 175, 100, 100);
                 encounter.populateSpawnZones();
-                encounter.initAniBounds();
+
                 return encounter;
         }
         return null;
@@ -253,7 +253,7 @@ public class RootContainer extends JFrame {
         }
 
         encounter.populateSpawnZones(); // ✅ Assign enemies to positions
-        encounter.initAniBounds(); // ✅ Ensure animations update correctly
+        encounter.initPlayerAniBounds(); // ✅ Ensure animations update correctly
 
         return encounter;
     }

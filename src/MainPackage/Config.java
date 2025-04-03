@@ -13,7 +13,7 @@ public abstract class Config {
     public static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     public static Dimension frameSize = new Dimension((int)(1000 * scaleFactor), (int)(1000 * scaleFactor));
     public static Dimension cardSize = new Dimension((int)(150 * scaleFactor), (int)(210 * scaleFactor));
-
+    public static boolean hitboxesOn = true;
 
     public static boolean debug = true;
 

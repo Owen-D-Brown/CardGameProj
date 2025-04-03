@@ -1,5 +1,6 @@
 package GUI;
 
+import Entities.Animation;
 import Entities.AttackPlane;
 import Entities.Card;
 import MainPackage.Game;
@@ -40,35 +41,38 @@ public class CardSlot extends Rectangle {
     public void resolve(Runnable onComplete) throws IOException {//Callback function passed iterates through the gameplay pane card slots. So, when this finishes, resolveNextCArd() is called again, which in turn calls this.resolve() again.
         //
 
+
         //
-        Game.gui.gameScreen.northPanel.initAniBounds();
-        //System.out.println("testing here for player pos " + Game.gui.gameScreen.northPanel.playerY);
-        slottedCard.initCardAniBounds();
+        Runnable toDo = () -> {
+            Game.gui.gameScreen.northPanel.initPlayerAniBounds();
+            //
+            try {
+                slottedCard.initCardAniBounds(Game.player, Game.gui.gameScreen.northPanel.enemies.get(0));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 //align bounds here
-        AttackPlane.addAniToQue(slottedCard.animation);
+            AttackPlane.addAniToQue(slottedCard.animation);
+            AttackPlane.animations.get(0).currentState = Animation.State.WAITING;
+            //System.out.println("current state "+AttackPlane.animations.get(0).currentState);
+            //PlayHandBtn -> GameplayPane.ResolveNextCard() -> CardSlot.Resolve -> Card.disolve() -> Call Back Function that Plays Animation -> Card.Effect().
+            //After Effect() Resolve -> GameplayPane.ResolveNextCard() for the next card slot.
 
-        //PlayHandBtn -> GameplayPane.ResolveNextCard() -> CardSlot.Resolve -> Card.disolve() -> Call Back Function that Plays Animation -> Card.Effect().
-        //After Effect() Resolve -> GameplayPane.ResolveNextCard() for the next card slot.
+            //Calls the disolve() method in the Card instance. Passes a callback function that plays the animation of the card. This executes once disolve() finishes.
+            slottedCard.disolve(() -> {
+                // System.out.println("entered callback on card.disolve "+AttackPlane.animations.get(0));
+                AttackPlane.animations.get(0).onComplete = onComplete;
+                AttackPlane.animations.get(0).currentState = Animation.State.MOVING;
+                // System.out.println("just masde state moving in disolve callback:: "+AttackPlane.animations.get(0).currentState);
+                AttackPlane.animations.get(0).isMoving = true;
+                AttackPlane.animations.get(0).card = slottedCard;
+                // System.out.println("finished disolve callback");
 
-        //Calls the disolve() method in the Card instance. Passes a callback function that plays the animation of the card. This executes once disolve() finishes.
-        slottedCard.disolve(() -> {
-            // Play attack animation AFTER dissolve finishes
-            Game.gui.gameScreen.northPanel.attackPlane.playAnimation(() -> {
-            //at this point, the animation is set to moving. Play animation starts teh animation timer, so no longer needed. Remove call to play animation, move logic to update animation
-                //for stopping it. ie. if State == finished -> stop animation, remove card.
 
-                // Only now move to the next card
-                if (onComplete != null) {
-                    slottedCard.effect();
-                    System.out.println("Card Slot Resolution Finished");
-                    AttackPlane.animations.get(0).stopAnimation();
-                    // Game.checkEnemyStatus(Game.gui.gameScreen.northPanel.enemies);
-                    Game.gui.gameScreen.glassPane.removeCard(slottedCard);
-
-                    onComplete.run();//unslots the card/moves to next one
-                }
             });
-        });
+        };
+        Game.player.setStateToAttacking(toDo);
+
 
         //Change so that the card passes and calls its own animation, then the program returns here to call onNext/ResolveNextCard
         //
@@ -80,21 +84,24 @@ public boolean isResolved = false;
     public void addSlotResolutionToQueue() {
         isResolved = false;
         currentlyResolving = false;
+
         if (slottedCard != null) {
+
             Game.cardSlots.add(this);
+            System.out.println("Adding to the queue");
             Game.resolutionQueue.add(() -> {
 
 
                 if (this.slottedCard != null) {
                     this.currentlyResolving = true;
+
                     try {
                         resolve(() -> {
-
+                            System.out.println("entering last callback");
                             Game.gui.gameScreen.glassPane.removeCard(slottedCard);
                             unslotCard();
                             this.isResolved = true;
-                            System.out.println("Card Slot Resolution Finished");
-                            //Game.cardSlots.remove(this);
+                            System.out.println("Reached the end of the final runnable in the task");
                         });
                     } catch (IOException e) {
                         throw new RuntimeException(e);

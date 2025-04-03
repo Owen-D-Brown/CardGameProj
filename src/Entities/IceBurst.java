@@ -14,6 +14,12 @@ public class IceBurst extends Card {
         this.image = loadImage(IMAGE_PATH); // load image from the path
         this.animation = new IceBlast();
     }
+
+    @Override
+    public void resetAnimation() throws IOException {
+
+    }
+
     //could possibly add a random chance to freeze enemies too
     @Override
     public void effect() {
@@ -22,6 +28,16 @@ public class IceBurst extends Card {
         for (Enemy enemy : Game.gui.gameScreen.northPanel.enemies) {
             enemy.takeDamage(800);
         }
+    }
+
+    @Override
+    public void initCardAniBounds(Player player, Enemy enemy) throws IOException {
+        ((IceBlast) animation).initAnimation(player, enemy);
+    }
+
+    @Override
+    public void initCardAniBounds(Enemy enemy, Player player) throws IOException {
+        ((IceBlast) animation).initAnimation(enemy, player);
     }
 
     //paint componenent for drawing the cards image
@@ -37,8 +53,5 @@ public class IceBurst extends Card {
         }
     }
 
-    @Override
-    public void initCardAniBounds() throws IOException {
-        ((IceBlast) animation).initAnimation(Game.player, Game.gui.gameScreen.northPanel.enemies.get(0));
-    }
+
 }

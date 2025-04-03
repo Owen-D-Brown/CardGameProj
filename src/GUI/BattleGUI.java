@@ -13,6 +13,8 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 
+import static MainPackage.Game.gui;
+
 public class BattleGUI extends JPanel {
 
     // Components
@@ -37,12 +39,7 @@ public class BattleGUI extends JPanel {
         setLayout(new BorderLayout());
         setPreferredSize(Config.frameSize);
 
-        //Create a JLayeredPane to hold game components + glass pane
-        //It's a layered pane because the visual GUI components sit under the glass pane.
-        layeredPane = new JLayeredPane();
-        layeredPane.setPreferredSize(Config.frameSize);
-        layeredPane.setLayout(null); // Allows absolute positioning
-        add(layeredPane, BorderLayout.CENTER);
+
 
         //Initialize components inside the layered pane
         init();
@@ -54,6 +51,13 @@ public class BattleGUI extends JPanel {
 
     //Initializing GUI components inside the layered pane. - This is where the main North, Center, and South of the GUI are instantiated.
     private void init() {
+
+        //Create a JLayeredPane to hold game components + glass pane
+        //It's a layered pane because the visual GUI components sit under the glass pane.
+        layeredPane = new JLayeredPane();
+        layeredPane.setPreferredSize(Config.frameSize);
+        layeredPane.setLayout(null); // Allows absolute positioning
+        add(layeredPane, BorderLayout.CENTER);
 
         //Game panel (holds all game components)
         gamePanel = new JPanel(new BorderLayout());
@@ -89,7 +93,7 @@ public class BattleGUI extends JPanel {
         toMenu.setBounds(0, 0, 200, 50);
         toMenu.addActionListener(e -> {
             Game.player.resetDeck();//Rest users deck
-            Game.gui.showScreen(Game.gui.menuScreen);//Swap to menu
+            gui.showScreen(gui.menuScreen);//Swap to menu
         });
         rewardScreen.add(toMenu);
 
@@ -150,10 +154,14 @@ public class BattleGUI extends JPanel {
         }
     }
 
+
+
     //Create and load in a new fight encounter. Pass a NorthPanel instance, and it will slot it into the northPanel slot.
     //There are debug print statements here for texting the transition between NorthPanel encounters.
     //MOVE THE CODE RESETTING THE GAMESTATE INTO THIS CLASS. CALL THE METHOD IN NEW FIGHT. ADD GAME CLASS METHOD TO CALL THIS ONE.
     public void newFight(NorthPanel fight) {
+
+        cardLayout.show(centerContainer, "main");
         if(Config.debug)
             System.out.println("\n--* BattleGUI.newFight() TRIGGERED IN BattleGUI CLASS *--. CHECKING FOR CORRECT NorthPanel SWAP.\n  *Components Before removal: " + Arrays.toString(this.getComponents())+"*");//We are checking that the northPanel swapped correctly.
 
@@ -165,9 +173,13 @@ public class BattleGUI extends JPanel {
             System.out.println("  *Components After removal: " + Arrays.toString(this.getComponents())+"*\n--* BattleGui.newFight() FINISHED *--\n");
 
         //Adding the new fight encounter to the GUI, and setting the northPanel reference to it.
+        //init();
+
+
         this.gamePanel.add(fight, BorderLayout.NORTH);
         this.northPanel = fight;
         getLootRewards();
+        glassPane.drawCard();
         this.revalidate();
         this.repaint();
 

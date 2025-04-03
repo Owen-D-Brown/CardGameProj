@@ -31,10 +31,13 @@ public abstract class Card extends JComponent implements MouseListener, MouseMot
         initY = this.getY();
     }
 
-    // abstract card effect method, implemented by card subclasses
-    public abstract void effect();
 
-    public abstract void initCardAniBounds() throws IOException;
+    public abstract void resetAnimation() throws IOException;
+    // abstract card effect method, implemented by card subclasses
+    public abstract void effect() throws IOException;
+
+    public abstract void initCardAniBounds(Player player, Enemy enemy) throws IOException;
+    public abstract void initCardAniBounds(Enemy enemy, Player player) throws IOException;
 
 
 
@@ -55,17 +58,25 @@ public abstract class Card extends JComponent implements MouseListener, MouseMot
 
     // Dissolve animation for removing the card
     public void disolve(Runnable onComplete) {
+     //   System.out.println("entered card.disolve");
+        AttackPlane.animations.get(0).currentState = Animation.State.WAITING;
         final int targetFPS = 20;
         final int delay = 1000 / targetFPS;
         Timer timer = new Timer(delay, null);
 
         ActionListener animationLis = evt -> {
+            //System.out.println("timer init "+this.getHeight()+" | "+this.getWidth());
             if (this.getWidth() <= 0 || this.getHeight() <= 0) {
+              //  System.out.println("stop timer");
                 ((Timer) evt.getSource()).stop();
                 this.setVisible(false);
+              //  System.out.println("complete: "+onComplete!=null);
                 if (onComplete != null) {
+
                     animation.startAnimation();
+
                     onComplete.run();
+
                 }
                 return;
             }
