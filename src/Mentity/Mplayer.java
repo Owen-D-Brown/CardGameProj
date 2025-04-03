@@ -23,7 +23,7 @@ public class Mplayer extends Mentity {
         getPlayerImg();
     }
 
-    // Initial position/speed/direction
+    // Initial position/speed/direction 555s
     public void setDefaultVal() {
         x = 200;           //spawn pos
         y = 200;
