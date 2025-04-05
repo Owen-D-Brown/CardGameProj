@@ -9,7 +9,7 @@ import javax.swing.*;
 
 public class gateGUI extends JPanel {
     private BufferedImage backgroundImage;
-
+//
     public gateGUI() {
         setLayout(null); // absolute positioning
         setPreferredSize(new Dimension(1000, 666));

@@ -41,7 +41,7 @@ public class Player extends JComponent {
         for(int i = 0; i<3; i++) {
             cards.add(new Firebolt());
             cards.add(new IceBurst());
-
+            cards.add(new Bandage());
 
 
 

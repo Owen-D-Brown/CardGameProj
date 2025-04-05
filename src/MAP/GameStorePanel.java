@@ -23,7 +23,7 @@ public class GameStorePanel extends JPanel {
         try {
             merchantImage = ImageIO.read(getClass().getResourceAsStream("/Resources/MapSprite/Merchant2.png"));
         } catch (IOException ex) {
-            System.err.println("Failed to load merchant image: " + ex.getMessage());
+            System.out.println("Failed to load merchant image: " + ex.getMessage());
         }
 
         // Merchant image will fill the left panel
@@ -160,7 +160,7 @@ public class GameStorePanel extends JPanel {
             String[] parts = itemName.split(" - ");
             return Integer.parseInt(parts[1].replace(" Gold", "").trim());
         } catch (Exception ex) {
-            System.err.println("Error parsing cost: " + ex.getMessage());
+            System.out.println("Error parsing cost: " + ex.getMessage());
             return 0;
         }
     }

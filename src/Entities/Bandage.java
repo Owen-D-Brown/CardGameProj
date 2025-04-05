@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class Bandage extends Card{
 
-    private static final String IMAGE_PATH = "/Resources/Cards/placeholder.png";
+    private static final String IMAGE_PATH = "/Resources/Cards/Bandage.png";
 
 
     public Bandage(){
