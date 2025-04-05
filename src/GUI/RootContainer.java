@@ -3,6 +3,10 @@ package GUI;
 import CombatMap.MapData;
 import CombatMap.MapGameplayPane;
 import CombatMap.MapGui;
+import Entities.Enemy;
+import Entities.Goblin;
+import Entities.Orc;
+import Entities.SatyrFemale;
 import CombatMap.MapLoader;
 import Entities.*;
 import MainPackage.Config;
@@ -82,15 +86,13 @@ public class RootContainer extends JFrame {
             showScreen(gameScreen);
         });
         menu.add(startButton);
-
-        JButton encounter1 = new JButton("Encounter 1");
+        JButton encounter1 = new JButton("Encounter fresh");
         encounter1.addActionListener(e -> {
             try {
                 gameScreen.newFight(startFight(1));
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
-            Game.gui.gameScreen.glassPane.setVisible(true);
             Game.gui.gameScreen.cardLayout.show(Game.gui.gameScreen.centerContainer, "main");
             Game.unslotAllCards();
             gameScreen.center.revalidate();
@@ -123,7 +125,6 @@ public class RootContainer extends JFrame {
         menu.add(mapTestButton);
 
 
-
         JButton randomFightButton = new JButton("Random Fight");
         randomFightButton.addActionListener(e -> {
             try {
@@ -142,13 +143,14 @@ public class RootContainer extends JFrame {
         return menu;
     }
 
+
     public NorthPanel startFight(int num) throws IOException {
-        switch (num) {
+        switch(num) {
             case 1:
                 ArrayList<Enemy> entities = new ArrayList<>();
-                entities.add(new Goblin());
+                entities.add(new SatyrFemale());
                 entities.add(new Orc());
-                entities.add(new Slime());
+
                 return new NorthPanel(entities);
             case 2:
                 ArrayList<Enemy> entities1 = new ArrayList<>();
@@ -161,7 +163,7 @@ public class RootContainer extends JFrame {
                 encounter.createSpawnZone(750, 175, 100, 100);
                 encounter.createSpawnZone(900, 175, 100, 100);
                 encounter.populateSpawnZones();
-                encounter.initAniBounds();
+
                 return encounter;
         }
         return null;

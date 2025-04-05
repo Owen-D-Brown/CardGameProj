@@ -20,21 +20,27 @@ public class Firebolt extends Card {
 
         }
     @Override
-    public void effect() {
+    public void effect() throws IOException {
         Random rand = new Random();
-        int damage = rand.nextInt(10) + 1; // Firebolt deals 5-15 damage
+        int damage = rand.nextInt(8) + 1; // Firebolt deals 5-15 damage
         System.out.println("Firebolt cast! Deals " + damage + " damage.");
 
         // Deal damage to the first enemy
         if (!Game.gui.gameScreen.northPanel.enemies.isEmpty()) {
             Game.gui.gameScreen.northPanel.enemies.get(0).takeDamage(damage);
         }
+        resetAnimation();
     }
 
 
     @Override
-    public void initCardAniBounds() throws IOException {
+    public void initCardAniBounds(Player player, Enemy enemy) throws IOException {
         ((Fireball) animation).initAnimation(Game.player, Game.gui.gameScreen.northPanel.enemies.get(0));
+    }
+
+    @Override
+    public void initCardAniBounds(Enemy enemy, Player player) throws IOException {
+
     }
 
     //paint component for drawing the cards image
@@ -50,6 +56,10 @@ public class Firebolt extends Card {
             g.fillRect(0, 0, getWidth(), getHeight()); // Red box if image is missing
 
         }
+    }
+
+    public void resetAnimation() throws IOException {
+        this.animation = new Fireball();
     }
 }
 

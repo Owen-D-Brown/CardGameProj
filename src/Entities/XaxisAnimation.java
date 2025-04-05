@@ -2,6 +2,7 @@ package Entities;
 
 import MainPackage.Game;
 
+import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 
@@ -25,17 +26,42 @@ public class XaxisAnimation extends Animation{
     }
 
     public void initAnimation(Player player, Enemy enemy) {
-        this.currentX = player.getX();
-        this.currentY = player.getY();
-        this.targetX = enemy.getX();
-        this.targetY = enemy.getY();
+        this.currentX = player.relativeX;
+        this.currentY = player.relativeY;
+
+
+        Point relativeOrigin = SwingUtilities.convertPoint(enemy, new Point(enemy.hitbox.x-(enemy.hitbox.width/2), enemy.hitbox.y), Game.gui.gameScreen.northPanel);
+
+
+        this.targetX = relativeOrigin.x-(enemy.hitbox.width/2);
+        this.targetY = player.relativeY;
+        goingRight = true;
+    }
+    boolean goingRight=false;
+    public void initAnimation(Enemy e, Player p) {
+
+
+        Point relativeOrigin = SwingUtilities.convertPoint(e, e.rangedOrigin, Game.gui.gameScreen.northPanel);
+        e.relativeX = relativeOrigin.x;
+        e.relativeY = relativeOrigin.y;
+
+        this.currentX = e.relativeX;
+        this.currentY = e.relativeY;
+
+
+
+
+        this.targetX = p.relativeX;
+        this.targetY = e.relativeY;
+
     }
 
 
 
     @Override
     public void updateAni() {
-        super.updateAni();
+      //  System.out.println("updating ani");
+       // super.updateAni();
         if(isMoving) {
             double speed = 0.1; // Moves 20% of the remaining distance each frame
 
@@ -44,9 +70,11 @@ public class XaxisAnimation extends Animation{
 
             // Stop animation when close enough
             if (Math.abs(currentX - targetX) < 5 && Math.abs(currentY - targetY) < 5) {
+
                 currentX = targetX;
                 currentY = targetY;
-                isMoving = false;
+//isMoving = false;
+                currentState = State.IMPACT;
             }
         }
 

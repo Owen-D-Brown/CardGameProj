@@ -8,12 +8,13 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 
 public class Animation extends JComponent {
 
 
     public boolean isMoving = false;
-
+    public Runnable onComplete;
     protected int x, y;
     protected int FPS = 20;
     public BufferedImage[] sprites;
@@ -23,28 +24,61 @@ public class Animation extends JComponent {
     protected int aniIndex = 0;
     protected int aniSpeed;
     protected int aniCounter = 0;
+    protected int w;
+    protected int h;
 
     public Animation( String filePath, int w, int h, int col, int row, int aniSpeed) throws IOException {
         this.filePath = filePath;
         this.aniSpeed = aniSpeed;
         this.sprites = importSprites(filePath, col, row, w, h);
         //calculateDuration();
+        setSize(w, h);
+        this.w = w;
+        this.h = h;
+        setBorder(BorderFactory.createLineBorder(Color.BLACK, 5));
+
 
     }
 
-    public void calculateInterval() {
-        this.interval = (aniSpeed * 1000) / 60;
-    }
+    public void checkForUpdates(Iterator<Animation> i) throws IOException {
+       // System.out.println("parent "+currentState);
 
+        if(isMoving && currentState == State.WAITING) {
+            currentState = State.MOVING;
 
-    public void calculateDuration() {
-        if (sprites == null || sprites.length == 0) {
-            this.duration = 0;
-        } else {
-            this.duration = (aniSpeed * sprites.length * 1000) / 60;
-            System.out.println("Duration: " + duration);
         }
+
+        if(currentState == State.MOVING) {
+
+        }
+
+        if(currentState ==State.IMPACT) {
+
+            isMoving = false;
+
+
+            if(!isMoving) {
+
+                currentState = State.FINISHED;
+                if(card!=null) {
+                    card.effect();
+                    Game.gui.gameScreen.glassPane.removeCard(card);
+
+
+                } else if (card == null) {
+
+
+                }
+                //AttackPlane.animations.remove(this);
+                i.remove();
+                onComplete.run();
+            }
+        }
+       // System.out.println("2parent "+currentState);
     }
+
+
+
 
     protected BufferedImage[] importSprites(String pathName, int cols, int rows, int spriteWidth, int spriteHeight) throws IOException {
         BufferedImage image = loadImage(pathName);
@@ -69,26 +103,32 @@ public class Animation extends JComponent {
 
 
 
-
+    public enum State {WAITING, MOVING, IMPACT, FINISHED};
+    public State currentState = State.WAITING;
     public void startAnimation() {
       //  this.circleX = Game.gui.gameScreen.northPanel.playerX;
        // this.circleY = Game.gui.gameScreen.northPanel.playerY;
         //working here
         isMoving = true;
+        //state to moving
+        currentState = State.MOVING;
+        System.out.println("STARTING ANIMATION");
     }
 
     public void stopAnimation() {
     //    this.circleX = Game.gui.gameScreen.northPanel.playerX;
      //   this.circleY = Game.gui.gameScreen.northPanel.playerY;
         isMoving = false;
+
+        currentState = State.FINISHED;
     }
 
 
 
-
+    public Card card;
 
     public void updateAni() {
-
+          //System.out.println("THIS IS FOR CARD ANINMATIONS - for ani in AttackPlane.animations "+currentState+" aniIndex: "+aniIndex+" aniCounter: "+aniCounter);
         if (isMoving) {
             aniCounter++;
 
@@ -97,8 +137,10 @@ public class Animation extends JComponent {
                 aniIndex++;
 
                 if (sprites.length > 0 && aniIndex >= sprites.length) {
+
                     aniIndex = 0;
                     isMoving = false;
+                    currentState = State.IMPACT;
                 }
             }
         }
@@ -111,7 +153,7 @@ public class Animation extends JComponent {
         super.paintComponent(g);
         if (isMoving) {
 
-            g.drawImage(sprites[aniIndex], x, y, 53*2, 32*2, null);
+            g.drawImage(sprites[aniIndex], x, y, w, h, null);
         }
     }
 

@@ -2,6 +2,7 @@ package Entities;
 
 import MainPackage.Config;
 import MainPackage.Game;
+import MainPackage.NorthPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,8 +25,8 @@ public abstract class Enemy extends JComponent {
     protected int weight; // base difficulty
 
     //States to determine enemy animation
-    protected enum State {IDLE, WALKING, ATTACKING, DYING};
-    protected State state = State.IDLE;
+    public enum State {IDLE, WALKING, ATTACKING, DYING};
+    public State state = State.IDLE;
 
     //Variables needed for loading of animations
     protected int idleColCount, idleRowCount;
@@ -58,7 +59,7 @@ public abstract class Enemy extends JComponent {
     protected int deathSpeed = 7;
 
     //Rectangles for the hitbox and healthbar
-    protected Rectangle hitbox;
+    public Rectangle hitbox = new Rectangle(35, 50, 50, 70);
     protected Rectangle healthBar = new Rectangle(0, 0, 75, 10);
 
     //Variables needed for moving the sprite during the walk animation.
@@ -73,7 +74,10 @@ public abstract class Enemy extends JComponent {
     public int x, y;
     public boolean dead = false;
     protected String name;
-    InPlaceAnimation attackAnimation;
+    Animation attackAnimation;
+    public Point rangedOrigin;
+    public int relativeX;
+    public int relativeY;
 
     // Loot Related properties
     protected Map<String, Object> lootTable = new HashMap<String, Object>();
@@ -82,13 +86,14 @@ public abstract class Enemy extends JComponent {
     protected int spriteWidth, spriteHeight;
 
     // main constructor with all of the stats and specific size dimensions
-    public Enemy(String name, int maxHealth, int attackPower, int defense, int agility, int speed, int w, int h, int sW, int sH, int idleColCount, int idleRolCount, int walkColCount, int walkRowCount, int attackColCount, int attackRowCount, int deathColCount, int deathRowCount, InPlaceAnimation attackAnimation, int weight) throws IOException {
+    public Enemy(String name, int maxHealth, int attackPower, int defense, int agility, int speed, int w, int h, int sW, int sH, int idleColCount, int idleRolCount, int walkColCount, int walkRowCount, int attackColCount, int attackRowCount, int deathColCount, int deathRowCount, Animation attackAnimation, int weight) throws IOException {
         currentX = 33333300;
         this.attackAnimation = attackAnimation;
         this.aniSpeed = 5;
         //Setting enemy date
         this.name = name;
-
+        if(Config.hitboxesOn)
+           // setBorder(BorderFactory.createLineBorder(Color.white));
         //Setting enemy stats
         this.maxHealth = maxHealth;
         this.currentHealth = maxHealth;
@@ -115,7 +120,7 @@ public abstract class Enemy extends JComponent {
         setSize(new Dimension(w, h));
 
         //Initializing hitbox
-        hitbox = new Rectangle(this.getX(), this.getY(), this.getWidth(), this.getHeight());
+
 
         //Populating loot table
         populateLootTable();
@@ -169,7 +174,7 @@ public abstract class Enemy extends JComponent {
         }
     }
 
-    public static BufferedImage[] importSprites(String pathName, int cols, int rows,
+    public BufferedImage[] importSprites(String pathName, int cols, int rows,
                                                 int spriteWidth, int spriteHeight) {
         BufferedImage image = loadImage(pathName);
         if (image == null) {
@@ -180,6 +185,7 @@ public abstract class Enemy extends JComponent {
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < cols; x++) {
                 int reversedX = (cols - 1 - x) * spriteWidth; // Start from the rightmost column
+
                 sprites[y * cols + x] = image.getSubimage(
                         reversedX, y * spriteHeight, spriteWidth, spriteHeight
                 );
@@ -264,46 +270,59 @@ public abstract class Enemy extends JComponent {
         int centeredX = (getWidth() - hitbox.width) / 2;
         int centeredY = (getHeight() - hitbox.height) / 2;
 
-        //g.drawRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
-        */
-        // health bar across the top
-        int barX = (getWidth() - healthBar.width) / 2;
-        healthBar.setLocation(barX, 0);
-        g.setColor(Color.red);
-        g.fillRect(healthBar.x, healthBar.y, healthBar.width, healthBar.height);
 
-        // fill portion of the bar for current health
-        int healthBarWidth = (int)((double) currentHealth / maxHealth * healthBar.width);
-        g.setColor(Color.GREEN);
-        g.fillRect(healthBar.x, healthBar.y, healthBarWidth, healthBar.height);
+        */
+        if(Config.hitboxesOn) {
+            g.setColor(Color.white);
+            g.drawRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
+            if(this.getBorder() == null) {
+                setBorder(BorderFactory.createLineBorder(Color.white));
+            }
+        } else {
+            this.setBorder(null);
+        }
+
+
+        // Center the health bar above the hitbox
+        int barX = hitbox.x + (hitbox.width - healthBar.width) / 2;
+        int barY = hitbox.y - healthBar.height - 5; // Offset by 5 pixels above the hitbox
+
+// Draw background bar (red)
+        g.setColor(Color.red);
+        g.fillRect(barX, barY, healthBar.width, healthBar.height);
+
+// Calculate and draw current health (green)
+        int healthBarWidth = (int) ((double) currentHealth / maxHealth * healthBar.width);
+        g.setColor(Color.green);
+        g.fillRect(barX, barY, healthBarWidth, healthBar.height);
 
 
 
         if(state == State.WALKING) {
-            g.drawImage(animations.get(1)[walkIndex], 0, 0, 75, 75, null);
+            g.drawImage(animations.get(1)[walkIndex], 0, 0, this.getWidth(), this.getHeight(), null);
         }
         if(state == State.IDLE) {
-            g.drawImage(animations.get(0)[aniIndex], 0, 0, 75, 75, null);
+            g.drawImage(animations.get(0)[aniIndex], 0, 0, this.getWidth(), this.getHeight(), null);
         }
 
         if(state == State.ATTACKING) {
-            g.drawImage(animations.get(2)[attackIndex], 0, 0, 75, 75, null);
+            g.drawImage(animations.get(2)[attackIndex], 0, 0, this.getWidth(), this.getHeight(), null);
         }
 
         if(state == State.DYING) {
-            g.drawImage(animations.get(3)[deathIndex], 0, 0, 75, 75, null);
+            g.drawImage(animations.get(3)[deathIndex], 0, 0, this.getWidth(), this.getHeight(), null);
         }
     }
 
-    private Runnable onComplete;
-    private boolean isAttacking = false;
-    private int attackTriggerX = 600;
-    private int slashX, slashY;
+    protected Runnable onComplete;
+    protected boolean isAttacking = false;
+    protected int attackTriggerX = 600;//////////////////THIS NEEDS WORK
+    protected int slashX, slashY;
 
-    private int deathDelayCounter = 0; // Counter to track delay frames
-    private static final int DEATH_DELAY_FRAMES = 30;
+    protected int deathDelayCounter = 0; // Counter to track delay frames
+    protected static final int DEATH_DELAY_FRAMES = 30;
 
-    public void updateEnemyStatus() {
+    public void updateEnemyStatus(Iterator<Enemy> iterator) {
 
         if(currentX <= attackTriggerX && !isAttacking) {
 
@@ -312,16 +331,16 @@ public abstract class Enemy extends JComponent {
         }
 
         if(isAttacking) {
+            //System.out.println(attackIndex+" "+(animations.get(2).length-1));
             if(attackIndex >= animations.get(2).length-1) {
 
                 this.state = State.IDLE;
                 attackIndex = 0;
-
-                attackAnimation.placeAnimation(slashX, slashY);
+                ((InPlaceAnimation) attackAnimation).placeAnimation(slashX, slashY);
                 AttackPlane.addAniToQue(attackAnimation);
-                AttackPlane.animations.get(0).startAnimation();
-                Game.gui.gameScreen.northPanel.attackPlane.playAnimation(() -> {
-                    AttackPlane.animations.get(0).stopAnimation(); // Stop animation
+
+
+                Runnable onComp = ()-> {
                     Random rand = new Random();
                     int dmg = rand.nextInt(10); // Random between 0-9
                     Game.player.takeDamage(dmg);  // Apply damage
@@ -331,7 +350,13 @@ public abstract class Enemy extends JComponent {
                     this.setBounds(startBounds);
                     currentX = this.getBounds().x;
                     onComplete.run();
-                });
+
+                };
+
+                AttackPlane.animations.get(0).onComplete = onComp;
+                AttackPlane.animations.get(0).currentState = Animation.State.MOVING;
+                AttackPlane.animations.get(0).startAnimation();
+                //
 
             }
         }
@@ -342,18 +367,22 @@ public abstract class Enemy extends JComponent {
         }
 
         if (state == State.DYING) {
-            if (aniIndex >= animations.get(3).length - 1) {
-                deathDelayCounter++; // Start counting after animation ends
 
-                if (deathDelayCounter >= DEATH_DELAY_FRAMES) {
-                    Game.gui.gameScreen.northPanel.removeEnemy(this);
-                    this.dead = true;
-                    return;
-                }
+            Game.enemyWaiting = true;
+            this.dead = true;
+            if (deathIndex >= animations.get(3).length - 1) {
+                deathDelayCounter++; // Start counting after animation ends
+                System.out.println(deathDelayCounter+" | "+DEATH_DELAY_FRAMES);
+
+                  // iterator.remove();
+                   Game.gui.gameScreen.northPanel.removeEnemy(this);
+                iterator.remove();
+                System.out.println("enemy waiting set to false");
+                Game.enemyWaiting = false;
             }
         }
     }
-
+//boolean forRemove = false;
     public Rectangle startBounds;
 
     public void setStartBounds(Rectangle r) {
@@ -369,6 +398,7 @@ public abstract class Enemy extends JComponent {
         //System.out.println("visuals have started ------");
         if (currentHealth <= 0) {
             System.out.println(this.name + " has been defeated!");
+            Game.enemyWaiting = true;
         } else {
             System.out.println(this.name + " Health: " + currentHealth + "/" + maxHealth);
         }

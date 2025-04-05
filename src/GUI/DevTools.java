@@ -1,6 +1,8 @@
 package GUI;
 
+import Entities.AttackPlane;
 import Entities.Goblin;
+import MainPackage.Config;
 import MainPackage.Game;
 
 import javax.swing.*;
@@ -112,6 +114,16 @@ public class DevTools extends JFrame {
         returnToOverworld.setBounds(110, 160, 200, 50);
 
 
+
+        JButton printNoOfAnisInQ = new JButton("Toggle Hitboxes");
+        printNoOfAnisInQ.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Config.hitboxesOn = !Config.hitboxesOn;
+            }
+        });
+        add(printNoOfAnisInQ);
+        printNoOfAnisInQ.setBounds(410,0,100,50);
 
         deckCount = new JLabel();
         deckCount.setBounds(400, 200, 200, 50);

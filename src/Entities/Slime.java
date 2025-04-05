@@ -1,6 +1,7 @@
 package Entities;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Random;
 
 import MainPackage.Game;
@@ -43,7 +44,7 @@ public class Slime extends Enemy {
     }
 
     @Override
-    public void updateEnemyStatus() {
+    public void updateEnemyStatus(Iterator<Enemy> iterator) {
 
     }
 
