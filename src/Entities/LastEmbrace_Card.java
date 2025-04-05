@@ -2,6 +2,7 @@ package Entities;
 
 import MainPackage.Game;
 
+import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.util.Random;
@@ -11,9 +12,11 @@ public class LastEmbrace_Card extends Card{
 
     private static final String IMAGE_PATH = "/Resources/Cards/LastEmbrace_Card.png";
 
-    public LastEmbrace_Card() {
+    public LastEmbrace_Card() throws IOException {
         super(IMAGE_PATH);
         this.image = loadImage(IMAGE_PATH);
+
+        this.animation = new LastEmbraceAnimation();
     }
 
     @Override
@@ -25,23 +28,28 @@ public class LastEmbrace_Card extends Card{
     public void effect() {
 
         Random rand = new Random();
-        int damage = rand.nextInt(12) + 1; // Vampire Bite deals 5-15 damage
-        System.out.println("Vampire Bite! Deals " + damage + " damage.");
+        int damage = rand.nextInt(50) + 1; // Vampire Bite deals 5-15 damage
 
         // Deal damage to the first enemy
         if (!Game.gui.gameScreen.northPanel.enemies.isEmpty()) {
             Game.gui.gameScreen.northPanel.enemies.get(0).takeDamage(damage);
+            Game.player.takeDamage(damage/2);
         }
     }
 
     @Override
     public void initCardAniBounds(Player player, Enemy enemy) throws IOException {
-        ((IceBlast) animation).initAnimation(player, enemy);
+        Point relativeOrigin = SwingUtilities.convertPoint(enemy, new Point(enemy.hitbox.x-(enemy.hitbox.width/2), enemy.hitbox.y), Game.gui.gameScreen.northPanel);
+
+        int x;
+        x = relativeOrigin.x-animation.w/2+50;
+        ((LastEmbraceAnimation) animation).placeAnimation(x, Game.gui.gameScreen.northPanel.yFloor-(animation.h/2)-60);
     }
 
     @Override
     public void initCardAniBounds(Enemy enemy, Player player) throws IOException {
-        ((IceBlast) animation).initAnimation(enemy, player);
+
+        ((LastEmbraceAnimation) animation).placeAnimation(player.relativeX, Game.gui.gameScreen.northPanel.yFloor-animation.h);
     }
 
     //paint component for drawing the cards image

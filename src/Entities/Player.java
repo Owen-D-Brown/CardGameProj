@@ -31,28 +31,40 @@ public class Player extends JComponent {
 
     protected int gold = 0;
     public int maxHealth = 100;
-    public int currentHealth = 100;
+    public int currentHealth = 50;
 
     private Rectangle hitbox = new Rectangle(25, 50, 50, 70);
     private Rectangle healthBar = new Rectangle(0, 0, 75, 10);
     private ArrayList<BufferedImage[]> animations = new ArrayList<>();
+
+    public Point rangedOrigin;
+    public int relativeX;
+    public int relativeY;
 
     public Player() throws IOException {
         setSize(new Dimension(128, 128));
         if(Config.hitboxesOn)
             //setBorder(BorderFactory.createLineBorder(Color.white));
         for(int i = 0; i<3; i++) {
-            cards.add(new Firebolt());
+            //cards.add(new Firebolt());
            // cards.add(new IceBurst());
-          //  cards.add(new Bandage());
+            //cards.add(new Potion_Card());
+            //cards.add(new Satyr_MCard());
+            //cards.add(new LastEmbrace_Card());
+          //  cards.add(new Satyr_MCard());
+           // cards.add(new Vampire_MCard());
+            cards.add(new Insanity_Card());
+            cards.add(new Insanity_Card());
         }
-        cards.add(new Satyr_MCard());
-        cards.add(new Potion_Card());
-        cards.add(new Insanity_Card());
+
+        //
+       // cards.add(new Insanity_Card());
         cards.add(new IceBurst());
         animations.add(importSprites("/Resources/FireWizard/FireWizardIdleMap.png", 7, 1, 128, 128));
         animations.add(importSprites("/Resources/FireWizard/FireWizardRangeAttackMap.png", 8, 1, 128, 128));
         animations.add(importSprites("/Resources/FireWizard/FireWizardMeleeAttackMap.png", 4, 1, 128, 128));
+        rangedOrigin = new Point(85, 75);
+
     }
 
     public void giveGold(int n) {
@@ -77,6 +89,10 @@ public class Player extends JComponent {
         int centeredX = (getWidth() - 33) / 2; // 33 is sprite width
         int centeredY = 25; // Matches the previous hitbox position
 
+        if(Config.hitboxesOn) {
+            g.setColor(Color.red);
+            g.drawRect(rangedOrigin.x, rangedOrigin.y, 10, 10);
+        }
         // Update the hitbox's position (optional, if needed for other logic)
        // hitbox.setLocation(centeredX, centeredY);
 
@@ -123,6 +139,16 @@ public class Player extends JComponent {
 
         revalidate();
         repaint();
+    }
+
+    public void heal(int healAmount) {
+        if (Game.player.currentHealth < Game.player.maxHealth) { //if players current health is less than max (100)
+            Game.player.currentHealth = Math.min(Game.player.currentHealth + healAmount, Game.player.maxHealth); //heal 10 to players health
+            FloatingText.createEffect("+"+healAmount, this, Color.GREEN);
+        //    System.out.println("Bandage used! Healed for " + healAmount + ". Current Health: " + Game.player.currentHealth);
+        } else {
+          //  System.out.println("Health is already full! Bandage has no effect.");
+        }
     }
 
     public static BufferedImage loadImage(String path) {
@@ -181,10 +207,14 @@ public class Player extends JComponent {
             if(attackCounter>=attackSpeed) {
                 attackCounter = 0;
                 attackIndex++;
+                if(attackIndex==animations.get(1).length-1) {
+                    whatToDoAfterAttackAnimation.run();
+                }
                 if(!animations.isEmpty()&&attackIndex >= animations.get(1).length) {
+                    whatToDoAfterAttackAnimation.run();
                     attackIndex = 0;
                     currentState = State.IDLE;
-                    whatToDoAfterAttackAnimation.run();
+
                 }
             }
         }

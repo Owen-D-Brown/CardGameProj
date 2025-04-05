@@ -48,6 +48,11 @@ public class NorthPanel extends JPanel {
         setComponentZOrder(attackPlane, 0);
         //Ensuring that the state of the game is reset every time a new encounter is made. Reset card slots, player deck, etc.
         resetFightState();
+
+        Point relativeOrigin = SwingUtilities.convertPoint(player, player.rangedOrigin, this);
+        player.relativeX = relativeOrigin.x;
+        player.relativeY = relativeOrigin.y;
+        System.out.println(player.relativeX+" "+player.relativeY);
     }
 
 
@@ -112,18 +117,20 @@ public class NorthPanel extends JPanel {
     }
 
     public void repositionEnemies() {
-        int x = 710;
-        int y = yFloor;
+        int baseX = 600;
+        int spacing = 70;
 
         for (int i = 0; i < enemies.size(); i++) {
-            enemies.get(i).setBounds(x, y, enemies.get(i).getWidth(), enemies.get(i).getHeight());
-            x = x + enemies.get(i).getWidth() + 10; // Increment x for the next enemy
-            System.out.println("Enemy repositioned to: "+x);
+            Enemy enemy = enemies.get(i);
+            int x = baseX + (i * (enemy.getWidth() + spacing));
+            enemy.setBounds(x, yFloor - enemy.getHeight(), enemy.getWidth(), enemy.getHeight());
+            System.out.println("Enemy repositioned to: " + x);
         }
 
         revalidate();
         repaint();
     }
+
 
     public void removeEnemy(int index) {
         if(enemies.size() >0) {

@@ -59,7 +59,7 @@ public abstract class Enemy extends JComponent {
     protected int deathSpeed = 7;
 
     //Rectangles for the hitbox and healthbar
-    protected Rectangle hitbox = new Rectangle(35, 50, 50, 70);
+    public Rectangle hitbox = new Rectangle(35, 50, 50, 70);
     protected Rectangle healthBar = new Rectangle(0, 0, 75, 10);
 
     //Variables needed for moving the sprite during the walk animation.
@@ -75,6 +75,9 @@ public abstract class Enemy extends JComponent {
     public boolean dead = false;
     protected String name;
     Animation attackAnimation;
+    public Point rangedOrigin;
+    public int relativeX;
+    public int relativeY;
 
     // Loot Related properties
     protected Map<String, Object> lootTable = new HashMap<String, Object>();

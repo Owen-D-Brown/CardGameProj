@@ -11,9 +11,10 @@ public class Satyr_MCard extends Card{
 
     private static final String IMAGE_PATH = "/Resources/Cards/Satyr_MonsterCard.png";
 
-    public Satyr_MCard() {
+    public Satyr_MCard() throws IOException {
         super(IMAGE_PATH);
         this.image = loadImage(IMAGE_PATH);
+        this.animation = new SatyrCardAttackAnimation();
     }
 
     @Override
@@ -24,23 +25,16 @@ public class Satyr_MCard extends Card{
     @Override
     public void effect() {
 
-        Random rand = new Random();
-        int damage = rand.nextInt(12) + 1; // Vampire Bite deals 5-15 damage
-        System.out.println("Vampire Bite! Deals " + damage + " damage.");
 
-        // Deal damage to the first enemy
-        if (!Game.gui.gameScreen.northPanel.enemies.isEmpty()) {
-            Game.gui.gameScreen.northPanel.enemies.get(0).takeDamage(damage);
-        }
     }
     @Override
     public void initCardAniBounds(Player player, Enemy enemy) throws IOException {
-        ((IceBlast) animation).initAnimation(player, enemy);
+        ((XaxisAnimation) animation).initAnimation(player, enemy);
     }
 
     @Override
     public void initCardAniBounds(Enemy enemy, Player player) throws IOException {
-        ((IceBlast) animation).initAnimation(enemy, player);
+        ((XaxisAnimation) animation).initAnimation(enemy, player);
     }
 
     //paint component for drawing the cards image

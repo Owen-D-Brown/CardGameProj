@@ -3,6 +3,7 @@ package MainPackage;
 import Entities.*;
 import GUI.*;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.util.*;
 
@@ -48,7 +49,6 @@ public class Game implements Runnable {
         Thread gameThread = new Thread(this);
         gameThread.start();
     }
-
 
     ///----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -199,12 +199,13 @@ public class Game implements Runnable {
         Iterator<Animation> iterator1 = AttackPlane.animations.iterator();
         while(iterator1.hasNext()) {
             Animation ani = iterator1.next();
+            ani.updateAni();//UPDATE MOVEMENT
             try {
                 ani.checkForUpdates(iterator1);//STATE CONTROL
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            ani.updateAni();//UPDATE MOVEMENT
+
 
             ani.revalidate();//READJUST POSITIONING
             ani.repaint();//REDRAW THE IMAGE
@@ -249,45 +250,50 @@ public class Game implements Runnable {
 
             if (deltaF >= 1) {//By running the game loop this way, it prevents the calculations from being messed up from a nanosecond or two slipping through the cracks. It catches up with itself.
 
-                //If there is a combat instance loaded
-                if (Game.gui.gameScreen.northPanel != null) {
+                SwingUtilities.invokeLater(() -> {
+                    //If there is a combat instance loaded
+                    if (Game.gui.gameScreen.northPanel != null) {
 
-                    //Animate the player sprite.
-                    player.animate();
-                    player.revalidate();
-                    player.repaint();
+                        //Animate the player sprite.
+                        player.animate();
+                        player.revalidate();
+                        player.repaint();
 
-                    //Update any instances of floating text that need to be animated
-                    FloatingText.update();
+                        //Update any instances of floating text that need to be animated
+                        FloatingText.update();
 
-                    //If there are no more enemies in the master enemy array. Bring the player to the rewardscreen.
-                    shouldGoToRewardScreen();
+                        //If there are no more enemies in the master enemy array. Bring the player to the rewardscreen.
+                        shouldGoToRewardScreen();
 
-                    //Remove any finished floating text instances
-                    FloatingText.removeInstances();
+                        //Remove any finished floating text instances
+                        FloatingText.removeInstances();
 
-                    //Running updates for all enemies
-                    updateEnemies();
+                        //Running updates for all enemies
+                        updateEnemies();
 
-                    //Performing a check to see if there are enemies still alive. Used for game flow
-                    if(gui.gameScreen.northPanel.enemies.size() <= 0) {allEnemiesAlive = false;}
+                        //Performing a check to see if there are enemies still alive. Used for game flow
+                        if (gui.gameScreen.northPanel.enemies.size() <= 0) {
+                            allEnemiesAlive = false;
+                        }
 
-                    /// FOR THESE METHODS TO RUN - THE GAME SHOULD BE IN CARD RESOLUTION STATE
-                    //checks the gamestate, then runs tasks that have been loaded into the resolution queue by clicking on the play hand button.
-                    checkAndRunPlayedCards();
+                        /// FOR THESE METHODS TO RUN - THE GAME SHOULD BE IN CARD RESOLUTION STATE
+                        //checks the gamestate, then runs tasks that have been loaded into the resolution queue by clicking on the play hand button.
+                        checkAndRunPlayedCards();
 
-                    //Animate animations queued up in the attack plane.
-                    animateAttackPlaneAnimations();
+                        //Animate animations queued up in the attack plane.
+                        animateAttackPlaneAnimations();
 
-                    //Check if all cards have resolved, and any dead enemies have finished their animations. Then, moves to enemy phase.
-                    checkAndMoveToEnemyPhase();
+                        //Check if all cards have resolved, and any dead enemies have finished their animations. Then, moves to enemy phase.
+                        checkAndMoveToEnemyPhase();
 
-                    //Repaint the north panel where everything is located/
-                    gui.gameScreen.northPanel.revalidate();
-                    gui.gameScreen.northPanel.repaint();
+                        //Repaint the north panel where everything is located/
+                        gui.gameScreen.northPanel.revalidate();
+                        gui.gameScreen.northPanel.repaint();
 
-                    deltaF--;//Removing one from deltaF, keeping any leftover time we may have for the next iteration.
-                }
+
+                    }
+                });
+                deltaF--;//Removing one from deltaF, keeping any leftover time we may have for the next iteration.
             }
         }
     }

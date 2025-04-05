@@ -73,7 +73,7 @@ public abstract class Card extends JComponent implements MouseListener, MouseMot
               //  System.out.println("complete: "+onComplete!=null);
                 if (onComplete != null) {
 
-                    animation.startAnimation();
+                  //  animation.startAnimation();
 
                     onComplete.run();
 

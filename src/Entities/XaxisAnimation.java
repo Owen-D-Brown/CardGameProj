@@ -2,6 +2,7 @@ package Entities;
 
 import MainPackage.Game;
 
+import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 
@@ -25,17 +26,34 @@ public class XaxisAnimation extends Animation{
     }
 
     public void initAnimation(Player player, Enemy enemy) {
-        this.currentX = player.getX();
-        this.currentY = player.getY();
-        this.targetX = enemy.getX();
-        this.targetY = enemy.getY();
-    }
+        this.currentX = player.relativeX;
+        this.currentY = player.relativeY;
 
+
+        Point relativeOrigin = SwingUtilities.convertPoint(enemy, new Point(enemy.hitbox.x-(enemy.hitbox.width/2), enemy.hitbox.y), Game.gui.gameScreen.northPanel);
+
+
+        this.targetX = relativeOrigin.x-(enemy.hitbox.width/2);
+        this.targetY = player.relativeY;
+        goingRight = true;
+    }
+    boolean goingRight=false;
     public void initAnimation(Enemy e, Player p) {
-        this.currentX = e.getX();
-        this.currentY = e.getY();
-        this.targetX = p.getX();
-        this.targetY = p.getY();
+
+
+        Point relativeOrigin = SwingUtilities.convertPoint(e, e.rangedOrigin, Game.gui.gameScreen.northPanel);
+        e.relativeX = relativeOrigin.x;
+        e.relativeY = relativeOrigin.y;
+
+        this.currentX = e.relativeX;
+        this.currentY = e.relativeY;
+
+
+
+
+        this.targetX = p.relativeX;
+        this.targetY = e.relativeY;
+
     }
 
 

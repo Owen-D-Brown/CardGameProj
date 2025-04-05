@@ -24,20 +24,28 @@ public class Animation extends JComponent {
     protected int aniIndex = 0;
     protected int aniSpeed;
     protected int aniCounter = 0;
+    protected int w;
+    protected int h;
 
     public Animation( String filePath, int w, int h, int col, int row, int aniSpeed) throws IOException {
         this.filePath = filePath;
         this.aniSpeed = aniSpeed;
         this.sprites = importSprites(filePath, col, row, w, h);
         //calculateDuration();
+        setSize(w, h);
+        this.w = w;
+        this.h = h;
+        setBorder(BorderFactory.createLineBorder(Color.BLACK, 5));
+
 
     }
 
     public void checkForUpdates(Iterator<Animation> i) throws IOException {
-
+       // System.out.println("parent "+currentState);
 
         if(isMoving && currentState == State.WAITING) {
             currentState = State.MOVING;
+
         }
 
         if(currentState == State.MOVING) {
@@ -66,6 +74,7 @@ public class Animation extends JComponent {
                 onComplete.run();
             }
         }
+       // System.out.println("2parent "+currentState);
     }
 
 
@@ -103,6 +112,7 @@ public class Animation extends JComponent {
         isMoving = true;
         //state to moving
         currentState = State.MOVING;
+        System.out.println("STARTING ANIMATION");
     }
 
     public void stopAnimation() {
@@ -125,7 +135,7 @@ public class Animation extends JComponent {
             if (aniCounter >= aniSpeed) {
                 aniCounter = 0;
                 aniIndex++;
-                System.out.println(sprites.length+"  "+aniIndex);
+
                 if (sprites.length > 0 && aniIndex >= sprites.length) {
 
                     aniIndex = 0;
@@ -143,7 +153,7 @@ public class Animation extends JComponent {
         super.paintComponent(g);
         if (isMoving) {
 
-            g.drawImage(sprites[aniIndex], x, y, 53*2, 32*2, null);
+            g.drawImage(sprites[aniIndex], x, y, w, h, null);
         }
     }
 
