@@ -209,10 +209,10 @@ public class RootContainer extends JFrame {
     }
 
     public void returnToOverworld() {
-        showScreen(worldPanel);              // ⬅️ Show the overworld map
-        gamePanel.gameState = gamePanel.S_PLAY;        // ⬅️ Make sure the state is PLAYING
-        worldPanel.startGameThread();        // ⬅️ Restart the game loop (if needed)
-        worldPanel.requestFocusInWindow();   // ⬅️ Ensure keyboard input is focused
+        showScreen(worldPanel);              // Show the overworld map
+        gamePanel.gameState = gamePanel.S_PLAY;    // Make sure the state is PLAYING
+        worldPanel.startGameThread();        // Restart the game loop (if needed)
+        worldPanel.requestFocusInWindow();   // Ensure keyboard input is focused
     }
 
 
@@ -222,7 +222,7 @@ public class RootContainer extends JFrame {
         availableEnemies.add(new Orc());    // Weight: 10
         availableEnemies.add(new Goblin2());   // Weight: 10
         availableEnemies.add(new Orc2());      // Weight: 20
-        //availableEnemies.add(new SpearBoneMan());
+        availableEnemies.add(new SpearBoneMan());  // Weight: 10
 
         ArrayList<Enemy> selectedEnemies = new ArrayList<>();
         HashSet<Class<?>> selectedEnemyTypes = new HashSet<>();
@@ -237,7 +237,7 @@ public class RootContainer extends JFrame {
             }
         }
 
-        // ✅ NEW: Loop with filtered enemy list
+        //Loop with filtered enemy list
         while (!validEnemies.isEmpty() && selectedEnemies.size() < 3) {
             List<Enemy> possibleEnemies = new ArrayList<>();
 
@@ -274,7 +274,7 @@ public class RootContainer extends JFrame {
         return encounter;
     }
     public void loadMapAndSwitch(String path, int dungeonIndex) {
-        MapData mapData = CombatMap.CombatMapManager.getOrLoadMap(path); // ✅ Use persisted version
+        MapData mapData = CombatMap.CombatMapManager.getOrLoadMap(path); //Use persisted version
         mapScreen.setMapData(mapData);
         mapScreen.setCurrentDungeonIndex(dungeonIndex);
 
