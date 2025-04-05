@@ -43,13 +43,13 @@ public class EncounterPanel extends JPanel {
         add(choicesPanel);
     }
 
-    // ✅ New method to assign the background
+    //New method to assign the background
     public void setBackgroundImage(ImageIcon icon) {
         this.backgroundImage = icon.getImage();
         repaint();
     }
 
-    // ✅ Override to draw background
+    //Override to draw background
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -89,14 +89,47 @@ public class EncounterPanel extends JPanel {
             button.setMaximumSize(new Dimension(400, 40));
 
             button.addActionListener(e -> {
+                // Update description
                 setDescription(choice.getOutcomeText());
-                updateChoices(List.of()); // Clear old buttons
-                appendButton("Continue", () -> {
-                    System.out.println("Returning to combat map...");
-                });
 
-                System.out.println("Effect: " + choice.getEffectType() + " | Value: " + choice.getEffectValue());
+                // Process effect
+                String effect = choice.getEffectType();
+                int value = choice.getEffectValue();
+
+                switch (effect) {
+                    case "gold":
+                        Game.player.giveGold(value); // increase gold count
+                        break;
+                    case "removegold":
+                        Game.player.removeGold(value); // reduce gold count
+                        break;
+                    case "heal":
+                        Game.player.heal(value); // this would increase current HP
+                        break;
+                    case "maxHP":
+                        Game.player.increaseMaxHP(value); // add to max HP
+                        break;
+                    case "chanceGoldOrPenalty":
+                        boolean success = Game.player.tryChestEncounter(value, 30); // value = HP penalty, 30 = gold reward
+                        if (success) {
+                            setDescription("You pry open the chest and find a small pile of gold! (+30 Gold)");
+                            updateChoices(List.of());
+                            appendButton("Continue", () -> Game.gui.showScreen(Game.gui.mapScreen));
+                        } else {
+                            setDescription("A trap! The chest blasts you with a curse. (-" + value + " Max HP)");
+                            updateChoices(List.of(
+                                    new EncounterChoice("Try again", "", "chanceGoldOrPenalty", value),
+                                    new EncounterChoice("Leave it", "You step back, defeated.", "none", 0)
+                            ));
+                        }
+                        return; // prevent showing the Continue button below
+                }
+
+                // Show Continue button
+                updateChoices(List.of());
+                appendButton("Continue", () -> Game.gui.showScreen(Game.gui.mapScreen));
             });
+
 
             choicesPanel.add(Box.createVerticalStrut(10));
             choicesPanel.add(button);

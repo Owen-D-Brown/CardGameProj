@@ -7,13 +7,13 @@
       {
         "label": "Drink from the fountain",
         "outcomeText": "You feel your vitality surging. (+10 Max HP)",
-        "effectType": "increaseMaxHP",
+        "effectType": "MaxHP",
         "effectValue": 10
       },
       {
         "label": "Reach into the water",
         "outcomeText": "You find a handful of glittering gold! (+15 Gold)",
-        "effectType": "gainGold",
+        "effectType": "gold",
         "effectValue": 15
       }
     ]
@@ -25,9 +25,9 @@
     "choices": [
       {
         "label": "Attempt to pick the lock (25%)",
-        "outcomeText": "Success! Inside lies a glittering pile of gold! (+100 Gold)",
-        "effectType": "gainGold",
-        "effectValue": 100
+        "outcomeText": "",
+        "effectType": "chanceGoldOrPenalty",
+        "effectValue": 5
       },
       {
         "label": "Leave the chest",
@@ -38,3 +38,4 @@
     ]
   }
 ]
+
