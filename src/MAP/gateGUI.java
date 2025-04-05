@@ -7,6 +7,13 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+import CombatMap.MapData;
+import CombatMap.MapGameplayPane;
+import CombatMap.MapLoader;
+import MainPackage.Game;
+import CombatMap.GameProgress;
+
+
 public class gateGUI extends JPanel {
     private BufferedImage backgroundImage;
 
@@ -42,37 +49,60 @@ public class gateGUI extends JPanel {
                 ImagePanel button = new ImagePanel(img);
                 button.setBounds(startX + i * (buttonWidth + spacing), y, buttonWidth, buttonHeight);
 
-                int buttonIndex = i; // Need a final or effectively final variable for inner class
+                int buttonIndex = i;
 
-                // making each button clickable
-                button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)); //clickable cursor for iamge/button
-                button.addMouseListener(new java.awt.event.MouseAdapter() {
-                    @Override
-                    public void mouseClicked(java.awt.event.MouseEvent e) {
-                        System.out.println("Button " + (buttonIndex + 1) + " clicked!");
-                        // action for the buttons here
-                        switch (buttonIndex) {
-                            case 0:
-                                System.out.println("Action for Button 1");
-                                break;
-                            case 1:
-                                System.out.println("Action for Button 2");
-                                break;
-                            case 2:
-                                System.out.println("Action for Button 3");
-                                break;
-                            case 3:
-                                System.out.println("Action for Button 4");
-                                break;
+                boolean unlocked = GameProgress.isUnlocked(buttonIndex);
+                boolean completed = GameProgress.isDungeonCompleted(buttonIndex);
+
+                if (!unlocked) {
+                    button.setEnabled(false);
+                    button.setToolTipText("This gate is locked.");
+                    button.setCursor(Cursor.getDefaultCursor());
+                    button.setOpaque(true);
+                    button.setBackground(new Color(0, 0, 0, 120));
+                } else if (completed) {
+                    button.setEnabled(false);
+                    button.setToolTipText("This dungeon is already completed.");
+                    button.setCursor(Cursor.getDefaultCursor());
+                    button.setOpaque(true);
+                    button.setBackground(new Color(0, 0, 0, 120));
+                } else {
+                    button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                    button.setToolTipText("Enter Dungeon " + (buttonIndex + 1));
+
+                    button.addMouseListener(new java.awt.event.MouseAdapter() {
+                        @Override
+                        public void mouseClicked(java.awt.event.MouseEvent e) {
+                            JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(gateGUI.this);
+                            topFrame.dispose();
+
+                            try {
+                                String mapPath = switch (buttonIndex) {
+                                    case 0 -> "Resources/maps/map01.json";
+                                    case 1 -> "Resources/maps/map02.json";
+                                    case 2 -> "Resources/maps/map03.json";
+                                    case 3 -> "Resources/maps/map04.json";
+                                    default -> throw new IllegalStateException("Unexpected button index: " + buttonIndex);
+                                };
+
+                                Game.gui.loadMapAndSwitch(mapPath, buttonIndex);
+
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
                         }
-                    }
-                });
+                    });
+                }
 
                 add(button);
+
             } catch (IOException | IllegalArgumentException e) {
                 System.out.println("Failed to load image at: " + imagePaths[i]);
             }
         }
+
+
+
 
         // Fading text
         FadingText fadingText = new FadingText("Enter A Gate");
@@ -104,7 +134,7 @@ public class gateGUI extends JPanel {
     }
 
 
-    private static class ImagePanel extends JPanel {
+    private class ImagePanel extends JPanel {
         private final BufferedImage icon;
         private BufferedImage frame;
 
@@ -131,15 +161,17 @@ public class gateGUI extends JPanel {
 
             // draw the icon inside with padding
             if (icon != null) {
+                BufferedImage iconToDraw = isEnabled() ? icon : gateGUI.this.toGrayscale(icon);
                 int padding = 20;
                 int iconWidth = getWidth() - 2 * padding;
                 int iconHeight = getHeight() - 2 * padding;
-                g2d.drawImage(icon, padding, padding, iconWidth, iconHeight, this);
+                g2d.drawImage(iconToDraw, padding, padding, iconWidth, iconHeight, this);
             }
 
             g2d.dispose();
         }
     }
+
 
     // Faded text custom
     private class FadingText extends JComponent {
@@ -189,6 +221,20 @@ public class gateGUI extends JPanel {
             g2.drawString(text, x, y);
             g2.dispose();
         }
+    }
+
+    private BufferedImage toGrayscale(BufferedImage original) {
+        BufferedImage gray = new BufferedImage(original.getWidth(), original.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        for (int y = 0; y < original.getHeight(); y++) {
+            for (int x = 0; x < original.getWidth(); x++) {
+                int rgba = original.getRGB(x, y);
+                Color col = new Color(rgba, true);
+                int grayValue = (int) (0.3 * col.getRed() + 0.59 * col.getGreen() + 0.11 * col.getBlue());
+                Color grayColor = new Color(grayValue, grayValue, grayValue, col.getAlpha());
+                gray.setRGB(x, y, grayColor.getRGB());
+            }
+        }
+        return gray;
     }
 
     public static void main(String[] args) {

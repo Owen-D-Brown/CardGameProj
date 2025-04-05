@@ -82,12 +82,10 @@ public class MapGameplayPane extends JPanel {
                 System.out.println("Node clicked: " + node.id + " - Type: " + node.type);
 
                 if (node.type.equals("encounter")) {
-                    // Load random encounter
                     EncounterData encounter = EncounterManager.loadRandomEncounter();
                     if (encounter != null) {
                         ImageIcon background = new ImageIcon("src/Resources//RandomEvents/encounterbg.png");
                         Game.gui.encounterPanel.setBackgroundImage(background);
-
                         Game.gui.encounterPanel.displayEncounter(encounter);
                         Game.gui.showScreen(Game.gui.encounterPanel);
                         node.setDefeated(true);
@@ -118,12 +116,34 @@ public class MapGameplayPane extends JPanel {
                 rootContainer.gameScreen.center.repaint();
 
                 node.setDefeated(true);
+
+                // Unlock next dungeon if boss node is defeated
+                if ("boss".equals(node.getType())) {
+                    System.out.println("Boss node defeated.");
+
+                    String mapId = mapData.getMapID();
+                    try {
+                        int index = Integer.parseInt(mapId.replaceAll("[^0-9]", "")) - 1;
+
+                        // ✅ Mark this dungeon as completed
+                        GameProgress.markDungeonCompleted(index);
+
+                        // ✅ Unlock the next dungeon
+                        GameProgress.unlockNextDungeon(index);
+
+                    } catch (Exception ex) {
+                        System.err.println("Failed to parse map index from mapID: " + mapId);
+                    }
+                }
+
+
                 repaint();
                 setVisible(false);
                 return;
             }
         }
     }
+
 
     private void updateHoveredNode(Point mousePosition) {
         MapNode previousHovered = hoveredNode;

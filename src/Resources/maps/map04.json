@@ -1,0 +1,53 @@
+{
+  "mapID": "map04",
+  "nodes": [
+    {
+      "id": 1,
+      "type": "boss",
+      "x": 600,
+      "y": 200,
+      "connections": [],
+      "combatID": -1
+    },
+    {
+      "id": 2,
+      "type": "combat",
+      "x": 600,
+      "y": 325,
+      "connections": [1],
+      "combatID": -1
+    },
+    {
+      "id": 3,
+      "type": "encounter",
+      "x": 600,
+      "y": 450,
+      "connections": [2],
+      "combatID": -2
+    },
+    {
+      "id": 4,
+      "type": "encounter",
+      "x": 600,
+      "y": 575,
+      "connections": [3],
+      "combatID": -2
+    },
+    {
+      "id": 5,
+      "type": "encounter",
+      "x": 600,
+      "y": 700,
+      "connections": [4],
+      "combatID": -2
+    },
+    {
+      "id": 6,
+      "type": "encounter",
+      "x": 600,
+      "y": 825,
+      "connections": [5],
+      "combatID": -2
+    }
+  ]
+}

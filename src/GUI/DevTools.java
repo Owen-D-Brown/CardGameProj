@@ -81,11 +81,11 @@ public class DevTools extends JFrame {
         addSlot.setBounds(10,100,100,50);
 
         // Complete Combat Button
-        JButton completeCombat = new JButton("COMPLETE COMBAT");
-        completeCombat.addActionListener(new ActionListener() {
+        JButton returnToCombatMap = new JButton("RETURN TO COMBAT MAP");
+        returnToCombatMap.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("🟢 COMPLETE COMBAT button clicked!");
+                System.out.println("RETURN TO COMBAT MAP button clicked!");
 
                 // ⬆ Scale randomized combat weights here
                 Game.randomCombatNodeClicks++;
@@ -97,12 +97,21 @@ public class DevTools extends JFrame {
                 System.out.println("➡ New Combat Weight Range - Min: " + Game.randomCombatMinWeight +
                         ", Max: " + Game.randomCombatMaxWeight);
 
-                // ✅ Call existing cleanup method
+                //Call existing cleanup method
                 completeCombatAndReturnToMap();
             }
         });
-        add(completeCombat);
-        completeCombat.setBounds(110, 100, 150, 50); // Position for better layout
+        add(returnToCombatMap);
+        returnToCombatMap.setBounds(110, 100, 150, 50);
+
+        JButton returnToOverworld = new JButton("RETURN TO OVERWORLD");
+        returnToOverworld.addActionListener(e -> {
+            Game.gui.returnToOverworld();
+        });
+        add(returnToOverworld);
+        returnToOverworld.setBounds(110, 160, 200, 50);
+
+
 
         deckCount = new JLabel();
         deckCount.setBounds(400, 200, 200, 50);
@@ -130,7 +139,7 @@ public class DevTools extends JFrame {
      * Ensures all combat-related components are turned off.
      */
     private void completeCombatAndReturnToMap() {
-        System.out.println("Completing combat and returning to the map...");
+        System.out.println("Completing combat and returning to the map");
 
         // Hide combat-related UI elements
         Game.gui.gameScreen.glassPane.setVisible(false);

@@ -1,7 +1,9 @@
 package GUI;
 
+import CombatMap.MapData;
 import CombatMap.MapGameplayPane;
 import CombatMap.MapGui;
+import CombatMap.MapLoader;
 import Entities.*;
 import MainPackage.Config;
 import MainPackage.Game;
@@ -107,9 +109,19 @@ public class RootContainer extends JFrame {
         menu.add(worldButton);
 
 
-        JButton mapTestButton = new JButton("Map01 Test");//added button to test map function on launch
-        mapTestButton.addActionListener(e -> showScreen(mapScreen));
+        JButton mapTestButton = new JButton("Map01 Test");
+        mapTestButton.addActionListener(e -> {
+            try {
+                CombatMap.MapData mapData = CombatMap.MapLoader.loadMap("Resources/maps/map01.json");
+                mapScreen.setMapData(mapData); // set new map data
+                ((CombatMap.MapGameplayPane) getGlassPane()).setMapData(mapData); // update node overlay
+                showScreen(mapScreen); // now show the updated screen
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
         menu.add(mapTestButton);
+
 
 
         JButton randomFightButton = new JButton("Random Fight");
@@ -196,6 +208,12 @@ public class RootContainer extends JFrame {
         }
     }
 
+    public void returnToOverworld() {
+        showScreen(worldPanel);              // ⬅️ Show the overworld map
+        gamePanel.gameState = gamePanel.S_PLAY;        // ⬅️ Make sure the state is PLAYING
+        worldPanel.startGameThread();        // ⬅️ Restart the game loop (if needed)
+        worldPanel.requestFocusInWindow();   // ⬅️ Ensure keyboard input is focused
+    }
 
 
     public NorthPanel startRandomFight(int maxWeight, int minWeight) throws IOException {
@@ -255,8 +273,17 @@ public class RootContainer extends JFrame {
         encounter.initAniBounds();
         return encounter;
     }
+    public void loadMapAndSwitch(String path, int dungeonIndex) {
+        MapData mapData = CombatMap.CombatMapManager.getOrLoadMap(path); // ✅ Use persisted version
+        mapScreen.setMapData(mapData);
+        mapScreen.setCurrentDungeonIndex(dungeonIndex);
 
+        // Update the glass pane too
+        MapGameplayPane glassPane = (MapGameplayPane) getGlassPane();
+        glassPane.setMapData(mapData);
 
+        showScreen(mapScreen);
+    }
 
 
 }
