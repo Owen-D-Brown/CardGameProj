@@ -228,6 +228,7 @@ public abstract class Enemy extends JComponent {
                 startBounds = this.getBounds();
                 startXset = true;
             }
+
             currentX = temp.x;
             //System.out.println("Currrent X: "+currentX + "Attack Trigger X: "+attackTriggerX+" is attaacking: "+isAttacking);
             this.setBounds(temp.x -=movingSpeed, temp.y, temp.width, temp.height);
@@ -323,8 +324,8 @@ public abstract class Enemy extends JComponent {
     protected static final int DEATH_DELAY_FRAMES = 30;
 
     public void updateEnemyStatus(Iterator<Enemy> iterator) {
-
-        if(currentX <= attackTriggerX && !isAttacking) {
+       // System.out.println("current X: "+currentX+" playerX "+Game.player.relativeX);
+        if(currentX <= Game.player.relativeX&& !isAttacking) {
 
             this.state = State.ATTACKING;
             isAttacking = true;

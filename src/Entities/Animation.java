@@ -40,6 +40,10 @@ public class Animation extends JComponent {
 
     }
 
+    public Animation clone() {
+      return this;
+    }
+
     public void checkForUpdates(Iterator<Animation> i) throws IOException {
        // System.out.println("parent "+currentState);
 

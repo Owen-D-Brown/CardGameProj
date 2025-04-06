@@ -63,7 +63,7 @@ public class XaxisAnimation extends Animation{
       //  System.out.println("updating ani");
        // super.updateAni();
         if(isMoving) {
-            double speed = 0.1; // Moves 20% of the remaining distance each frame
+            double speed = 0.2; // Moves 20% of the remaining distance each frame
 
             currentX += (targetX - currentX) * speed;
             currentY += (targetY - currentY) * speed;

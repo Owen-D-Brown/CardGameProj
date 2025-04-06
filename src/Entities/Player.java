@@ -53,18 +53,26 @@ public class Player extends JComponent {
             //cards.add(new LastEmbrace_Card());
           //  cards.add(new Satyr_MCard());
            // cards.add(new Vampire_MCard());
-            cards.add(new Insanity_Card());
-            cards.add(new Insanity_Card());
+          //  cards.add(new Insanity_Card());
+          //  cards.add(new Insanity_Card());
         }
 
         //
        // cards.add(new Insanity_Card());
+        cards.add(new Insanity_Card());
         cards.add(new IceBurst());
+        cards.add(new Vampire_MCard());
+        cards.add(new LastEmbrace_Card());
+        cards.add(new Satyr_MCard());
+        cards.add(new Potion_Card());
+        cards.add(new Firebolt());
         animations.add(importSprites("/Resources/FireWizard/FireWizardIdleMap.png", 7, 1, 128, 128));
         animations.add(importSprites("/Resources/FireWizard/FireWizardRangeAttackMap.png", 8, 1, 128, 128));
         animations.add(importSprites("/Resources/FireWizard/FireWizardMeleeAttackMap.png", 4, 1, 128, 128));
         rangedOrigin = new Point(85, 75);
-
+        Point relativeOrigin = SwingUtilities.convertPoint(this, this.rangedOrigin, this);
+        relativeX = relativeOrigin.x;
+        System.out.println("relative X "+relativeX);
     }
 
     public void giveGold(int n) {

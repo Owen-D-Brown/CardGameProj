@@ -101,28 +101,29 @@ public class NorthPanel extends JPanel {
 
         enemies.add(enemy);
         add(enemy);
-
-        int baseX = 600;
-        int spacing = 70;
-        int x = baseX + ((enemies.size() - 1) * (enemy.getWidth() + spacing));
-
-
-        enemy.setBounds(x, yFloor-enemy.getHeight(), enemy.getWidth(), enemy.getHeight());
         enemy.setStartBounds(this.getBounds());
 
+        repositionEnemies(); // handles x/y positioning for all
         revalidate();
         repaint();
 
-        System.out.println("Enemy added at: " + yFloor + " - NorthPanel - " + this.getBounds().toString() + " | " + enemy.startBounds.toString()+" "+player.getBounds().y);
+        System.out.println("Enemy added at: " + yFloor + " - NorthPanel - " + this.getBounds().toString() + " | " + enemy.startBounds.toString() + " " + player.getBounds().y);
     }
 
+
     public void repositionEnemies() {
-        int baseX = 600;
+        int baseX = 300;
         int spacing = 70;
+
+        // Determine fixed width (max of all enemies or a predefined size)
+        int fixedWidth = enemies.stream()
+                .mapToInt(Enemy::getWidth)
+                .max()
+                .orElse(64); // fallback if list is empty
 
         for (int i = 0; i < enemies.size(); i++) {
             Enemy enemy = enemies.get(i);
-            int x = baseX + (i * (enemy.getWidth() + spacing));
+            int x = baseX + i * (fixedWidth + spacing);
             enemy.setBounds(x, yFloor - enemy.getHeight(), enemy.getWidth(), enemy.getHeight());
             System.out.println("Enemy repositioned to: " + x);
         }

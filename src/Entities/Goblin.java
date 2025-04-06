@@ -15,8 +15,8 @@ public class Goblin extends Enemy {
 
     public Goblin() throws IOException {
 
-        super("Goblin", 20, 5, 1, 0, 2, 100, 100, 600, 500, 8, 1, 6, 1, 6, 1, 6, 1, new GoblinAttackAnimation(), 5);
-
+        super("Goblin", 20, 5, 1, 0, 2, 72, 72, 600, 500, 8, 1, 6, 1, 6, 1, 6, 1, new GoblinAttackAnimation(), 5);
+        this.hitbox = new Rectangle(20, 10, 40, 60);
 
 
 

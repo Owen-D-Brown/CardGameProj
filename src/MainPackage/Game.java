@@ -129,7 +129,7 @@ public class Game implements Runnable {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-            }, player.getX(), player.getY());
+            }, player.relativeX-70, player.relativeY);
         }
 
         else //If the card slot doesn't have a card in it.

@@ -13,7 +13,7 @@ public class RangedEnemy extends Enemy {
 
     public RangedEnemy(String name, int maxHealth, int attackPower, int defense, int agility, int speed, int w, int h, int sW, int sH, int idleColCount, int idleRolCount, int walkColCount, int walkRowCount, int attackColCount, int attackRowCount, int deathColCount, int deathRowCount, Animation attackAnimation, int weight) throws IOException {
         super(name, maxHealth, attackPower, defense, agility, speed, w, h, sW, sH, idleColCount, idleRolCount, walkColCount, walkRowCount, attackColCount, attackRowCount, deathColCount, deathRowCount, attackAnimation, weight);
-        this.attackAnimation = new Fireball();
+        this.attackAnimation = attackAnimation;
     }
 
     @Override
@@ -94,7 +94,7 @@ public class RangedEnemy extends Enemy {
 
     @Override
     public void attack(Runnable onComplete, int x, int y) throws IOException {
-        this.attackAnimation = new Fireball();
+        this.attackAnimation = attackAnimation.clone();
         ((XaxisAnimation) attackAnimation).initAnimation(this, Game.player);
         this.onComplete = onComplete;
         attackIndex = 0;

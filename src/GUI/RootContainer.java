@@ -2,10 +2,7 @@ package GUI;
 
 import CombatMap.MapGameplayPane;
 import CombatMap.MapGui;
-import Entities.Enemy;
-import Entities.Goblin;
-import Entities.Orc;
-import Entities.SatyrFemale;
+import Entities.*;
 import MainPackage.Config;
 import MainPackage.Game;
 import MainPackage.NorthPanel;
@@ -130,8 +127,14 @@ public class RootContainer extends JFrame {
         switch(num) {
             case 1:
                 ArrayList<Enemy> entities = new ArrayList<>();
-                entities.add(new SatyrFemale());
+
+               // entities.add(new SatyrFemale());
+                entities.add(new Knight());
+                entities.add(new Goblin());
                 entities.add(new Orc());
+
+               // entities.add(new Orc());
+
 
                 return new NorthPanel(entities);
             case 2:
@@ -142,9 +145,9 @@ public class RootContainer extends JFrame {
                 entities1.add(orc);
                 NorthPanel encounter = new NorthPanel(entities1);
                 //encounter.positionEnemy(goblin, 950, 150);
-                encounter.createSpawnZone(750, 175, 100, 100);
-                encounter.createSpawnZone(900, 175, 100, 100);
-                encounter.populateSpawnZones();
+             //   encounter.createSpawnZone(750, 175, 100, 100);
+              //  encounter.createSpawnZone(900, 175, 100, 100);
+              //  encounter.populateSpawnZones();
 
                 return encounter;
         }
