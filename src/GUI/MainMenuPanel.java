@@ -11,7 +11,7 @@ import java.awt.image.BufferedImage;
 import java.io.InputStream;
 
 public class MainMenuPanel extends JPanel {
-    private static final String IMAGE_PATH = "/Resources/MenuImages/Mainmenu.png";
+    private static final String IMAGE_PATH = "/Resources/MenuImages/MainMenuFinal.png";
     protected BufferedImage image;
     public MainMenuPanel(RootContainer root) {
         //load background image
