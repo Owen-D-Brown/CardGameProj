@@ -1,9 +1,11 @@
 package RandomEncounter;
 
+import GUI.RootContainer;
 import MainPackage.Game;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.util.List;
 
 public class EncounterPanel extends JPanel {
@@ -13,8 +15,10 @@ public class EncounterPanel extends JPanel {
     private JPanel choicesPanel;
     private EncounterData currentEncounter;
     private Image backgroundImage; // New field for background image
+    private RootContainer rootContainer;
 
-    public EncounterPanel() {
+    public EncounterPanel(RootContainer rootContainer) {
+        this.rootContainer = rootContainer;
         setLayout(null);
         setPreferredSize(new Dimension(1000, 1000));
         setBackground(Color.BLACK); // Fallback
@@ -109,6 +113,24 @@ public class EncounterPanel extends JPanel {
                     case "maxHP":
                         Game.player.increaseMaxHP(value); // add to max HP
                         break;
+                    case "triggerCombat":
+                        try {
+                            // Transition to the combat screen cleanly
+                            Game.gui.showScreen(Game.gui.gameScreen);
+                            Game.gui.gameScreen.glassPane.setVisible(true);
+                            Game.gui.gameScreen.cardLayout.show(Game.gui.gameScreen.centerContainer, "main");
+                            Game.unslotAllCards();
+                            Game.gui.gameScreen.center.revalidate();
+                            Game.gui.gameScreen.center.repaint();
+
+                            // Start the predefined encounter
+                            rootContainer.gameScreen.newFight(rootContainer.startFight(value));
+
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                        return; // Skip showing 'continue' button
+
                     case "chanceGoldOrPenalty":
                         boolean success = Game.player.tryChestEncounter(value, 30); // value = HP penalty, 30 = gold reward
                         if (success) {

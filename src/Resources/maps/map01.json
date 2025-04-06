@@ -7,7 +7,7 @@
       "x": 600,
       "y": 200,
       "connections": [],
-      "combatID": -1
+      "combatID": 1
     },
     {
       "id": 2,
@@ -15,7 +15,7 @@
       "x": 600,
       "y": 325,
       "connections": [1],
-      "combatID": -1
+      "combatID": 3
     },
     {
       "id": 3,
@@ -31,7 +31,7 @@
       "x": 600,
       "y": 575,
       "connections": [3],
-      "combatID": -1
+      "combatID": 3
     },
     {
       "id": 5,
@@ -47,7 +47,7 @@
       "x": 600,
       "y": 825,
       "connections": [5],
-      "combatID": -1
+      "combatID": 1
     }
   ]
 }

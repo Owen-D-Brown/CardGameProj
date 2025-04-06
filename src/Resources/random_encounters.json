@@ -36,6 +36,25 @@
         "effectValue": 0
       }
     ]
+  },
+  {
+    "id": "corridor_ambush",
+    "imagePath": "src/Resources/RandomEvents/ambush_corridor.png",
+    "description": "You hear rustling and heavy breathing down the corridor. Could be trouble... or opportunity.",
+    "choices": [
+      {
+        "label": "Approach and engage",
+        "outcomeText": "You ready your deck and charge in!",
+        "effectType": "triggerCombat",
+        "effectValue": 4
+      },
+      {
+        "label": "Sneak past quietly",
+        "outcomeText": "You avoid conflict and continue on your way.",
+        "effectType": "none",
+        "effectValue": 0
+      }
+    ]
   }
 ]
 
