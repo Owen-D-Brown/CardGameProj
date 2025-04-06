@@ -29,8 +29,7 @@ public class BattleGUI extends JPanel {
     public JPanel centerContainer;
     public CardLayout cardLayout;
     public JPanel gamePanel;
-    public JPanel rewardScreen;
-
+    public RewardScreen rewardScreen;
     // Constructor
     public BattleGUI(Game game) {
 
@@ -77,7 +76,7 @@ public class BattleGUI extends JPanel {
         centerContainer.add(center, "main");
 
         //Reward screen that appears after each successful fight.
-        rewardScreen = new JPanel();
+        rewardScreen = new RewardScreen();
         rewardScreen.setBackground(Color.black);
         rewardScreen.setLayout(null);
         centerContainer.add(rewardScreen, "rewardScreen");
@@ -117,7 +116,7 @@ public class BattleGUI extends JPanel {
 
     }
 
-    public void getLootRewards() {
+   /* public void getLootRewards() {
         //for each enemy - will require changing
         for(int i = 0; i<=northPanel.enemies.size()-1; i++) {
             Map.Entry<String, Object> item = northPanel.enemies.get(i).generateLoot();
@@ -144,7 +143,7 @@ public class BattleGUI extends JPanel {
                     } else {
                         Game.player.giveTrinket(item);
                     }
-                    System.out.println("Player gold: "+Game.player.getGold()+"\n Player trinkets: "+Game.player.getTrinkets());
+                   // System.out.println("Player gold: "+Game.player.getGold()+"\n Player trinkets: "+Game.player.getTrinkets());
                     trinketSideBar.populateTrinketBar();
                     rewardScreen.revalidate();
                     rewardScreen.repaint();
@@ -152,7 +151,7 @@ public class BattleGUI extends JPanel {
             });
             rewardScreen.add(takeLoot);
         }
-    }
+    }*/
 
 
 
@@ -178,10 +177,12 @@ public class BattleGUI extends JPanel {
 
         this.gamePanel.add(fight, BorderLayout.NORTH);
         this.northPanel = fight;
-        getLootRewards();
+        rewardScreen.getLootRewards();
         glassPane.drawCard();
         this.revalidate();
         this.repaint();
 
     }
+
+
 }

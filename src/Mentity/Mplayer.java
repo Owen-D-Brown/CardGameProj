@@ -172,10 +172,10 @@ public class Mplayer extends Mentity {
             return true;
         }
         // Debugging Log
-        System.out.println("Checking collision at (" + tileRowTop + "," + tileColLeft + ") - " + gp.tileManager.cMap[tileRowTop][tileColLeft]);
-        System.out.println("Checking collision at (" + tileRowTop + "," + tileColRight + ") - " + gp.tileManager.cMap[tileRowTop][tileColRight]);
-        System.out.println("Checking collision at (" + tileRowBottom + "," + tileColLeft + ") - " + gp.tileManager.cMap[tileRowBottom][tileColLeft]);
-        System.out.println("Checking collision at (" + tileRowBottom + "," + tileColRight + ") - " + gp.tileManager.cMap[tileRowBottom][tileColRight]);
+       // System.out.println("Checking collision at (" + tileRowTop + "," + tileColLeft + ") - " + gp.tileManager.cMap[tileRowTop][tileColLeft]);
+       // System.out.println("Checking collision at (" + tileRowTop + "," + tileColRight + ") - " + gp.tileManager.cMap[tileRowTop][tileColRight]);
+        //System.out.println("Checking collision at (" + tileRowBottom + "," + tileColLeft + ") - " + gp.tileManager.cMap[tileRowBottom][tileColLeft]);
+        //System.out.println("Checking collision at (" + tileRowBottom + "," + tileColRight + ") - " + gp.tileManager.cMap[tileRowBottom][tileColRight]);
 
         // check if player is in the corner of a tile
         return

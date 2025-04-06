@@ -82,7 +82,7 @@ public class gamePanel extends JPanel implements Runnable {
         double nextDrawT = System.nanoTime() + drawInt;
 
         while(gameThread != null) {
-            System.out.println("Game loop is working !");
+            //System.out.println("Game loop is working !");
 
             //Setting the current System time into nanoseconds
             long currentTime = System.nanoTime();

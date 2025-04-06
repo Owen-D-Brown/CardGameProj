@@ -238,10 +238,12 @@ public class RootContainer extends JFrame {
         ArrayList<Enemy> availableEnemies = new ArrayList<>();
         availableEnemies.add(new Goblin());         // Weight: 5
         availableEnemies.add(new Orc());            // Weight: 10
-        availableEnemies.add(new Goblin2());        // Weight: 10
-        availableEnemies.add(new Orc2());           // Weight: 20
+               // Weight: 20
         availableEnemies.add(new SpearBoneMan());   // Weight: 10
         availableEnemies.add(new SatyrFemale());    // Weight: 10
+        availableEnemies.add(new Knight());    // Weight: 10
+        availableEnemies.add(new Slime());    // Weight: 10
+        availableEnemies.add(new VampireCountess());    // Weight: 10
 
         ArrayList<Enemy> selectedEnemies = new ArrayList<>();
         HashSet<Class<?>> selectedEnemyTypes = new HashSet<>();

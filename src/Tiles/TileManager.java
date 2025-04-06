@@ -1,15 +1,18 @@
 package Tiles;
 
 import javax.imageio.ImageIO;
-import javax.swing.JFrame;
+import javax.swing.*;
 
 import Entities.Player;
 import MAP.GameStorePanel;
 import MAP.KeyH;
 import MAP.gamePanel;
 import MAP.gateGUI;
+import MainPackage.Game;
 
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -115,7 +118,23 @@ public class TileManager {
         gamePanel.gameState = gamePanel.S_GATE;
 
         JFrame frame = new JFrame("Gate");
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                // Place your code to run before the window closes here
+                System.out.println("windowClosing");
+                Game.gui.returnToOverworld();
+                gamePanel.gameState = gamePanel.S_PLAY;
+
+
+                // Example: Show a confirmation dialog
+
+                    frame.dispose(); // Close the frame but don't exit the system
+                    // Alternatively, you can use frame.setVisible(false); to hide the frame
+
+            }
+        });
         frame.add(new gateGUI()); // make sure GateGUI is a proper JPanel
         frame.pack();
         frame.setResizable(false);

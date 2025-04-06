@@ -134,7 +134,7 @@ public abstract class Card extends JComponent implements MouseListener, MouseMot
     public void mouseReleased(MouseEvent e) {
         GameplayPane.checkIntersect(this);
 
-        if (SwingUtilities.isRightMouseButton(e) && draggingArrow) {
+       /* if (SwingUtilities.isRightMouseButton(e) && draggingArrow) {
             System.out.println("Right-click drag released.");
 
 
@@ -150,7 +150,7 @@ public abstract class Card extends JComponent implements MouseListener, MouseMot
             draggingArrow = false;
             arrowEnd = null;
             getParent().repaint();
-        }
+        }*/
     }
 
 
