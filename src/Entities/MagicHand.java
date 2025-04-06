@@ -19,6 +19,12 @@ public class MagicHand extends Card{
 
 
     }
+
+    @Override
+    public void resetAnimation() throws IOException {
+
+    }
+
     @Override
     public void effect() {
         Random rand = new Random();
@@ -31,11 +37,19 @@ public class MagicHand extends Card{
         }
     }
 
+    @Override
+    public void initCardAniBounds(Player player, Enemy enemy) throws IOException {
+        ((Fireball) animation).initAnimation(Game.player, Game.gui.gameScreen.northPanel.enemies.get(0));
+
+    }
 
     @Override
-    public void initCardAniBounds() throws IOException {
-        ((Fireball) animation).initAnimation(Game.player, Game.gui.gameScreen.northPanel.enemies.get(0));
+    public void initCardAniBounds(Enemy enemy, Player player) throws IOException {
+
     }
+
+
+
 
     //paint component for drawing the cards image
     @Override

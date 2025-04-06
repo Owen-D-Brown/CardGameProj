@@ -191,7 +191,12 @@ public class Game implements Runnable {
 
                     if(allEnemiesAlive&&task!=null) {
 
-                        task.run();
+                        for(Enemy e : Game.gui.gameScreen.northPanel.enemies) {
+
+                        }
+
+                        if(Game.gui.gameScreen.northPanel.enemies.size()>0)
+                            task.run();
                     }
 
                 }
