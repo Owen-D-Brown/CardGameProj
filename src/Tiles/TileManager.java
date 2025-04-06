@@ -3,6 +3,7 @@ package Tiles;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
+import Entities.Player;
 import MAP.GameStorePanel;
 import MAP.KeyH;
 import MAP.gamePanel;
@@ -10,6 +11,7 @@ import MAP.gateGUI;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.io.InputStream;
 
 public class TileManager {
@@ -130,7 +132,7 @@ public class TileManager {
     // FINALLY FIXED dsfsdgDESDRTGRE Y
     //creates jframe for the merchant ui
     //basic panel settings like in othewr classes, consistent throughout
-    public void openStore() {
+    public void openStore() throws IOException {
         //Important ref, when player presses E
         /* gameState Links toi Player here
          * if (kh.Ep && gp.tileManager.MerchantTile(playerRow, playerCol)) {
@@ -143,7 +145,7 @@ public class TileManager {
         gamePanel.gameState = gamePanel.S_SHOP;  // track the state of the game (CONSTANT) shop state do not remove again
         JFrame frame = new JFrame("Merchant Shop");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.add(new GameStorePanel());
+        frame.add(new GameStorePanel(new Player()));
         frame.pack();
         frame.setResizable(false);
         frame.setVisible(true);

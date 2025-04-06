@@ -25,7 +25,7 @@ public class Mplayer extends Mentity {
         getPlayerImg();
     }
 
-    // Initial position/speed/direction
+    // Initial position/speed/direction 555s
     public void setDefaultVal() {
         x = 200;           //spawn pos
         y = 200;
@@ -50,7 +50,7 @@ public class Mplayer extends Mentity {
     }
 
     //logic and collision checking
-    public void update() {
+    public void update() throws IOException {
 
         // this stops player movement when the Merchant it opened
         //issues with the player continuing  to walk after opening shop

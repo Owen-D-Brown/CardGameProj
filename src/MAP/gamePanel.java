@@ -2,6 +2,7 @@ package MAP;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import javax.swing.*;
 
 import MainPackage.Game;
@@ -88,7 +89,11 @@ public class gamePanel extends JPanel implements Runnable {
 
 
             //Update info positions, calling the update method
-            update();
+            try {
+                update();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             //redraw screen here
             repaint();
 
@@ -119,7 +124,7 @@ public class gamePanel extends JPanel implements Runnable {
         }
     }
 
-    public void update() {
+    public void update() throws IOException {
         player.update();
     }
 
