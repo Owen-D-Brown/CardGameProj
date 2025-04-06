@@ -24,6 +24,7 @@ public class GameStorePanel extends JPanel {
             merchantImage = ImageIO.read(getClass().getResourceAsStream("/Resources/MapSprite/Merchant2.png"));
         } catch (IOException ex) {
             System.out.println("Failed to load merchant image: " + ex.getMessage());
+
         }
 
         // Merchant image will fill the left panel
