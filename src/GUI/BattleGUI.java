@@ -89,13 +89,13 @@ public class BattleGUI extends JPanel {
         cardLayout.show(centerContainer, "main");
 
         //Button to bring you back to the main menu,.
-        JButton toMenu = new JButton("to menu");
-        toMenu.setBounds(0, 0, 200, 50);
-        toMenu.addActionListener(e -> {
+        JButton toMap = new JButton("to menu");
+        toMap.setBounds(0, 0, 200, 50);
+        toMap.addActionListener(e -> {
             Game.player.resetDeck();//Rest users deck
-            gui.showScreen(gui.menuScreen);//Swap to menu
+            gui.showScreen(gui.mapScreen);//Swap to menu
         });
-        rewardScreen.add(toMenu);
+        rewardScreen.add(toMap);
 
         //South panel. This is the simplest panel. It's just the background - The actual cards exist and are drawn in the glass pane.
         southPanel = new SouthPanel();

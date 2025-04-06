@@ -189,13 +189,7 @@ public class Game implements Runnable {
 
                 if(!slot.currentlyResolving) {
 
-                    if(allEnemiesAlive&&task!=null) {
-
-                        for(Enemy e : Game.gui.gameScreen.northPanel.enemies) {
-
-                        }
-
-                        if(Game.gui.gameScreen.northPanel.enemies.size()>0)
+                    if(allEnemiesAlive&&task!=null&&!enemyWaiting) {
                             task.run();
                     }
 
