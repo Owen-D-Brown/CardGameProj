@@ -17,6 +17,7 @@ public class Game implements Runnable {
     public static int randomCombatMinWeight = 0;
     public static int randomCombatMaxWeight = 10;
     public static int randomCombatNodeClicks = 0; // Tracks how many combats started
+    public static String currentNodeType = "combat";
 
     static {
         try {

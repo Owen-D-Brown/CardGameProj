@@ -132,6 +132,7 @@ public class MapGameplayPane extends JPanel {
 
     private void performNodeAction(MapNode node) {
         try {
+            Game.currentNodeType = node.getType(); // Save node type globally
             if ("encounter".equals(node.type)) {
                 EncounterData encounter = EncounterManager.loadRandomEncounter();
                 if (encounter != null) {
@@ -149,6 +150,7 @@ public class MapGameplayPane extends JPanel {
             }
 
             if (node.getCombatID() == -1) {
+                Game.currentNodeType = "combat";
                 MainPackage.NorthPanel encounter = rootContainer.startRandomFight(Game.randomCombatMaxWeight, Game.randomCombatMinWeight);
                 if (encounter == null) {
                     System.err.println("⚠ Could not start randomized combat.");
@@ -156,6 +158,7 @@ public class MapGameplayPane extends JPanel {
                 }
                 rootContainer.gameScreen.newFight(encounter);
             } else {
+                Game.currentNodeType = "combat";
                 rootContainer.gameScreen.newFight(rootContainer.startFight(node.getCombatID()));
             }
 
@@ -169,6 +172,7 @@ public class MapGameplayPane extends JPanel {
             node.setDefeated(true);
 
             if ("boss".equals(node.type)) {
+                Game.currentNodeType = "boss";
                 String mapId = mapData.getMapID();
                 try {
                     int index = Integer.parseInt(mapId.replaceAll("[^0-9]", "")) - 1;

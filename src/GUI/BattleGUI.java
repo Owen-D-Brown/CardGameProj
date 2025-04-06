@@ -91,9 +91,16 @@ public class BattleGUI extends JPanel {
         JButton toMap = new JButton("to menu");
         toMap.setBounds(0, 0, 200, 50);
         toMap.addActionListener(e -> {
-            Game.player.resetDeck();//Rest users deck
-            gui.showScreen(gui.mapScreen);//Swap to menu
+            Game.player.resetDeck(); // Reset user's deck
+
+            // Check what type of node we just completed
+            if ("boss".equalsIgnoreCase(Game.currentNodeType)) {
+                Game.gui.returnToOverworld(); // Go to overworld if boss
+            } else {
+                gui.showScreen(gui.mapScreen); // Otherwise go back to combat map
+            }
         });
+
         rewardScreen.add(toMap);
 
         //South panel. This is the simplest panel. It's just the background - The actual cards exist and are drawn in the glass pane.
