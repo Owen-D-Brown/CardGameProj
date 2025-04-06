@@ -208,7 +208,8 @@ public class GameplayPane extends JPanel {
                     slot.slotCard(c);//Passing the card instance to the cardSlot object.
                     Game.player.hand.remove(c);
                     slottedCards.add(c);
-                    Game.devTools.updateCounts();
+                    if(Game.devTools!=null)
+                        Game.devTools.updateCounts();
                     return;//Stop checking the card slots and leave this method.
                 }
                 else
@@ -216,7 +217,8 @@ public class GameplayPane extends JPanel {
                     if(slottedCards.contains(c)) {
                         Game.player.hand.add(c);
                         slottedCards.remove(c);
-                        Game.devTools.updateCounts();
+                        if(Game.devTools!=null)
+                            Game.devTools.updateCounts();
                         c.setLocation(c.initX, c.initY);
                     }
                     //figure out the logic for removing the card from the card slot when its dragged out of it without overriding other slots.
@@ -229,8 +231,9 @@ public class GameplayPane extends JPanel {
             Game.player.hand.add(c);
             slottedCards.remove(c);
         }
+        if(Game.devTools!=null)
+            Game.devTools.updateCounts();
 
-        Game.devTools.updateCounts();
         c.setLocation(c.initX, c.initY);
         c.primed = false;
 

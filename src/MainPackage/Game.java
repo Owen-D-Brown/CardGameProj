@@ -43,7 +43,7 @@ public class Game implements Runnable {
         player = new Player();//Initializing player.
 
         //Development Tools Frame
-        devTools = new DevTools();
+     //   devTools = new DevTools();
 
         //Main GUI Frame
         gui = new RootContainer(this);
