@@ -1,12 +1,19 @@
 package GUI;
 
+import CombatMap.MapData;
 import CombatMap.MapGameplayPane;
 import CombatMap.MapGui;
+import Entities.Enemy;
+import Entities.Goblin;
+import Entities.Orc;
+import Entities.SatyrFemale;
+import CombatMap.MapLoader;
 import Entities.*;
 import MainPackage.Config;
 import MainPackage.Game;
 import MainPackage.NorthPanel;
 import MAP.gamePanel; // Import your game panel
+import RandomEncounter.EncounterPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,6 +21,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.List;
+
 
 public class RootContainer extends JFrame {
 
@@ -24,6 +34,7 @@ public class RootContainer extends JFrame {
     private JPanel containerPanel; // The main container using BorderLayout
     public Game game;
     public gamePanel worldPanel; // Reference to the gamePanel (Shop System)
+    public EncounterPanel encounterPanel;
 
     public RootContainer(Game game) {
         setTitle("Card Game");
@@ -43,6 +54,7 @@ public class RootContainer extends JFrame {
         //menuScreen = createMenuScreen();
         worldPanel = new gamePanel(); // Initialize shop system
         mapScreen = new MapGui();
+        encounterPanel = new EncounterPanel(this);
 
         // Add and configure GlassPane
         MapGameplayPane glassPane = new MapGameplayPane(this);
@@ -58,6 +70,7 @@ public class RootContainer extends JFrame {
     public JPanel createMenuScreen() {
         JPanel menu = new JPanel();
         menu.setBackground(Color.BLACK);
+
         JButton startButton = new JButton("Start Game");
         startButton.addActionListener(e -> {
             try {
@@ -71,7 +84,6 @@ public class RootContainer extends JFrame {
             gameScreen.center.revalidate();
             gameScreen.center.repaint();
             showScreen(gameScreen);
-
         });
         menu.add(startButton);
         JButton encounter1 = new JButton("Encounter fresh");
@@ -99,15 +111,24 @@ public class RootContainer extends JFrame {
         menu.add(worldButton);
 
 
-        JButton mapTestButton = new JButton("Map01 Test");//added button to test map function on launch
-        mapTestButton.addActionListener(e -> showScreen(mapScreen));
+        JButton mapTestButton = new JButton("Map01 Test");
+        mapTestButton.addActionListener(e -> {
+            try {
+                CombatMap.MapData mapData = CombatMap.MapLoader.loadMap("Resources/maps/map01.json");
+                mapScreen.setMapData(mapData); // set new map data
+                ((CombatMap.MapGameplayPane) getGlassPane()).setMapData(mapData); // update node overlay
+                showScreen(mapScreen); // now show the updated screen
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
         menu.add(mapTestButton);
 
 
         JButton randomFightButton = new JButton("Random Fight");
         randomFightButton.addActionListener(e -> {
             try {
-                gameScreen.newFight(startRandomFight(30, 0)); // Example: maxWeight = 10, minWeight = 0
+                gameScreen.newFight(startRandomFight(40, 0)); // Example: maxWeight = 10, minWeight = 0
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
@@ -127,14 +148,9 @@ public class RootContainer extends JFrame {
         switch(num) {
             case 1:
                 ArrayList<Enemy> entities = new ArrayList<>();
-
-               // entities.add(new SatyrFemale());
-                entities.add(new Knight());
-                entities.add(new Goblin());
-                entities.add(new Orc());
-
-               // entities.add(new Orc());
-
+                entities.add(new SatyrFemale());
+                entities.add(new SpearBoneMan());
+                //entities.add(new Goblin());
 
                 return new NorthPanel(entities);
             case 2:
@@ -145,11 +161,26 @@ public class RootContainer extends JFrame {
                 entities1.add(orc);
                 NorthPanel encounter = new NorthPanel(entities1);
                 //encounter.positionEnemy(goblin, 950, 150);
-             //   encounter.createSpawnZone(750, 175, 100, 100);
-              //  encounter.createSpawnZone(900, 175, 100, 100);
-              //  encounter.populateSpawnZones();
-
+                encounter.createSpawnZone(750, 175, 100, 100);
+                encounter.createSpawnZone(900, 175, 100, 100);
+                encounter.populateSpawnZones();
                 return encounter;
+            case 3:
+                ArrayList<Enemy> entities2 = new ArrayList<>();
+                entities2.add(new SatyrFemale());
+                //entities2.add(new SpearBoneMan());
+                entities2.add(new Goblin());
+
+                return new NorthPanel(entities2);
+            case 4:
+                ArrayList<Enemy> entities3 = new ArrayList<>();
+                entities3.add(new SatyrFemale());
+                entities3.add(new SpearBoneMan());
+                //entities3.add(new Goblin());
+
+                return new NorthPanel(entities3);
+
+
         }
         return null;
     }
@@ -195,19 +226,29 @@ public class RootContainer extends JFrame {
         }
     }
 
+    public void returnToOverworld() {
+        showScreen(worldPanel);              // Show the overworld map
+        gamePanel.gameState = gamePanel.S_PLAY;    // Make sure the state is PLAYING
+        worldPanel.startGameThread();        // Restart the game loop (if needed)
+        worldPanel.requestFocusInWindow();   // Ensure keyboard input is focused
+    }
+
+
     public NorthPanel startRandomFight(int maxWeight, int minWeight) throws IOException {
-        // ✅ Define available unique enemies
         ArrayList<Enemy> availableEnemies = new ArrayList<>();
-        availableEnemies.add(new Goblin()); // Weight: 5
-        availableEnemies.add(new Orc());    // Weight: 10
-        // Add more enemy types as needed...
+        availableEnemies.add(new Goblin());         // Weight: 5
+        availableEnemies.add(new Orc());            // Weight: 10
+        availableEnemies.add(new Goblin2());        // Weight: 10
+        availableEnemies.add(new Orc2());           // Weight: 20
+        availableEnemies.add(new SpearBoneMan());   // Weight: 10
+        availableEnemies.add(new SatyrFemale());    // Weight: 10
 
         ArrayList<Enemy> selectedEnemies = new ArrayList<>();
-        HashSet<Class<?>> selectedEnemyTypes = new HashSet<>(); // Track selected enemy types
+        HashSet<Class<?>> selectedEnemyTypes = new HashSet<>();
         int remainingWeight = maxWeight;
         Random random = new Random();
 
-        // ✅ Filter valid enemies based on minWeight & maxWeight
+        // Filter valid enemies
         ArrayList<Enemy> validEnemies = new ArrayList<>();
         for (Enemy e : availableEnemies) {
             if (e.getWeight() >= minWeight && e.getWeight() <= maxWeight) {
@@ -215,49 +256,49 @@ public class RootContainer extends JFrame {
             }
         }
 
-        // ✅ Randomly select unique enemies while staying within weight & limit (3 enemies max)
+        // Loop with filtered enemy list
         while (!validEnemies.isEmpty() && selectedEnemies.size() < 3) {
-            Enemy chosenEnemy = validEnemies.get(random.nextInt(validEnemies.size()));
+            List<Enemy> possibleEnemies = new ArrayList<>();
 
-            // ✅ Ensure the enemy type is unique in this battle
-            if (!selectedEnemyTypes.contains(chosenEnemy.getClass()) && remainingWeight - chosenEnemy.getWeight() >= 0) {
-                selectedEnemies.add(chosenEnemy);
-                selectedEnemyTypes.add(chosenEnemy.getClass()); // ✅ Store the type
-                remainingWeight -= chosenEnemy.getWeight();
+            for (Enemy e : validEnemies) {
+                if (!selectedEnemyTypes.contains(e.getClass()) && e.getWeight() <= remainingWeight) {
+                    possibleEnemies.add(e);
+                }
             }
 
-            // ✅ Stop if all unique enemy types have been used
-            if (selectedEnemyTypes.size() == validEnemies.size()) break;
+            if (possibleEnemies.isEmpty()) {
+                break;
+            }
+
+            Enemy chosenEnemy = possibleEnemies.get(random.nextInt(possibleEnemies.size()));
+            selectedEnemies.add(chosenEnemy);
+            selectedEnemyTypes.add(chosenEnemy.getClass());
+            remainingWeight -= chosenEnemy.getWeight();
         }
 
-        // ✅ Debugging: Print selected enemies
-        System.out.println("Randomized Combat - Selected Unique Enemies:");
-        for (Enemy e : selectedEnemies) {
-            System.out.println(e.getClass().getSimpleName() + " - Weight: " + e.getWeight() + " | Instance: " + e);
-        }
-
-        // ✅ Create the combat panel
         NorthPanel encounter = new NorthPanel(selectedEnemies);
 
-        // ✅ Define spawn positions for up to 3 enemies
-        int[][] spawnPositions = { {500, 175}, {650, 175}, {800, 175} };
-
-        for (int i = 0; i < selectedEnemies.size(); i++) {
-            Enemy enemy = selectedEnemies.get(i);
-            int x = spawnPositions[i][0];
-            int y = spawnPositions[i][1];
-
-            encounter.createSpawnZone(x, y, 100, 100);
-
-            // ✅ Explicitly assign the enemy's position
-            enemy.setBounds(x, y, 100, 100);
-
-            System.out.println("Enemy " + enemy.getClass().getSimpleName() + " placed at: " + x + ", " + y);
-        }
-
-        encounter.populateSpawnZones(); // ✅ Assign enemies to positions
-        encounter.initPlayerAniBounds(); // ✅ Ensure animations update correctly
+        encounter.createSpawnZone((int)(500 * Config.scaleFactor), (int)(175 * Config.scaleFactor), (int)(100 * Config.scaleFactor), (int)(100 * Config.scaleFactor));
+        encounter.createSpawnZone((int)(650 * Config.scaleFactor), (int)(175 * Config.scaleFactor), (int)(100 * Config.scaleFactor), (int)(100 * Config.scaleFactor));
+        encounter.createSpawnZone((int)(800 * Config.scaleFactor), (int)(175 * Config.scaleFactor), (int)(100 * Config.scaleFactor), (int)(100 * Config.scaleFactor));
+        encounter.populateSpawnZones();
 
         return encounter;
     }
+
+
+
+    public void loadMapAndSwitch(String path, int dungeonIndex) {
+        MapData mapData = CombatMap.CombatMapManager.getOrLoadMap(path); //Use persisted version
+        mapScreen.setMapData(mapData);
+        mapScreen.setCurrentDungeonIndex(dungeonIndex);
+
+        // Update the glass pane too
+        MapGameplayPane glassPane = (MapGameplayPane) getGlassPane();
+        glassPane.setMapData(mapData);
+
+        showScreen(mapScreen);
+    }
+
+
 }

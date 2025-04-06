@@ -10,6 +10,7 @@ import javax.swing.SwingUtilities;
 import MAP.GameStorePanel;
 import MAP.KeyH;
 import MAP.gamePanel;
+import MAP.gateGUI;
 import Tiles.TileManager;
 import MainPackage.Game;
 
@@ -116,8 +117,38 @@ public class Mplayer extends Mentity {
             gp.gameState = gamePanel.S_SHOP;  // switch the game state to shop mode
             gp.tileManager.openStore(); // open the merchant window
         }
+        if (kh.Ep && gp.tileManager.Gate(playerRow, playerCol)) {
+            kh.Ep = false; // multiple openings are false
+            gp.gameState = gamePanel.S_GATE;
+            gp.tileManager.openGateGUI(); // open gate window
+        }
 
     }
+
+    public void openGateGUI() {
+        gamePanel.gameState = gamePanel.S_GATE;
+
+        JFrame frame = new JFrame("Gate");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.add(new gateGUI());
+        frame.pack();
+        frame.setResizable(false);
+        frame.setVisible(true);
+
+        frame.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                gamePanel.gameState = gamePanel.S_PLAY;
+
+                kh.UPp = false;
+                kh.DOWNp = false;
+                kh.LEFTp = false;
+                kh.RIGHTp = false;
+                kh.Ep = false;
+            }
+        });
+    }
+
 
     /*
      * // basic Jpanel operatio0n/method here private void openMerchantShop() {

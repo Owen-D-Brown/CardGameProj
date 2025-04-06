@@ -199,11 +199,9 @@ public class NorthPanel extends JPanel {
     }
 
     public void populateSpawnZones() {
-        for(int i = 0; i<spawnZones.size();i++) {
-            if(enemies.get(i)!=null) {
-                Rectangle temp = spawnZones.get(i);
-                enemies.get(i).setBounds(temp.x, temp.y, enemies.get(i).getWidth(), enemies.get(i).getHeight());
-            }
+        for (int i = 0; i < enemies.size() && i < spawnZones.size(); i++) {
+            Rectangle temp = spawnZones.get(i);
+            enemies.get(i).setBounds(temp.x, temp.y, enemies.get(i).getWidth(), enemies.get(i).getHeight());
         }
     }
 

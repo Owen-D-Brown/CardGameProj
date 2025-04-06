@@ -1,7 +1,10 @@
 package MAP;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import javax.swing.*;
+
+import MainPackage.Game;
 import Mentity.Mplayer;
 import Tiles.TileManager;
 
@@ -9,9 +12,10 @@ public class gamePanel extends JPanel implements Runnable {
 
     public static final int S_PLAY = 0; //default gamplay here no shop/merchant interaction
     public static final int S_SHOP = 1; // trying to get the player to stop moving when interacting with the merchant/shop
-    public static final int S_COMBAT_MAP = 2; // new state for combat map
+    public static final int S_GATE = 3; //game state for the gate to function
+    public static final int S_COMBAT_MAP = 3; //game state for the gate to function
     public static int gameState = S_PLAY; //default state/play state
-
+    private boolean gameThreadStarted = false;
 
     final int screenWidth = 1000;
     final int screenHeight = 1000;
@@ -36,13 +40,29 @@ public class gamePanel extends JPanel implements Runnable {
         this.addKeyListener(kh);
         this.setFocusable(true);
 
-        tileManager = new TileManager(kh); // Load map.png as a background
+        tileManager = new TileManager(kh);// Load map.png as a background
+
+        // ESC to go back to Menu
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ESCAPE"), "backToMenu");
+        this.getActionMap().put("backToMenu", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Game.gui.showScreen(Game.gui.menuScreen);
+            }
+        });
+
     }
 
     public void startGameThread() {
-        gameThread = new Thread(this);
-        gameThread.start();
+        if (gameThread == null || !gameThread.isAlive()) {
+            gameThread = new Thread(this);
+            gameThread.start();
+            System.out.println("Game thread started.");
+        } else {
+            System.out.println("Game thread already running.");
+        }
     }
+
 
     // Game loop logic goes here
     /* GameThread is automatically called via run method */

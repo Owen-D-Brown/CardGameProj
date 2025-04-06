@@ -275,5 +275,34 @@ public class Player extends JComponent {
         }
     }
 
+    // Increases max HP
+    public void increaseMaxHP(int amount) {
+        maxHealth += amount;
+        currentHealth += amount; // Optional: boost current HP too
+        System.out.println("Max HP increased by " + amount + ". New max: " + maxHealth);
+        revalidate();
+        repaint();
+    }
+
+    // Reduces max HP (e.g., for failed encounter rolls)
+    public void decreaseMaxHP(int amount) {
+        maxHealth = Math.max(1, maxHealth - amount); // Prevent dropping to zero
+        currentHealth = Math.min(currentHealth, maxHealth); // Clamp current HP
+        System.out.println("Max HP reduced by " + amount + ". New max: " + maxHealth);
+        revalidate();
+        repaint();
+    }
+
+    public boolean tryChestEncounter(int hpPenalty, int goldReward) {
+        double chance = Math.random();
+        if (chance <= 0.25) {
+            giveGold(goldReward);
+            return true;
+        } else {
+            maxHealth -= hpPenalty;
+            currentHealth = Math.min(currentHealth, maxHealth); // prevent overhealing
+            return false;
+        }
+    }
 
 }

@@ -14,6 +14,18 @@ public class Game implements Runnable {
     //// Static entites for access by the entire application. ////
 
     public static Player player;//Player instance
+    public static int randomCombatMinWeight = 0;
+    public static int randomCombatMaxWeight = 10;
+    public static int randomCombatNodeClicks = 0; // Tracks how many combats started
+
+    static {
+        try {
+            player = new Player();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static RootContainer gui; //Main GUI Instance
     public static Config.GameState gameState;//Gamestate instance to control game state
     public static DevTools devTools; //Development Tools window

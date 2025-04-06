@@ -1,6 +1,7 @@
 package CombatMap;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -83,31 +84,53 @@ public class MapData {
         }
     }
 
-    public List<MapNode> getAvailableNodes() {
-        List<MapNode> availableNodes = new ArrayList<>();
-
+    /**
+     * Returns nodes that have no other nodes pointing to them (starting nodes).
+     */
+    public List<MapNode> getStartingNodes() {
+        List<Integer> allConnectedIds = new ArrayList<>();
         for (MapNode node : nodes) {
-            if (node.isDefeated()) {
-                // Unlock connected nodes
-                for (int connectedId : node.connections) {
-                    MapNode connectedNode = getNodeById(connectedId);
-                    if (connectedNode != null && !connectedNode.isDefeated() && !availableNodes.contains(connectedNode)) {
-                        availableNodes.add(connectedNode);
-                    }
-                }
-            }
+            allConnectedIds.addAll(node.connections);
         }
 
-        // If no nodes are defeated, unlock the starting node(s)
-        if (availableNodes.isEmpty()) {
-            for (MapNode node : nodes) {
-                if (node.getId() == 4) { // Node 4 is the starting point
-                    availableNodes.add(node);
+        List<MapNode> startingNodes = new ArrayList<>();
+        for (MapNode node : nodes) {
+            if (!allConnectedIds.contains(node.id)) {
+                startingNodes.add(node);
+            }
+        }
+        return startingNodes;
+    }
+
+    /**
+     * Returns a list of nodes available for interaction (based on defeat state).
+     */
+    public List<MapNode> getAvailableNodes() {
+        List<MapNode> available = new ArrayList<>();
+
+        for (MapNode node : nodes) {
+            if (node.isDefeated()) continue;
+
+            // First, allow any nodes not connected to (i.e. start of the map)
+            if (getStartingNodes().contains(node)) {
+                available.add(node);
+                continue;
+            }
+
+            // Then allow any node whose connected-from nodes are defeated
+            boolean allParentsDefeated = true;
+            for (MapNode other : nodes) {
+                if (other.connections.contains(node.id) && !other.isDefeated()) {
+                    allParentsDefeated = false;
                     break;
                 }
             }
+
+            if (allParentsDefeated) {
+                available.add(node);
+            }
         }
 
-        return availableNodes;
+        return available;
     }
 }
