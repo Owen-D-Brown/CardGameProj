@@ -1,5 +1,6 @@
 package Entities;
 
+import Entities.Cards.Card;
 import org.junit.jupiter.api.Test;
 
 import java.awt.image.BufferedImage;
