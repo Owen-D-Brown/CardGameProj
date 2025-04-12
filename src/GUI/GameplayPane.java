@@ -1,8 +1,7 @@
 package GUI;
 
-import Entities.Card;
-import Entities.Enemy;
-import Entities.Player;
+import Entities.CardSlot;
+import Entities.Cards.Card;
 import MainPackage.Config;
 import MainPackage.Game;
 
@@ -10,7 +9,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 
 //This is the glass pane overlaying the main GUI. This is where all interactable elements are placed. The GUI Below this is not directly interactable.
 public class GameplayPane extends JPanel {

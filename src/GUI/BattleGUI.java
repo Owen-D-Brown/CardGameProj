@@ -188,7 +188,6 @@ public class BattleGUI extends JPanel {
         glassPane.drawCard();
         this.revalidate();
         this.repaint();
-
     }
 
 

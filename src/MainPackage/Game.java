@@ -1,6 +1,8 @@
 package MainPackage;
 
 import Entities.*;
+import Entities.Animations.Animation;
+import Entities.Enemies.Enemy;
 import GUI.*;
 
 import javax.swing.*;
@@ -43,7 +45,7 @@ public class Game implements Runnable {
         player = new Player();//Initializing player.
 
         //Development Tools Frame
-     //   devTools = new DevTools();
+       // devTools = new DevTools();
 
         //Main GUI Frame
         gui = new RootContainer(this);
@@ -95,7 +97,7 @@ public class Game implements Runnable {
         System.out.println("\n****THE GAME STATE HAS CHANGED -- CARD PLAY****\n");
 
         //Draw up to five cards in the player's hand
-        for(int i = player.hand.size(); i< 5; i++) {
+        for(int i = player.hand.size(); i< 6; i++) {
             drawCard();
         }
         gui.gameScreen.southPanel.updateSouthPanel();
@@ -301,7 +303,6 @@ public class Game implements Runnable {
                         //Repaint the north panel where everything is located/
                         gui.gameScreen.northPanel.revalidate();
                         gui.gameScreen.northPanel.repaint();
-
 
                     }
                 });

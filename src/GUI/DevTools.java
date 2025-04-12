@@ -1,7 +1,6 @@
 package GUI;
 
-import Entities.AttackPlane;
-import Entities.Goblin;
+import Entities.Enemies.Goblin;
 import MainPackage.Config;
 import MainPackage.Game;
 

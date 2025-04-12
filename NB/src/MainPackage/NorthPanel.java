@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import Entities.Goblin;
-import Entities.Enemy;
 
 public class NorthPanel extends JPanel {
 

@@ -1,5 +1,9 @@
 package Entities;
 
+import Entities.Cards.Card;
+import Entities.Cards.*;
+import Entities.Cards.Satyr_MCard;
+import Entities.Enemies.Enemy;
 import GUI.GameplayPane;
 import MainPackage.Config;
 import MainPackage.Game;
@@ -29,9 +33,9 @@ public class Player extends JComponent {
     }
     public enum State {IDLE, WALKING, ATTACKING, DYING}
 
-    protected int gold = 0;
-    public int maxHealth = 100;
-    public int currentHealth = 50;
+    protected int gold = 50;
+    public int maxHealth = 1000;
+    public int currentHealth = 1000;
 
     private Rectangle hitbox = new Rectangle(25, 50, 50, 70);
     private Rectangle healthBar = new Rectangle(0, 0, 75, 10);
@@ -43,7 +47,7 @@ public class Player extends JComponent {
 
     public Player() throws IOException {
         setSize(new Dimension(128, 128));
-        if(Config.hitboxesOn)
+        //if(Config.hitboxesOn)
             //setBorder(BorderFactory.createLineBorder(Color.white));
         for(int i = 0; i<3; i++) {
             //cards.add(new Firebolt());
@@ -53,19 +57,21 @@ public class Player extends JComponent {
             //cards.add(new LastEmbrace_Card());
           //  cards.add(new Satyr_MCard());
            // cards.add(new Vampire_MCard());
+           // cards.add(new Insanity_Card());
           //  cards.add(new Insanity_Card());
-          //  cards.add(new Insanity_Card());
-        }
+            //cards.add(new Insanity_Card());
 
-        //
-       // cards.add(new Insanity_Card());
-        cards.add(new Insanity_Card());
-        cards.add(new IceBurst());
-        cards.add(new Vampire_MCard());
+        }
         cards.add(new LastEmbrace_Card());
         cards.add(new Satyr_MCard());
-        cards.add(new Potion_Card());
+        cards.add(new Vampire_MCard());
+        cards.add(new Insanity_Card());
         cards.add(new Firebolt());
+        cards.add(new IceBurst());
+        cards.add(new Potion_Card());
+        //
+       // cards.add(new Insanity_Card());
+
         animations.add(importSprites("/Resources/FireWizard/FireWizardIdleMap.png", 7, 1, 128, 128));
         animations.add(importSprites("/Resources/FireWizard/FireWizardRangeAttackMap.png", 8, 1, 128, 128));
         animations.add(importSprites("/Resources/FireWizard/FireWizardMeleeAttackMap.png", 4, 1, 128, 128));

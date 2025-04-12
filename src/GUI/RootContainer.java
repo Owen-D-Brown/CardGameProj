@@ -3,12 +3,7 @@ package GUI;
 import CombatMap.MapData;
 import CombatMap.MapGameplayPane;
 import CombatMap.MapGui;
-import Entities.Enemy;
-import Entities.Goblin;
-import Entities.Orc;
-import Entities.SatyrFemale;
-import CombatMap.MapLoader;
-import Entities.*;
+import Entities.Enemies.*;
 import MainPackage.Config;
 import MainPackage.Game;
 import MainPackage.NorthPanel;
@@ -21,7 +16,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
-import java.util.stream.Collectors;
 import java.util.List;
 
 
@@ -61,8 +55,19 @@ public class RootContainer extends JFrame {
         setGlassPane(glassPane);
         glassPane.setVisible(true); // Ensure it's visible
 
+        JPanel devOptions = new JPanel();
+        //Dev panel
+        if(Config.debug) {
+            devOptions = createMenuScreen();
+
+        }
         // Start on the menu
-        showScreen(menuScreen);
+        if(Config.debug) {
+            showScreen(devOptions);
+        } else {
+            showScreen(menuScreen);
+        }
+
 
         setVisible(true);
     }
@@ -149,8 +154,8 @@ public class RootContainer extends JFrame {
             case 1:
                 ArrayList<Enemy> entities = new ArrayList<>();
                 entities.add(new SatyrFemale());
-                entities.add(new SpearBoneMan());
-                //entities.add(new Goblin());
+                entities.add(new VampireCountess());
+                entities.add(new Orc());
 
                 return new NorthPanel(entities);
             case 2:
@@ -179,7 +184,20 @@ public class RootContainer extends JFrame {
                 //entities3.add(new Goblin());
 
                 return new NorthPanel(entities3);
+            case 5:
+                ArrayList<Enemy> entities5 = new ArrayList<>();
+                entities5.add(new SatyrFemale());
 
+                //entities3.add(new Goblin());
+
+                return new NorthPanel(entities5);
+            case 6:
+                ArrayList<Enemy> entities6 = new ArrayList<>();
+                entities6.add(new Goblin());
+
+                //entities3.add(new Goblin());
+
+                return new NorthPanel(entities6);
 
         }
         return null;
