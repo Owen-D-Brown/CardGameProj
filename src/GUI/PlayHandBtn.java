@@ -1,16 +1,12 @@
 package GUI;
 
-import Entities.AttackPlane;
-import Entities.Card;
-import MainPackage.Config;
+import Entities.CardSlot;
 import MainPackage.Game;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.IOException;
 
 import static GUI.GameplayPane.currentCardIndex;
 

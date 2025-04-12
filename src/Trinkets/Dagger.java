@@ -1,6 +1,6 @@
 package Trinkets;
 
-import Entities.Enemy;
+import Entities.Enemies.Enemy;
 import MainPackage.Config;
 
 import javax.imageio.ImageIO;

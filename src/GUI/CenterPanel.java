@@ -1,6 +1,7 @@
 package GUI;
 
-import Entities.Enemy;
+import Entities.CardSlot;
+import Entities.Enemies.Enemy;
 import MainPackage.Config;
 
 import javax.imageio.ImageIO;

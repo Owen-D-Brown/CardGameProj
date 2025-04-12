@@ -1,6 +1,7 @@
 package MAP;
 
 import Entities.*;
+import Entities.Cards.*;
 import MainPackage.Game;
 import javax.imageio.ImageIO;
 import javax.swing.*;

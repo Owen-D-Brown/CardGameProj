@@ -1,7 +1,9 @@
 package MainPackage;
 
 import Entities.*;
-import GUI.CardSlot;
+import Entities.Enemies.Enemy;
+import GUI.AttackPlane;
+import Entities.CardSlot;
 import GUI.GameplayPane;
 
 import javax.imageio.ImageIO;
