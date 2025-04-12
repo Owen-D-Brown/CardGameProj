@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eclipse-userlibraries>
+  <library name="fasterxml.jackson.core.databind">
+    <archive path="C:/Users/jason/IdeaProjects/CardGameProj/lib/jackson-databind-2.16.0.jar" />
+    <archive path="C:/Users/jason/IdeaProjects/CardGameProj/lib/jackson-annotations-2.16.0.jar" />
+    <archive path="C:/Users/jason/IdeaProjects/CardGameProj/lib/jackson-core-2.16.0.jar" />
+  </library>
+  <library name="fasterxml.jackson.core.annotations">
+    <archive path="C:/Users/jason/IdeaProjects/CardGameProj/lib/jackson-annotations-2.16.0.jar" />
+  </library>
+</eclipse-userlibraries>
+
