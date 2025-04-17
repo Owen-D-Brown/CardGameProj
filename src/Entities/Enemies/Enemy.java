@@ -21,7 +21,7 @@ public abstract class Enemy extends JComponent {
 
    //Rpg stats for each Enemy
     public int maxHealth;
-    public static int currentHealth;
+    public int currentHealth;
     protected int attackPower;  //attack power (base attack stat
     protected int defense;      // base defense stat
     protected int agility;      //base agility
@@ -97,11 +97,14 @@ public abstract class Enemy extends JComponent {
         this.aniSpeed = 5;
         //Setting enemy date
         this.name = name;
-        if(Config.hitboxesOn)
+        //if(Config.hitboxesOn)
            // setBorder(BorderFactory.createLineBorder(Color.white));
         //Setting enemy stats
         this.maxHealth = maxHealth;
         this.currentHealth = maxHealth;
+        //for julie
+        this.maxHealth = 25;
+        this.currentHealth = 25;
         this.attackPower = attackPower;
         this.defense = defense;
         this.agility = agility;

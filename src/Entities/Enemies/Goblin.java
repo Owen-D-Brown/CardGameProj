@@ -29,11 +29,11 @@ public class Goblin extends Enemy {
 
     @Override
     public void takeDamage(int damage) {
-        if (Math.random() < (this.agility * B_DODGE_CHANCE)) {
+       /* if (Math.random() < (this.agility * B_DODGE_CHANCE)) {
             System.out.println("Goblin dodged the attack!");
             FloatingText.createEffect("DODGE", this, Color.BLUE);
             return;
-        }
+        }*/
         super.takeDamage(damage);
     }
 }

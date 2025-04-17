@@ -33,7 +33,7 @@ public class Player extends JComponent {
     }
     public enum State {IDLE, WALKING, ATTACKING, DYING}
 
-    protected int gold = 50;
+    protected int gold = 10000;
     public int maxHealth = 1000;
     public int currentHealth = 1000;
 

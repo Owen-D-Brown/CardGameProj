@@ -177,6 +177,7 @@ public class Game implements Runnable {
                 enemy.revalidate();
                 enemy.repaint();
                 enemy.updateEnemyStatus(iterator); // Pass iterator for safe removal
+
             }
         }
     }
