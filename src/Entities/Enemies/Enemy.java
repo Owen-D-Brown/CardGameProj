@@ -21,7 +21,7 @@ public abstract class Enemy extends JComponent {
 
    //Rpg stats for each Enemy
     public int maxHealth;
-    public int currentHealth;
+    public static int currentHealth;
     protected int attackPower;  //attack power (base attack stat
     protected int defense;      // base defense stat
     protected int agility;      //base agility

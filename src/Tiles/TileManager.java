@@ -128,10 +128,10 @@ public class TileManager {
                 gamePanel.gameState = gamePanel.S_PLAY;
 
 
-                // Example: Show a confirmation dialog
+
 
                     frame.dispose(); // Close the frame but don't exit the system
-                    // Alternatively, you can use frame.setVisible(false); to hide the frame
+
 
             }
         });
