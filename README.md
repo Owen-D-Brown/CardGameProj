@@ -25,6 +25,7 @@ A Java-based turn-based card battler with animated combat, recursive game loops,
 - **Testing**: JUnit (white-box, black-box, unit testing)  
 
 ## Future Work
+### After Migration to LibGDX
 - Refined deck-building mechanics.  
 - Expanded enemy roster and AI logic.  
 - Sound effects and music integration.  
