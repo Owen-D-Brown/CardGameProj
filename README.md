@@ -1,6 +1,6 @@
 # Turn-Based Card Game
 
-A Java-based turn-based card battler with animated combat, recursive game loops, and dynamic entity interactions. Built with Swing for rendering and a custom animation engine.  
+A Java-based turn-based card battler with animated combat, recursive game loops, State Systems, and dynamic entity interactions. Built with Swing for rendering and a custom animation engine.  
 
 ## Gameplay Overview
 - Player and enemy take turns playing cards.  
